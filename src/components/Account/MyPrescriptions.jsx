@@ -21,7 +21,7 @@ const GET_MY_PRESCRIPTIONS = gql`
 `;
 
 const DELETE_PRESCRIPTION = gql`
-  mutation DeletePrescription($input: ID!) {
+  mutation deletePrescription($input: ID!) {
     deletePrescription(input: $input) {
       status
       message

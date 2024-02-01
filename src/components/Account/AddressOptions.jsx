@@ -13,7 +13,7 @@ const AddressOptions = ({ isDefault,address,setLoading,setIsOptionsModal,refetch
   }
 `;
 const DELETE_ADDRESS = gql`
-  mutation DeletePrescription($input: ID!) {
+  mutation deleteAddress($input: ID!) {
     deleteAddress(input: $input) {
       status
       message
