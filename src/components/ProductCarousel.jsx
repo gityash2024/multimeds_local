@@ -10,7 +10,8 @@ import { Link, useNavigate } from "react-router-dom";
 import data from "../data";
 import Context from "../context/AppContext";
 import { useQuery, gql,useMutation } from "@apollo/client";
-
+import transformProductData from '../util/transformProductData';
+import products from "../productData";
 const PRODUCT_LIST= gql`
 query{
   getCarouselProducts{
@@ -39,71 +40,27 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
   const [slide, setSlide] = useState(0);
   const [isFetched, setIsFetched] = useState(false);
   const [productList, setProductList] = useState([]);
-  const slideData = [
-    {
-      id: 1,
-      image: SampleProductImage,
-      title: "Product 1",
-    },
-    {
-      id: 2,
-      image: SampleProductImage,
-      title: "Product 2",
-    },
-    {
-      id: 3,
-      image: SampleProductImage,
-      title: "Product 3",
-    },
-    {
-      id: 4,
-      image: SampleProductImage,
-      title: "Product 4",
-    },
-    {
-      id: 5,
-      image: SampleProductImage,
-      title: "Product 5",
-    },
-    {
-      id: 6,
-      image: SampleProductImage,
-      title: "Product 6",
-    },
-    {
-      id: 7,
-      image: SampleProductImage,
-      title: "Product 7",
-    },
-    {
-      id: 8,
-      image: SampleProductImage,
-      title: "Product 8",
-    },
-    {
-      id: 9,
-      image: SampleProductImage,
-      title: "Product 9",
-    },
-    {
-      id: 10,
-      image: SampleProductImage,
-      title: "Product 10",
-    },
-  ];
-
-  useEffect(()=>{
-    try{
-    console.log('data is 123');
-    console.log(dataList);
-    console.log(dataList.getCarouselProducts.products);
-    setProductList(dataList.getCarouselProducts.products);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const maxVisibleItems = 5;
+  useEffect(() => {
+    const transformedData = transformProductData(products);
+    console.log(transformedData)
+    setProductList(transformedData);
     setIsFetched(true);
-    }catch(err){
-      console.log(err);
-    }
+
+  }, []);
+  // useEffect(()=>{
+  //   try{
+  //   console.log('data is 123');
+  //   console.log(dataList);
+  //   console.log(dataList.getCarouselProducts.products);
+  //   setProductList(dataList.getCarouselProducts.products);
+  //   setIsFetched(true);
+  //   }catch(err){
+  //     console.log(err);
+  //   }
     
-  },[dataList])
+  // },[dataList])
   const res = data.filter((item, index) => {
     if (slide === 0) {
       return index < 5;
@@ -113,11 +70,11 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
   });
 
   const handleRightArrow = () => {
-    setSlide(5);
+    setCurrentIndex(prevIndex => Math.min(prevIndex + maxVisibleItems, productList.length - maxVisibleItems));
   };
 
   const handleLeftArrow = () => {
-    setSlide(0);
+    setCurrentIndex(prevIndex => Math.max(prevIndex - maxVisibleItems, 0));
   };
 
   return (
@@ -149,59 +106,42 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
 
       {/* Carousel */}
       <div className="w-full flex justify-between items-end gap-6">
-        {/* <div className="max-w-[81.5rem] grid grid-flow-col gap-[2rem] overflow-auto scroll-auto my-8 scrollbar-hide"> */}
+            {productList.slice(currentIndex, currentIndex + maxVisibleItems).map((item) => (
+              <ProductCarouselCard
+                key={item.id}
+                title={item.productName}
+                discount={item.discount ? item.discount.toString().slice(0, 4) : '0'}
+                sp={item.sp}
+                units={item.unitsInPack}
+                maxRetailPrice={item.maxRetailPrice}
+                marketer={item.marketer}
+                image={item.productImages[0]}
+                openProduct={() => {
+                  setSelectedProduct(item);
+                  navigate(`/product/${item.id}`);
+                }}
+              />
+            ))}
+          </div>
 
-        {/* {res.map((item, idx) => {
-          return (
-            <ProductCarouselCard
-              title={item.productName}
-              // discount={item["Discount coupon code & Discount expiry"]?item["Discount coupon code & Discount expiry"]:'0'}
-              discount={item["discount"]?item["discount"]:'0'}
-              sp={item.sp}
-              units={item.unitsInPack}
-              price={item.price}
-              maxRetailPrice={item.maxRetailPrice}
-              image={item["Product Image"][0]}
-              openProduct={()=>{setSelectedProduct(item);navigate(`/product/${item.id}`)}}
-            />
-          );
-        })} */}
-        {productList.map((item, idx) => {
-          return (
-            <ProductCarouselCard
-              title={item.productName}
-              // discount={item["Discount coupon code & Discount expiry"]?item["Discount coupon code & Discount expiry"]:'0'}
-              discount={item["discount"]?item["discount"]:'0'}
-              sp={item.sp}
-              units={item.unitsInPack}
-              // price={item.price}
-              maxRetailPrice={item.maxRetailPrice}
-              image={item["productImages"][0]}
-              openProduct={()=>{setSelectedProduct(item);navigate(`/product/${item.id}`)}}
-              // openProduct={()=>{navigate(`/product/${item.id}`)}}
-            />
-          );
-        })}
-        {/* </div> */}
-      </div>
+     
 
       {/* Navigation Arrows */}
       <div className="w-full flex gap-1">
-        <button onClick={handleLeftArrow} className="cursor-pointer">
-          <img src={slide === 0 ? LeftArrowInactive : LeftArrowActive} />
-        </button>
-        <button onClick={handleRightArrow} className="cursor-pointer">
-          <img src={slide === 5 ? RightArrowInactive : RightArrowActive} />
-        </button>
-      </div>
-    </div>
-        )
-        :(
-          <div>Loading</div>
-        )
-      }
+            <button onClick={handleLeftArrow} className="cursor-pointer">
+              <img src={currentIndex === 0 ? LeftArrowInactive : LeftArrowActive} alt="Left Arrow" />
+            </button>
+            <button onClick={handleRightArrow} className="cursor-pointer">
+              <img src={currentIndex >= productList.length - maxVisibleItems ? RightArrowInactive : RightArrowActive} alt="Right Arrow" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div>Loading...</div>
+      )}
     </div>
   );
 };
+
 
 export default ProductCarousel;

@@ -1,9 +1,12 @@
-import React, { useContext, useRef, useState,useEffect } from "react";
+import React, { useContext, useRef,usena, useState,useEffect } from "react";
 import ProductCard from "../Product/ProductCard";
 import IndexSortBy from "./IndexSortBy";
 import data from "../../data";
 import { useQuery, gql,useMutation } from "@apollo/client";
 import CartItemCard from "../Cart/CartItemCard";
+import products from "../../productData";
+import transformProductData from '../../util/transformProductData';
+import { useNavigate } from "react-router-dom";
 
 const PRODUCT_LIST= gql`
 query{
@@ -28,23 +31,72 @@ query{
 const FindByIndex = ({ isIllness }) => {
   console.log('isIllness');
   console.log(isIllness);
+  const navigate=useNavigate()
   const { loading, error, data:dataList } = useQuery(PRODUCT_LIST);
   const [isFetched, setIsFetched] = useState(false);
   const [productList, setProductList] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [activeLetter, setActiveLetter] = useState('All');
+  const [isPrescriptionRequired, setIsPrescriptionRequired] = useState(null); 
+  useEffect(() => {
+    const transformedData = transformProductData(products);
+    setProductList(transformedData);
+    console.log(transformedData)
+    setFilteredProducts(transformedData); // Initially, no filter applied
+        setIsFetched(true);
 
-  
-  useEffect(()=>{
-    try{
-    console.log('data is 123');
+  }, []);
+  const handleAlphabetFilter = (letter) => {
+    setActiveLetter(letter);
+    applyFilters(letter, isPrescriptionRequired);
+  };
 
-    console.log(dataList.getAllProducts.products);
-    setProductList(dataList.getAllProducts.products);
-    setIsFetched(true);
-    }catch(err){
-      console.log(err);
+  const handlePrescriptionFilter = (required) => {
+    setIsPrescriptionRequired(required);
+    applyFilters(activeLetter, required);
+  };
+
+  const clearFilters = () => {
+    setActiveLetter('All');
+    setIsPrescriptionRequired(null);
+    setFilteredProducts(productList); // Reset to all products
+  };
+  const applyFilters = (letter, prescription) => {
+    let filtered = productList;
+
+    // Filter by prescription if needed
+    if (prescription !== null) {
+      filtered = filtered.filter((product) => product.prescriptionRequired === prescription);
     }
+
+    // Filter by letter if not 'All'
+    if (letter !== 'All') {
+      filtered = filtered.filter((product) => product.productName.toUpperCase().startsWith(letter));
+    }
+
+    setFilteredProducts(filtered);
+  };
+  const alphabetButtons = Array.from({ length: 26 }, (_, i) => String.fromCharCode(i + 65)).map((letter) => (
+    <button
+      key={letter}
+      className={activeLetter === letter ? "text-[#7487FF] font-HelveticaNeueMedium" : ""}
+      onClick={() => handleAlphabetFilter(letter)}
+    >
+      {letter}
+    </button>
+  ));
+  // useEffect(()=>{
+  //   try{
+  //   console.log('data is 123');
+
+  //   console.log(dataList.getAllProducts.products);
+  //   setProductList(dataList.getAllProducts.products);
+  //   setIsFetched(true);
+  //   }catch(err){
+  //     console.log(err);
+  //   }
     
-  },[dataList])
+  // },[dataList])
 
   return (
      <div>
@@ -54,7 +106,9 @@ const FindByIndex = ({ isIllness }) => {
           <div className="flex flex-col justify-between py-12 px-[6.25rem] gap-[1.25rem] bg-white mb-4">
           {/* Path */}
           <h1 className="w-full text-[0.875rem] text-[#64748B]">
-            Link 1/Link2/
+          <span onClick={()=>{navigate('/')}} className="text-[#94A3B8] font-HelveticaNeueMedium" style={{cursor:'pointer'}}>
+               Home/
+            </span>
             <span className="text-[#031B89] font-HelveticaNeueMedium">
               Product Page
             </span>
@@ -67,68 +121,49 @@ const FindByIndex = ({ isIllness }) => {
             </h1>
     
             {/* SortBy */}
-            <IndexSortBy isIndex />
+            {/* <IndexSortBy isIndex /> */}
+            <select className="text-[#94A3B8] text-[0.875rem] relative w-[21.875rem] flex justify-between p-2 rounded border border-[#CBD5E1] items-center" onChange={(e) => handlePrescriptionFilter(e.target.value === 'required')}>
+          <option className="text-[#94A3B8] text-[0.875rem]" value="required">Prescription Required</option>
+          <option className="text-[#94A3B8] text-[0.875rem]" value="notRequired">No Prescription Required</option>
+        </select>
           </div>
     
           {/* Sort Indexes */}
           <div className="flex flex-col gap-2">
-            <h1 className="font-[0.75rem]">Sort by:</h1>
-    
-            <div className="flex gap-6 text-[#334155]">
-              <button className="text-[#7487FF] font-HelveticaNeueMedium">
-                All Kapil
-              </button>
-              <button>A</button>
-              <button>B</button>
-              <button>C</button>
-              <button>D</button>
-              <button>E</button>
-              <button>F</button>
-              <button>G</button>
-              <button>H</button>
-              <button>I</button>
-              <button>J</button>
-              <button>K</button>
-              <button>L</button>
-              <button>M</button>
-              <button>N</button>
-              <button>O</button>
-              <button>P</button>
-              <button>Q</button>
-              <button>R</button>
-              <button>T</button>
-              <button>U</button>
-              <button>V</button>
-              <button>W</button>
-              <button>X</button>
-              <button>Y</button>
-              <button>Z</button>
+        {/* Alphabetical Filter */}
+        {/* <button style={{    width:' 8%',
+    float: 'right',
+    display: 'flex',
+    justifyContent: 'center',    position: 'relative',
+    left: '92%'
+}} className="w-[5.5rem] py-2 px-4 bg-[#7487FF] text-white rounded font-HelveticaNeueMedium" onClick={() => clearFilters()}>Clear Filters</button> */}
+        <div className="flex gap-6 text-[#334155]">
+          <button
+            className={activeLetter === 'All' ? "text-[#7487FF] font-HelveticaNeueMedium" : ""}
+            onClick={() => handleAlphabetFilter('All')}
+          >
+            All
+          </button>
+          {alphabetButtons}
+        </div>
+
+        {/* Prescription Filter Dropdown */}
+        {/* <select onChange={(e) => handlePrescriptionFilter(e.target.value === 'required')}>
+          <option value="required">Prescription Required</option>
+          <option value="notRequired">No Prescription Required</option>
+        </select> */}
+      </div>
+
+      {/* Products */}
+      {!isIllness ? (
+        <div className="grid w-full md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filteredProducts.map((product, i) => (
+            <div key={'product-' + product.id}>
+              <ProductCard product={product} isPrescriptionNeeded={product.prescriptionRequired} />
             </div>
-          </div>
-    
-          {/* Products/Illness */}
-          {!isIllness ? (
-            // <div className="grid w-full md:grid-cols-2  lg:grid-cols-3 gap-3">
-            // { data.map((product, i)=> {
-            //       return (
-            //         <div key={'p'+i}>
-            //           <ProductCard product={product} isPrescriptionNeeded={true}/>
-            //         </div>
-            //       )
-            //     }
-            //   )}
-            // </div>
-            <div className="grid w-full md:grid-cols-2  lg:grid-cols-3 gap-3">
-            { productList.map((product, i)=> {
-                  return (
-                    <div key={'p'+i}>
-                      <ProductCard product={product} isPrescriptionNeeded={product.prescriptionRequired}/>
-                    </div>
-                  )
-                }
-              )}
-            </div>
-          ) : (
+          ))}
+        </div>
+      ) : (
             // find by illness
             <div className="flex gap-12">
               <div className="flex flex-col gap-[1.25rem]">

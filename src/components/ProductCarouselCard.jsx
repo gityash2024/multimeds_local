@@ -2,14 +2,13 @@ import React from "react";
 
 import SecondaryButton from "./SecondaryButton";
 
-const ProductCarouselCard = ({id,title, discount, image, units, price, openProduct,maxRetailPrice,sp }) => {
+const ProductCarouselCard = ({id,title, discount, image, units, price, openProduct,maxRetailPrice,sp,marketer }) => {
   return (
     <div className="w-[14.375rem] flex gap-[0.781rem] flex-col justify-center items-stretch p-2">
       {/* Product Image */}
       <div className="flex justify-center items-center relative h-[8.438rem] w-full" onClick={()=>{openProduct()}}>
         <img
           src={image}
-          alt={`${title} image`}
           className="h-full object-cover"
         />
         <h1 className="absolute top-0 left-0 text-[0.625rem] font-HelveticaNeueMedium p-2 bg-[#C2F5E9]">
@@ -33,7 +32,7 @@ const ProductCarouselCard = ({id,title, discount, image, units, price, openProdu
             </p>
           </div>
           <p className="text-[0.625rem] font-HelveticaNeueItalic text-[#64748B]">
-            Mkt: Inlife Pharma Pvt ltd.
+            {marketer}
           </p>
         </div>
         <button className="w-[13.313rem] font-HelveticaNeueMedium border-[1px] rounded text-[#031B89] border-[#031B89] py-2">

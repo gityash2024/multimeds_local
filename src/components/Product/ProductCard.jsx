@@ -29,7 +29,7 @@ export default function ProductCard(props){
         {/* Image name and unit */}
         <div className="cursor-pointer flex gap-2 max-w-[15.313rem]" onClick={()=>{setSelectedProduct(product); navigate(`/product/${product.id}`)}}>
         {/* openProduct={()=>{setSelectedProduct(item);navigate(`/product/${item.id}`)}} */}
-          <img src={product["productImages"][0]} alt="image" className="w-14 h-14" />
+          <img src={product["productImages"][0]} alt="" className="w-14 h-14" />
           <div className="flex flex-col gap-1 w-full">
             <h1 className="text-[0.875rem] font-HelveticaNeueMedium">
               {product.productName}
@@ -51,7 +51,7 @@ export default function ProductCard(props){
           </div>
 
           <h1 className="text-[0.75rem] font-HelveticaNeueMedium text-[#65A30D]">
-            {product.discount}% OFF
+            {product.discount.toFixed(2)}% OFF
           </h1>
         </div>
 

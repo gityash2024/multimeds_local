@@ -15,8 +15,8 @@ const token = localStorage.getItem('token');
 // })
 
 export const httpLink = createHttpLink({
-  // uri: 'http://localhost:3030/graphql', // Your GraphQL endpoint URI
-   uri: 'https://api.mymultimeds.com/graphql', // Your production GraphQL endpoint URI
+ // uri: 'http://localhost:3030/graphql', // Your GraphQL endpoint URI
+    uri: 'https://api.mymultimeds.com/graphql', // Your production GraphQL endpoint URI
  });
  
  const authMiddleware = new ApolloLink((operation, forward) => {

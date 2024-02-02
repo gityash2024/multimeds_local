@@ -24,12 +24,19 @@ import Context from "../context/AppContext";
 import Login from "./Login";
 import SubscriptionCard from "./Subscription";
 const ProductSection = () => {
+  const currentUrl = encodeURIComponent(window.location.href);
+const whatsappShareUrl = `https://wa.me/?text=${currentUrl}`;
+const telegramShareUrl = `https://t.me/share/url?url=${currentUrl}`;
+const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
+
   const navigate = useNavigate();
   let userDetails =localStorage.getItem('token');
   const ref = useRef();
   const shareModalRef = useRef();
   const {selectedProduct} = useContext(Context)
+  console.log(selectedProduct)
   const [isAddressModal, setIsAddressModal] = useState(false);
+  const [error, setError] = useState();
   const [quantityCount,setQuantityCount] = useState(1);
   const [shareModal,setShareModal] = useState(false);
   const [isQuantityDropdown, setIsQuantityDropdown] = useState(false);
@@ -75,6 +82,7 @@ const ProductSection = () => {
   }
 
   const onQuantityChange=(e)=>{
+    setError('')
     e.preventDefault();
     let product= selectedProduct;
 
@@ -105,12 +113,24 @@ const ProductSection = () => {
    
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+      .then(() => {
+        console.log('Page URL copied to clipboard');
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+  };
   const onCartSubmit=(e)=>{
+    setError('')
     e.preventDefault();
     if(userDetails){
       setIsLogin(true);
       if(cartItems.length>0){
-       
+        
+
       // navigate(`/account/orders/order-details`);
       let newStateObj={};
       newStateObj.totalSP= totalSp;
@@ -118,22 +138,30 @@ const ProductSection = () => {
       newStateObj.cartItems = cartItems;
       navigate('/account/orders/order-details', { state: newStateObj });
       } else{
-        alert('Please Select Quantity ')
+        setError('Quantity is required')
+        // alert('Please Select Quantity ')
       }
     }else{
       setIsLogin(false);
     }
   }
+  const shareOnWhatsApp = () => {
+    window.open(whatsappShareUrl, '_blank');
+  };
 
   useEffect(()=>{setShareModal(false)},[])
-
   return (
     <div className="flex py-12 px-[6.25rem] justify-center gap-[1.25rem] bg-white mb-4">
       {/* Product*/}
       <div className="flex flex-col gap-[1.25rem]">
         {/* Path */}
         <h className="text-[0.875rem] text-[#64748B]">
-          Link 1/Link2/
+        <span onClick={()=>{navigate('/')}} className="text-[#94A3B8] font-HelveticaNeueMedium" style={{cursor:'pointer'}}>
+               Home/
+            </span>
+        <span onClick={()=>{navigate('/products')}} className="text-[#94A3B8] font-HelveticaNeueMedium" style={{cursor:'pointer'}}>
+               All Products/
+            </span>
           <span className="text-[#031B89] font-HelveticaNeueMedium">
             Product Page
           </span>
@@ -157,25 +185,28 @@ const ProductSection = () => {
                   {selectedProduct["productName"]}
                 </h1>
                 <div className="flex relative gap-1">
-                  <button>
-                    <img className="w-[80px]" src={Bookmark} alt="bookmark icon" />
+                  <button style={{cursor:'not-allowed'}}>
+                    <img className="w-[35px]" src={Bookmark} alt="bookmark icon" />
                   </button>
                   <button onClick={()=>{setShareModal(prev => !prev)}}>
-                    <img className="w-[80px]" src={Share} alt="share icon" />
+                    <img className="w-[35px]" src={Share} alt="share icon" />
                   </button>
-                  {shareModal && <div ref={shareModalRef} className="absolute top-[24px] right-[0px] w-[240px] flex flex-col gap-4 bg-white rounded-md px-2 py-4 shadow-lg border">
-                    <h1 className="text-[#64748B]">Share with friends</h1>
-                      <div className="flex gap-4 justify-center">
-                          <img className="cursor-pointer w-[40px]" src={whatsappIcon} alt="whatsapp icon" onClick={()=>{setShareModal(false)}}/>
-                          <img className="cursor-pointer w-[40px]" src={instagramIcon} alt="whatsapp icon" onClick={()=>{setShareModal(false)}}/>
-                          <img className="cursor-pointer w-[40px]" src={telegramIcon} alt="whatsapp icon" onClick={()=>{setShareModal(false)}}/>
-                          <img className="cursor-pointer w-[40px]" src={twitterIcon} alt="whatsapp icon" onClick={()=>{setShareModal(false)}}/>
-                      </div>
-                      <div className="flex gap-2 text-[12px] border rounded-3xl p-2 w-full">
-                        <input type="text" className="outline-none w-[60%] border-r px-2" value="https://xyz.abc/product/share/demo=x4820"/>
-                        <p className="cursor-pointer w-fit text-[#64748B] hover:text-black">Copy link</p>
-                      </div>
-                  </div>}
+                  {shareModal && (
+  <div ref={shareModalRef} className="absolute top-[24px] right-[0px] w-[240px] flex flex-col gap-4 bg-white rounded-md px-2 py-4 shadow-lg border">
+    <h1 className="text-[#64748B]">Share with friends</h1>
+    <div className="flex gap-4 justify-center">
+      <img className="cursor-pointer w-[40px]" src={whatsappIcon} alt="whatsapp icon" onClick={shareOnWhatsApp}/>
+      {/* Instagram share is not included because it's not supported */}
+      <img className="cursor-pointer w-[40px]" src={telegramIcon} alt="telegram icon" onClick={()=> window.open(telegramShareUrl, '_blank')}/>
+      <img className="cursor-pointer w-[40px]" src={twitterIcon} alt="twitter icon" onClick={()=> window.open(twitterShareUrl, '_blank')}/>
+    </div>
+    <div className="flex gap-2 text-[12px] border rounded-3xl p-2 w-full">
+      <input type="text" readOnly className="outline-none w-[60%] border-r px-2" value={window.location.href}/>
+      <p className="cursor-pointer w-fit text-[#64748B] hover:text-black" onClick={()=>{setShareModal(false);handleCopyLink()}}>Copy link</p>
+    </div>
+  </div>
+)}
+
                 </div>
               </div>
 
@@ -200,11 +231,12 @@ const ProductSection = () => {
                 {/* Manufacturer */}
                 <div className="w-[7.188rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                    Manufacturer
+                    {selectedProduct["marketer"]}
                   </h1>
                   <div>
                     <div className="w-fit border-b border-[#0F172A]">
                       <h2 className="cursor-pointer text-[0.875rem] font-HelveticaNeueMedium text-[#0F172A]">
+                     
                         {selectedProduct.Manufacturer}
                       </h2>
                     </div>
@@ -213,7 +245,8 @@ const ProductSection = () => {
                 {/* Composition*/}
                 <div className="w-[7.188rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                    Composition
+                    Composition <br/>
+                    --
                   </h1>
                   <div>
                     <div className="w-fit border-b border-[#0F172A]">
@@ -228,7 +261,8 @@ const ProductSection = () => {
                 {/* Storage */}
                 <div className="w-[7.188rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                    Storage
+                      Storage <br />
+                    {selectedProduct.safetyinformation?.split(',')[0]}
                   </h1>
                   <div>
                     <div className="w-fit">
@@ -241,7 +275,7 @@ const ProductSection = () => {
                 {/* Country of Origin*/}
                 <div className="w-[7.188rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                    Country of Origin
+                  Country <br /> India 
                   </h1>
                   <div>
                     <div className="w-fit">
@@ -285,11 +319,11 @@ const ProductSection = () => {
               </p>
             </div> */}
              <span className=" text-[0.625rem] font-HelveticaNeueMedium p-2 bg-[#C2F5E9] h-6">
-          {10}% OFF
+             {selectedProduct.discount.toFixed(2)}% OFF
         </span>
              <div className="flex justify-between items-center">
             <h1 className="font-HelveticaNeueMedium text-[#031B89]">
-              Rs {selectedProduct.sp}
+            MRP : Rs {selectedProduct.sp}
             </h1>
             <p className="text-[0.75rem] text-[#94A3B8] pl-1">
               {/* MRP:  */}
@@ -376,7 +410,7 @@ const ProductSection = () => {
                 } */}
                 
                 <select onChange={onQuantityChange} className={`left-[0] top-[2.8rem] border border-[#E2E8F0] w-full p-2 gap-2 rounded bg-white`} style={{height:40}}>
-                <option value="" selected>select quantity</option>
+                <option value="" selected disabled>select quantity</option>
     <option value="1">1</option>
     <option value="2">2</option>
     <option value="3">3</option>
@@ -384,6 +418,8 @@ const ProductSection = () => {
     <option value="5">5</option>
     <option value="6">6</option>
         </select>
+        {error && <p className="text-[#EF4444] text-xs">{error}</p>}
+
                 {/* {isQuantityDropdown ? (
                   <QuantityDropdown
                     isSelected={isSelected}
