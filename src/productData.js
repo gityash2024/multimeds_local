@@ -36,8 +36,8 @@ const products = [
      "Discount %": 10,
      "Images Link": "https:\/\/drive.google.com\/drive\/folders\/1W9kl97e7WQ3VF6wZxz7LiGtdZ1B7KPu2?usp=drive_link",
      "productImages": [
-        "../assets/product1.png", 
-        "../assets/product1-2.png"
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706890207662.png", 
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706890297704.png"
     ]
     },
     {
@@ -75,7 +75,12 @@ const products = [
      "MRP": 85,
      "SP": 77,
      "Discount %": 9.411764705882353,
-     "Images Link": "https:\/\/drive.google.com\/drive\/folders\/1I60Mm1-cyIlS05Casfa_lr5e295umwGp?usp=drive_link"
+     "Images Link": "https:\/\/drive.google.com\/drive\/folders\/1I60Mm1-cyIlS05Casfa_lr5e295umwGp?usp=drive_link",
+     "productImages": [
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706894391771.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706894556968.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706894733943.png" 
+     ]
     },
     {
      "Sl No": 3,
@@ -112,7 +117,14 @@ const products = [
      "MRP": 1500,
      "SP": 1399,
      "Discount %": 6.7333333333333325,
-     "Images Link": "https:\/\/drive.google.com\/drive\/folders\/17PS-Pa77Nv5yO02l1QZcPqRiO35SKl2K?usp=drive_link"
+     "Images Link": "https:\/\/drive.google.com\/drive\/folders\/17PS-Pa77Nv5yO02l1QZcPqRiO35SKl2K?usp=drive_link",
+     "productImages": [
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706894986639.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706895017860.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706895059968.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706895099372.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706895148123.png",
+     ]
     },
     {
      "Sl No": 4,
@@ -151,7 +163,14 @@ const products = [
      "MRP": 590,
      "SP": 499,
      "Discount %": 15.423728813559324,
-     "Images Link": "https:\/\/drive.google.com\/drive\/folders\/17PS-Pa77Nv5yO02l1QZcPqRiO35SKl2K?usp=drive_link"
+     "Images Link": "https:\/\/drive.google.com\/drive\/folders\/17PS-Pa77Nv5yO02l1QZcPqRiO35SKl2K?usp=drive_link",
+     "productImages": [
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706895628765.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706895709984.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706895751365.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706895791558.png",
+        "https://ree-route.s3.ap-south-1.amazonaws.com/1706895854644.png",
+        ]
     },
     {
      "Sl No": 5,

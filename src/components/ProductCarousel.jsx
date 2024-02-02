@@ -46,9 +46,13 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
     const transformedData = transformProductData(products);
     console.log(transformedData)
     setProductList(transformedData);
+    console.log(transformedData,'========---------------------------------productb list')
     setIsFetched(true);
 
   }, []);
+
+  useEffect(()=>{
+  },[productList])
   // useEffect(()=>{
   //   try{
   //   console.log('data is 123');
@@ -106,7 +110,8 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
 
       {/* Carousel */}
       <div className="w-full flex justify-between items-end gap-6">
-            {productList.slice(currentIndex, currentIndex + maxVisibleItems).map((item) => (
+      
+            {productList.length && productList.slice(currentIndex, currentIndex + maxVisibleItems).map((item) => (
               <ProductCarouselCard
                 key={item.id}
                 title={item.productName}
