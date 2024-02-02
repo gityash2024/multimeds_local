@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-
+import { useNavigate } from 'react-router-dom';
+import ConfirmationModal from "./ConfirmationModal";
 import { Link, NavLink } from "react-router-dom";
 
 import Logo from "../assets/multimedsLogo.svg";
@@ -26,10 +27,14 @@ import {
   Routes,
 } from "react-router-dom";
 const Navbar = ({ isDiscountBanner  }) => {
+  const navigate = useNavigate();
+
   const [userDetails, setUserDetails] = useState(localStorage.getItem('token'));
   console.log(userDetails)
   const [isMenu, setIsMenu] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   const [isLogin, setIsLogin] = useState(false);
   const [isCartModal, setIsCartModal] = useState(false);
   const location = useLocation();
@@ -50,16 +55,24 @@ const Navbar = ({ isDiscountBanner  }) => {
     setLoading(false)
   })
 
-  const onLogoutClick=(e)=>{
+  const onLogoutClick = (e) => {
     e.preventDefault();
-    localStorage.removeItem('token');
-    localStorage.removeItem('userInfo');
-    // toast.info('Logged out successfully');
+    setShowConfirmModal(true);
+  };
+  
+
+  // const onLogoutClick=(e)=>{
+  //   e.preventDefault();
+  //   localStorage.removeItem('token');
+  //   localStorage.removeItem('userInfo');
+  //   // toast.info('Logged out successfully');
     
-    setLoading(true)
-    setUserDetails(localStorage.getItem('token'));
-    // window.location.reload();
-  }
+  //   setLoading(true)
+  //   setUserDetails(localStorage.getItem('token'));
+  //   navigate('/', { state: { openLoginModal: true } });
+
+  //   // window.location.reload();
+  // }
 
   return (
     <div className="lg:static w-full fixed top-0 z-50 flex flex-col justify-center ">
@@ -172,6 +185,20 @@ const Navbar = ({ isDiscountBanner  }) => {
       {/* Navlinks */}
       {/* <Navlinks /> */}
       <MobileMenu isMenu={isMenu} />
+      {
+  showConfirmModal && (
+    <ConfirmationModal
+      onConfirm={() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userInfo');
+        navigate('/', { state: { openLoginModal: true } });
+        setShowConfirmModal(false);
+        setUserDetails(localStorage.getItem('token'));
+      }}
+      onCancel={() => setShowConfirmModal(false)}
+    />
+  )
+}
 
       {/* Navlinks */}
       {isDiscountBanner ? <DiscountBanner /> : null}

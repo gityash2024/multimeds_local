@@ -81,8 +81,11 @@ body {
     color: #ffffff;
   }
   .maps {
+    /* height: 50vh;
+    width: 45vw; */
+    position: relative;
     height: 50vh;
-    width: 45vw;
+    width: 125%;
   }
   
   .map-container {

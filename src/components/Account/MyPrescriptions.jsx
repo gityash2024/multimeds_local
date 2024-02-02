@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Modal from "../modal";
 
 const GET_MY_PRESCRIPTIONS = gql`
-  query GetMyPrescriptions {
+  query getMyPrescriptions {
     getMyPrescriptions {
       status
       message
@@ -21,7 +21,7 @@ const GET_MY_PRESCRIPTIONS = gql`
 `;
 
 const DELETE_PRESCRIPTION = gql`
-  mutation deletePrescription($input: ID!) {
+  mutation DeletePrescription($input: ID!) {
     deletePrescription(input: $input) {
       status
       message
@@ -66,7 +66,7 @@ const MyPrescriptions = () => {
         toast.success("Prescription added successfully.");
         refetch();
         setOpen(false);
-
+        setUrl('')
         setLoading(false);
       } else {
         setLoading(false);
@@ -155,8 +155,16 @@ useEffect(()=>{
 
   const handleAddPrescription = async () => {
     setLoading(true);
-    addPrescription()
+   if(url) {addPrescription()}
   };
+
+  if (error) {
+    // Handle the error state properly, maybe display a message to the user
+    console.error("Error fetching prescriptions:", error);
+    return <p>There was an error fetching the prescriptions.</p>;
+  }
+
+  const prescriptions = data?.getMyPrescriptions?.prescriptions ?? [];
 
   return (
     <div className="flex flex-col gap-4">
@@ -185,18 +193,27 @@ useEffect(()=>{
         </button>
       </div>
 
-      {data && data.getMyPrescriptions.prescriptions.length === 0 && (
+      {/* {data && data.getMyPrescriptions && data.getMyPrescriptions.prescriptions.length === 0 ? (
         <p className="text-center">No prescriptions found.</p>
-      )}
-
-      {data &&
-        data.getMyPrescriptions.prescriptions.map((prescription) => (
+      ) : (
+        data && data.getMyPrescriptions && data.getMyPrescriptions.prescriptions.map((prescription) => (
           <Prescription
             key={prescription.id}
             prescription={prescription}
             onDelete={() => handleDelete(prescription.id)}
           />
-        ))}
+        ))
+      )} */}
+        {prescriptions.length === 0 && (
+        <p className="text-center">No prescriptions found.</p>
+      )}
+        {prescriptions.map((prescription) => (
+        <Prescription
+          key={prescription.id}
+          prescription={prescription}
+          onDelete={() => handleDelete(prescription.id)}
+        />
+      ))}
 
       {open && (
         <Modal isOpen={open} onClose={handleClose}>

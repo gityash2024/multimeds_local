@@ -29,7 +29,7 @@ mutation createAddress($houseNumber: String!, $aptOrBuildingName: String!, $stre
 }
 `;
 const UPDATE_ADDRESS = gql`
-mutation updateAddress($houseNumber: String!, $aptOrBuildingName: String!, $streetOrAreaName: String!, $city: String!, $state: String!, $pincode: String!,$addressId: ID!) {
+mutation updateAddress($houseNumber: String!, $aptOrBuildingName: String!, $streetOrAreaName: String!, $city: String!, $state: String!, $pincode: String!,$addressId: String!) {
   updateAddress(input: {
     houseNumber: $houseNumber,
     aptOrBuildingName: $aptOrBuildingName,
@@ -59,6 +59,7 @@ const AddAddressModal = ({ ref,address, setIsAddAddress,refetch }) => {
   const [aptOrBuildingName, setBuildingName] = useState('');
   const [streetOrAreaName, setAreaName] = useState('');
   const [pincode, setPincode] = useState('');
+  const [loading, setLoading] = useState(false);
   const [city, setCity] = useState('');
   const [state, setState] = useState('');  
   const [lat, setLat] = useState(Number(26.4844632));
@@ -75,6 +76,7 @@ const AddAddressModal = ({ ref,address, setIsAddAddress,refetch }) => {
     },
     onCompleted: (data) => {
       if (data.createAddress.status === 'SUCCESS') {
+        setLoading(false)
      
         toast.success('Address added successfully.');
         setIsAddAddress(false);refetch();
@@ -88,10 +90,14 @@ const AddAddressModal = ({ ref,address, setIsAddAddress,refetch }) => {
 
         
       }else{
+        setLoading(false)
+
         toast.error('Error : Add Address ');
       }
     },
     onError:(err)=>{
+      setLoading(false)
+
       toast.error('Error : ' + err?.message);
 
       // setBtnDisable(false)
@@ -110,6 +116,7 @@ const AddAddressModal = ({ ref,address, setIsAddAddress,refetch }) => {
     },
     onCompleted: (data) => {
       if (data.updateAddress.status === 'SUCCESS') {
+        setLoading(false)
      
         toast.success('Address updated successfully.');
         setIsAddAddress(false);refetch();
@@ -119,11 +126,15 @@ const AddAddressModal = ({ ref,address, setIsAddAddress,refetch }) => {
         
       }else{
         // format()
+        setLoading(false)
+
         // setIsAddAddress(false);
         toast.error('Error : Add Address ');
       }
     },
     onError:(err)=>{
+      setLoading(false)
+
       // setIsAddAddress(false);
       toast.error('Error : ' + err?.message);
       // format()
@@ -393,8 +404,11 @@ const saveInputs=()=>{
  
 
     if (address) {
+      setLoading(true)
+
       updateAddress();
     } else {
+      setLoading(true)
 createAddress()
     }  console.log(responseObj,active,'++++++++++++=====++++===+++====+++====+++==========+++====+++====++====++==')
 
@@ -405,12 +419,14 @@ createAddress()
       ref={ref}
       className="w-screen h-screen fixed top-0 left-0 z-50 flex justify-center items-center bg-black bg-opacity-40"
     >
+{(loading ) &&  <Loader />
+}
       <div
         ref={modalRef}
         className="w-[45.25rem] border border-[#CBD5E1] flex flex-col justify-center max-w-[54.5rem] rounded-xl p-4 gap-3 bg-white shadow-login"
       >
         <div className="w-full py-2 px-4 flex justify-between items-center gap-2">
-          <h1 className="font-HelveticaNeueMedium">Add a New Address</h1>
+          <h1 className="font-HelveticaNeueMedium">{!address ? "Add a New" : "Update"} Address</h1>
           <button
             onClick={() => {
               format()
@@ -557,7 +573,7 @@ createAddress()
           </div>
         </div>
 
-        <PrimaryButton handleClick={saveInputs}  title="SAVE" />
+        <PrimaryButton handleClick={saveInputs}  title={!address?'SAVE':'UPDATE'} />
       </div>
     </div>
   );
