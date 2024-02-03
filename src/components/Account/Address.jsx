@@ -10,7 +10,7 @@ const Address = ({ address ,setLoading,refetch,editAddress}) => {
       <div className="flex flex-col gap-1">
         <div className="text-[0.875rem] font-HelveticaNeueMedium">
           <div className="flex gap-1 items-center">
-            <h1>{address.label}</h1>
+            <h1 className="text-[#0F172A] uppercase">{address.label}</h1>
             <h1>|</h1>
             <h1>{address.houseNumber}</h1>
           </div>

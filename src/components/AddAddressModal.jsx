@@ -21,7 +21,8 @@ const CREATE_ADDRESS = gql`
     $city: String!
     $state: String!
     $pincode: String!
-  ) {
+    $label: String
+      ) {
     createAddress(
       input: {
         houseNumber: $houseNumber
@@ -30,6 +31,7 @@ const CREATE_ADDRESS = gql`
         city: $city
         state: $state
         pincode: $pincode
+        label: $label
       }
     ) {
       status
@@ -46,6 +48,7 @@ const UPDATE_ADDRESS = gql`
     $state: String!
     $pincode: String!
     $addressId: String!
+    $label: String
   ) {
     updateAddress(
       input: {
@@ -56,6 +59,7 @@ const UPDATE_ADDRESS = gql`
         state: $state
         pincode: $pincode
         addressId: $addressId
+        label: $label
       }
     ) {
       status
@@ -90,7 +94,7 @@ const GET_CITIES_BY_STATE = gql`
     }
   }
 `;
-const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
+const AddAddressModal = ({ ref, address, setIsAddAddress, referctAdderss }) => {
   const [errors, setErrors] = useState({
     houseNumber: "",
     aptOrBuildingName: "",
@@ -110,10 +114,11 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
   const [lat, setLat] = useState(Number(26.4844632));
   const [log, setLog] = useState(Number(80.3194603));
   const [other, setOtherValue] = useState("");
+  const [label, setLabel] = useState(""); // New state for label
 
   const [selectedState, setSelectedState] = useState("");
 
-  const { data: statesData } = useQuery(GET_STATES,{
+  const { data: statesData, loading: statesLoading } = useQuery(GET_STATES,{
     onCompleted: (data) => {
       setLoading(false);
     },
@@ -121,7 +126,7 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
       setLoading(false)
     }
   });
-  const { data: citiesData } = useQuery(GET_CITIES_BY_STATE, {
+  const { data: citiesData, refetch } = useQuery(GET_CITIES_BY_STATE, {
     variables: { 
       stateInput: selectedState ? statesData.getStates.states.find(state => state.name === selectedState)?.iso2 : null 
     },
@@ -136,6 +141,7 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
   
 
   const handleStateChange = (event) => {
+    console.log(event.target.value)
     setSelectedState(event.target.value);
     setState(event.target.value)
     if(event.target.value){
@@ -155,6 +161,7 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
         city: city,
         state: state,
         pincode: pincode,
+        label:label
       },
       onCompleted: (data) => {
         if (data.createAddress.status === "SUCCESS") {
@@ -162,13 +169,14 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
 
           toast.success("Address added successfully.");
           setIsAddAddress(false);
-          refetch();
+          referctAdderss();
           setHouseNumber("");
           setBuildingName("");
           setAreaName("");
           setPincode("");
           setCity("");
           setState("");
+          setLabel("");
         } else {
           setLoading(false);
 
@@ -196,6 +204,7 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
         state: state,
         pincode: pincode,
         addressId: address?.id,
+        label:label
       },
       onCompleted: (data) => {
         if (data.updateAddress.status === "SUCCESS") {
@@ -203,7 +212,7 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
 
           toast.success("Address updated successfully.");
           setIsAddAddress(false);
-          refetch();
+          referctAdderss();
           format();
         } else {
           // format()
@@ -232,23 +241,30 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
     setPincode("");
     setCity("");
     setState("");
+    setLabel("");
+
   };
 
   useEffect(() => {
     if (address) {
-      console.log(
-        address,
-        "++++++++++++++++=====++++++====+++=====================++++++++===========+++++++++++++++++++++++++++++++++++++++++++++"
-      );
       setHouseNumber(address.houseNumber || "");
       setBuildingName(address.aptOrBuildingName || "");
       setAreaName(address.streetOrAreaName || "");
       setPincode(address.pincode || "");
       setCity(address.city || "");
       setState(address.state || "");
+
+      // Set the label and active state based on the existing address label
+      if (address.label === 'home' || address.label === 'work') {
+        setLabel(address.label);
+        setActive(workAddressButtons.find(item => item.name === address.label).id);
+      } else {
+        setLabel(address.label);
+        setActive(3); // Assuming '3' is the ID for 'Other'
+        setOtherValue(address.label); // Set 'Other' input field if the label is not 'home' or 'work'
+      }
     }
   }, [address]);
-
   function getCurrentLocation() {
     return new Promise((resolve, reject) => {
       if ("geolocation" in navigator) {
@@ -308,6 +324,23 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
         });
     });
   }
+  useEffect(() => {
+    if (address && statesData) {
+      const stateIso2 = statesData.getStates.states.find(s => s.name === address.state)?.iso2;
+      if (stateIso2) {
+        console.log(stateIso2)
+        setSelectedState(address.state);
+        setState(address.state);
+      }
+    }
+  }, [address, statesData]);
+
+  useEffect(() => {
+    console.log(selectedState,'++++++++++++++====++++==+++===++++==++++==++++==+++===+++===+++===+++==+++===++')
+    if (selectedState) {
+      refetch()
+    }
+  }, [selectedState]);
 
   useEffect(() => {
     getCurrentLocation()
@@ -369,6 +402,9 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
   // }
 
   const handleProfileInputChange = (inputValue, type) => {
+    if (type === "label") {
+      setOtherValue(inputValue); // Correctly update 'other' state
+    }
     console.log(`Input value changed: ${inputValue}, ${type}`);
     if (type === "houseNumber") {
       if (inputValue?.trim()) {
@@ -377,6 +413,9 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
         errors.houseNumber = true;
       }
       setHouseNumber(inputValue);
+    }
+    if (type === "label") {
+      setLabel(inputValue);
     }
     if (type === "aptOrBuildingName") {
       if (inputValue?.trim()) {
@@ -450,13 +489,15 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
       newErrors.state = true;
       isValid = false;
     }
-    if (!active && active === 3 && !other) {
-      console.log(isValid, "is valid");
+    if (active === 3 && !other.trim()) {
+      // Validate 'other' field when 'Other' is selected
       isValid = false;
     }
     setErrors(newErrors);
     return isValid;
   };
+
+
   const saveInputs = () => {
     let responseObj = {
       houseNumber: houseNumber,
@@ -465,26 +506,40 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
       pincode: pincode,
       city: city,
       state: selectedState,
-      lable: workAddressButtons[active - 1]?.name || other,
+      label: label, // Include label in the response object
     };
     console.log(
       responseObj,
       active,
       "++++++++++++=====++++===+++====+++====+++==========+++====+++====++====++=="
     );
-    if (!validateForm()) {
+    if (!validateForm() || (active === 3 && !other.trim())) {
+      toast.error("Please fill all the required fields.");
       return;
     }
     // Proceed with creating address
+    console.log(responseObj, "Address response object");
+    const finalLabel = active === 3 ? other : label;
+
 
     if (address) {
       setLoading(true);
-
-      updateAddress();
+      updateAddress({
+        variables: {
+          // ... Other variables
+          label: finalLabel,
+        },
+      });
     } else {
       setLoading(true);
-      createAddress();
+      createAddress({
+        variables: {
+          // ... Other variables
+          label: finalLabel,
+        },
+      });
     }
+  
     console.log(
       responseObj,
       active,
@@ -500,7 +555,7 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
       {loadingg && <Loader />}
       <div
         ref={modalRef}
-        className="w-[45.25rem] border border-[#CBD5E1] flex flex-col justify-center max-w-[54.5rem] rounded-xl p-4 gap-3 bg-white shadow-login"
+        className="w-[45.25rem] h-[45.25rem] border border-[#CBD5E1] flex flex-col justify-center max-w-[54.5rem] rounded-xl p-4 gap-3 bg-white shadow-login"
       >
         <div className="w-full py-2 px-4 flex justify-between items-center gap-2">
           <h1 className="font-HelveticaNeueMedium">
@@ -683,9 +738,10 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
                 {workAddressButtons.map((item, idx) => {
                   return (
                     <button
-                      onClick={() => {
-                        setActive(item.id);
-                      }}
+                    onClick={() => {
+                      setActive(item.id);
+                      setLabel(item.name); // Set label when a predefined label is selected
+                    }}
                       className={`${
                         active !== item.id ? " bg-white" : "bg-[#FBA79B]"
                       } flex justify-center items-center gap-1 w-[8.25rem] rounded-full border border-[#FBA79B] py-2 px-1`}
@@ -729,16 +785,18 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, refetch }) => {
                 </h1>
               </button>
             </div>
-            {active === 3 ? (
-              <input
-                type="text"
-                name="other"
-                id="other"
-                onKeyDown={(e) => setOtherValue(e.target.value)}
-                placeholder="Add name"
-                className="w-full outline-none text-[0.875rem] font-HelveticaNeueLight placeholder:text-[#64748B] capitalize"
-              />
-            ) : null}
+            {active === 3 && (
+    <input
+      type="text"
+      name="other"
+      id="other"
+      value={other}
+      onInput={(e) => handleProfileInputChange(e.target.value, "label")}
+      placeholder="Add name"
+      className="w-full outline-none text-[0.875rem] font-HelveticaNeueLight placeholder:text-[#64748B] capitalize"
+      required={active === 3} // Make input required when Other is selected
+    />
+  )}
           </div>
         </div>
 

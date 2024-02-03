@@ -78,7 +78,7 @@ if(editAddress){
         </button>
 
         {isAddAddress ? (
-          <AddAddressModal  ref={modalRef} setIsAddAddress={setIsAddAddress} address={editAddress} refetch={refetch} />
+          <AddAddressModal  ref={modalRef} setIsAddAddress={setIsAddAddress} address={editAddress} referctAdderss={refetch} />
         ) : null}
       </div>
 
