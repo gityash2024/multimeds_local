@@ -2,28 +2,18 @@ import React, { useContext, useState } from "react";
 import ProductCard from "./Product/ProductCard";
 import { Link, useNavigate } from "react-router-dom";
 import Context from "../context/AppContext";
-const SearchBarDropdown = ({ isHero,data }) => {
+const SearchBarDropdown = ({ isHero,data , setFilteredProducts }) => {
+  console.log(data);
   const navigate = useNavigate();
   const {setSelectedProduct} = useContext(Context);
   return (
     <div
       className={`${
         isHero ? "top-12 -left-2" : "top-12 right-3"
-      } absolute border gap-6 rounded p-2 w-[40.688rem] bg-white`}
+      } absolute border gap-6 rounded p-2 w-[40.688rem] bg-white max-h-[20rem] overflow-auto scrollbar-hide z-50`}
     >
       <div className="flex flex-col gap-2">
         <div className="w-full flex flex-col gap-1">
-          {/* <Link className="w-full py-2 px-1 rounded bg-[#F8FAFC]">
-            <h1 className=" text-[0.875rem] font-HelveticaNeueLight ">
-              BP Monitors
-            </h1>
-          </Link>
-
-          <Link className="py-2 px-1 rounded bg-[#F8FAFC]">
-            <h1 className=" text-[0.875rem] font-HelveticaNeueLight">
-              BP Monitors
-            </h1>
-          </Link> */}
           {
             data.map((item,i)=>(
             //   <Link className="py-2 px-1 rounded bg-[#F8FAFC]" key={item.id} >
@@ -31,9 +21,9 @@ const SearchBarDropdown = ({ isHero,data }) => {
             //     {item.productName}
             //   </h1>
             // </Link>
-            <div className="py-2 px-1 rounded bg-[#F8FAFC]" key={item.id} onClick={()=>{setSelectedProduct(item); navigate(`/product/${item.id}`)}}>
+            <div className="py-2 px-1 rounded bg-[#F8FAFC]" key={item.id} onClick={()=>{setSelectedProduct(item); navigate(`/product/${item.id}`) ; setFilteredProducts([])}}>
               <h1 className=" text-[0.875rem] font-HelveticaNeueLight">
-                {item.productName}
+              {item['Short Title']}
               </h1>
             </div>
             ))

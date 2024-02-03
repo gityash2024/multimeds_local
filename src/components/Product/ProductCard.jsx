@@ -53,7 +53,7 @@ export default function ProductCard(props){
           </div>
 
           <h1 className="text-[0.75rem] font-HelveticaNeueMedium text-[#65A30D]">
-            {product.discount.toFixed(2)}% OFF
+            {product?.discount?.toFixed(2)}% OFF
           </h1>
         </div>
 

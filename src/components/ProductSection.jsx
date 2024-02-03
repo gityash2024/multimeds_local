@@ -1,9 +1,9 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
 
-import whatsappIcon from '../assets/whatsapp.png';
-import instagramIcon from '../assets/instagram.png';
-import telegramIcon from '../assets/telegram.png';
-import twitterIcon from '../assets/twitter.png';
+import whatsappIcon from "../assets/whatsapp.png";
+import instagramIcon from "../assets/instagram.png";
+import telegramIcon from "../assets/telegram.png";
+import twitterIcon from "../assets/twitter.png";
 
 import PrimaryHighlight from "./PrimaryHighlight";
 import SecondaryHighlight from "./SecondaryHighlight";
@@ -25,31 +25,35 @@ import Login from "./Login";
 import SubscriptionCard from "./Subscription";
 const ProductSection = () => {
   const currentUrl = encodeURIComponent(window.location.href);
-const whatsappShareUrl = `https://wa.me/?text=${currentUrl}`;
-const telegramShareUrl = `https://t.me/share/url?url=${currentUrl}`;
-const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
+  const whatsappShareUrl = `https://wa.me/?text=${currentUrl}`;
+  const telegramShareUrl = `https://t.me/share/url?url=${currentUrl}`;
+  const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
 
   const navigate = useNavigate();
-  let userDetails =localStorage.getItem('token');
+  let userDetails = localStorage.getItem("token");
   const ref = useRef();
   const shareModalRef = useRef();
-  const {selectedProduct} = useContext(Context)
-  console.log(selectedProduct)
+  const { selectedProduct } = useContext(Context);
+  console.log(selectedProduct);
   const [isAddressModal, setIsAddressModal] = useState(false);
   const [error, setError] = useState();
-  const [quantityCount,setQuantityCount] = useState(1);
-  const [shareModal,setShareModal] = useState(false);
+  const [quantityCount, setQuantityCount] = useState(1);
+  const [shareModal, setShareModal] = useState(false);
   const [isQuantityDropdown, setIsQuantityDropdown] = useState(false);
   const [isSelected, setIsSelected] = useState(-1);
   const [quantity, setQuantity] = useState(0);
-  let [cartItems,setCartItems] = useState([]);
-  let [totalMrp,setTotalMrp] = useState(0);
-  let [totalSp,setTotalSp] = useState(0);
-  let [itemObj,setItemObj] = useState({});
+  let [cartItems, setCartItems] = useState([]);
+  let [totalMrp, setTotalMrp] = useState(0);
+  let [totalSp, setTotalSp] = useState(0);
+  let [itemObj, setItemObj] = useState({});
   const [isLogin, setIsLogin] = useState(true);
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (shareModal && shareModalRef.current && !shareModalRef.current.contains(event.target)) {
+      if (
+        shareModal &&
+        shareModalRef.current &&
+        !shareModalRef.current.contains(event.target)
+      ) {
         setShareModal(false);
       }
     };
@@ -62,31 +66,35 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
         setShareModal(false);
       }
     };
-    
+
     // document.addEventListener("mousedown", handler);
     document.addEventListener("mousedown", handleClickOutside);
     window.addEventListener("scroll", handleScroll);
-  
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       window.removeEventListener("scroll", handleScroll);
       // document.removeEventListener("mousedown", handler);
     };
-  }, [shareModal,isLogin,cartItems]);
-  
+  }, [shareModal, isLogin, cartItems]);
 
-
-  function changeQuantity(event){
-    if(!isNaN(event.target.value)) 
-      setQuantityCount((event.target.value > 0 || event.target.value=="") ? event.target.value : 1); 
+  function changeQuantity(event) {
+    if (!isNaN(event.target.value))
+      setQuantityCount(
+        event.target.value > 0 || event.target.value == ""
+          ? event.target.value
+          : 1
+      );
   }
 
-  const onQuantityChange=(e)=>{
-    setError('')
+  const onQuantityChange = (e) => {
+    setError("");
     e.preventDefault();
-    let product= selectedProduct;
+    let product = selectedProduct;
 
-    const existingProductIndex = cartItems.findIndex((item) => item.id === product.id);
+    const existingProductIndex = cartItems.findIndex(
+      (item) => item.id === product.id
+    );
 
     if (existingProductIndex !== -1) {
       // If the product exists, update the quantity
@@ -94,8 +102,8 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
       newState[existingProductIndex].count = parseInt(e.target.value);
       // newState[existingProductIndex].totalMaxRetailPrice = product.maxRetailPrice*parseInt(e.target.value);
       // newState[existingProductIndex].totalSP = product.sp*parseInt(e.target.value);
-      let MrpCost= product.maxRetailPrice*parseInt(e.target.value);
-      let spCost = product.sp*parseInt(e.target.value)
+      let MrpCost = product.maxRetailPrice * parseInt(e.target.value);
+      let spCost = product.sp * parseInt(e.target.value);
       setTotalMrp(MrpCost);
       setTotalSp(spCost);
       setCartItems(newState);
@@ -104,69 +112,82 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
       product.count = parseInt(e.target.value);
       // product.totalMaxRetailPrice= product.maxRetailPrice*parseInt(e.target.value);
       // product.totalSP = product.sp*parseInt(e.target.value)
-      let MrpCost= product.maxRetailPrice*parseInt(e.target.value);
-      let spCost = product.sp*parseInt(e.target.value)
+      let MrpCost = product.maxRetailPrice * parseInt(e.target.value);
+      let spCost = product.sp * parseInt(e.target.value);
       setTotalMrp(MrpCost);
       setTotalSp(spCost);
-      setCartItems(prevCartItems => [...prevCartItems, product]);
+      setCartItems((prevCartItems) => [...prevCartItems, product]);
     }
-   
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }
+
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href)
+    navigator.clipboard
+      .writeText(window.location.href)
       .then(() => {
-        console.log('Page URL copied to clipboard');
+        console.log("Page URL copied to clipboard");
       })
-      .catch(err => {
-        console.error('Failed to copy: ', err);
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
       });
   };
-  const onCartSubmit=(e)=>{
-    setError('')
+  const onCartSubmit = (e) => {
+    setError("");
     e.preventDefault();
-    if(userDetails){
+    if (userDetails) {
       setIsLogin(true);
-      if(cartItems.length>0){
-        
-
-      // navigate(`/account/orders/order-details`);
-      let newStateObj={};
-      newStateObj.totalSP= totalSp;
-      newStateObj.MrpCost= totalMrp;
-      newStateObj.cartItems = cartItems;
-      navigate('/account/orders/order-details', { state: newStateObj });
-      } else{
-        setError('Quantity is required')
+      if (cartItems.length > 0) {
+        // navigate(`/account/orders/order-details`);
+        let newStateObj = {};
+        newStateObj.totalSP = totalSp;
+        newStateObj.MrpCost = totalMrp;
+        newStateObj.cartItems = cartItems;
+        navigate("/account/orders/order-details", { state: newStateObj });
+      } else {
+        setError("Quantity is required");
         // alert('Please Select Quantity ')
       }
-    }else{
+    } else {
       setIsLogin(false);
     }
-  }
+  };
   const shareOnWhatsApp = () => {
-    window.open(whatsappShareUrl, '_blank');
+    window.open(whatsappShareUrl, "_blank");
   };
 
-  useEffect(()=>{setShareModal(false)},[])
+  useEffect(() => {
+    setShareModal(false);
+  }, []);
   return (
     <div className="flex py-12 px-[6.25rem] justify-center gap-[1.25rem] bg-white mb-4">
       {/* Product*/}
       <div className="flex flex-col gap-[1.25rem]">
         {/* Path */}
         <h className="text-[0.875rem] text-[#64748B]">
-        <span onClick={()=>{navigate('/')}} className="text-[#94A3B8] font-HelveticaNeueMedium" style={{cursor:'pointer'}}>
-               Home/
-            </span>
-        <span onClick={()=>{navigate('/products')}} className="text-[#94A3B8] font-HelveticaNeueMedium" style={{cursor:'pointer'}}>
-               All Products/
-            </span>
+          <span
+            onClick={() => {
+              navigate("/");
+            }}
+            className="text-[#94A3B8] font-HelveticaNeueMedium"
+            style={{ cursor: "pointer" }}
+          >
+            Home/
+          </span>
+          <span
+            onClick={() => {
+              navigate("/products");
+            }}
+            className="text-[#94A3B8] font-HelveticaNeueMedium"
+            style={{ cursor: "pointer" }}
+          >
+            All Products/
+          </span>
           <span className="text-[#031B89] font-HelveticaNeueMedium">
             Product Page
           </span>
         </h>
-{/* {JSON.stringify(cartItems)} */}
+        {/* {JSON.stringify(cartItems)} */}
         {/* Images */}
         <div className="flex flex-col items-center bg-[#F8FAFC] w-[35.813rem] ">
           <ProductImageCarousel image={selectedProduct["productImages"]} />
@@ -185,28 +206,68 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
                   {selectedProduct["productName"]}
                 </h1>
                 <div className="flex relative gap-1">
-                  <button style={{cursor:'not-allowed'}}>
-                    <img className="w-[35px]" src={Bookmark} alt="bookmark icon" />
+                  <button style={{ cursor: "not-allowed" }}>
+                    <img
+                      className="w-[35px]"
+                      src={Bookmark}
+                      alt="bookmark icon"
+                    />
                   </button>
-                  <button onClick={()=>{setShareModal(prev => !prev)}}>
+                  <button
+                    onClick={() => {
+                      setShareModal((prev) => !prev);
+                    }}
+                  >
                     <img className="w-[35px]" src={Share} alt="share icon" />
                   </button>
                   {shareModal && (
-  <div ref={shareModalRef} className="absolute top-[24px] right-[0px] w-[240px] flex flex-col gap-4 bg-white rounded-md px-2 py-4 shadow-lg border">
-    <h1 className="text-[#64748B]">Share with friends</h1>
-    <div className="flex gap-4 justify-center">
-      <img className="cursor-pointer w-[40px]" src={whatsappIcon} alt="whatsapp icon" onClick={shareOnWhatsApp}/>
-      {/* Instagram share is not included because it's not supported */}
-      <img className="cursor-pointer w-[40px]" src={telegramIcon} alt="telegram icon" onClick={()=> window.open(telegramShareUrl, '_blank')}/>
-      <img className="cursor-pointer w-[40px]" src={twitterIcon} alt="twitter icon" onClick={()=> window.open(twitterShareUrl, '_blank')}/>
-    </div>
-    <div className="flex gap-2 text-[12px] border rounded-3xl p-2 w-full">
-      <input type="text" readOnly className="outline-none w-[60%] border-r px-2" value={window.location.href}/>
-      <p className="cursor-pointer w-fit text-[#64748B] hover:text-black" onClick={()=>{setShareModal(false);handleCopyLink()}}>Copy link</p>
-    </div>
-  </div>
-)}
-
+                    <div
+                      ref={shareModalRef}
+                      className="absolute top-[24px] right-[0px] w-[240px] flex flex-col gap-4 bg-white rounded-md px-2 py-4 shadow-lg border"
+                    >
+                      <h1 className="text-[#64748B]">Share with friends</h1>
+                      <div className="flex gap-4 justify-center">
+                        <img
+                          className="cursor-pointer w-[40px]"
+                          src={whatsappIcon}
+                          alt="whatsapp icon"
+                          onClick={shareOnWhatsApp}
+                        />
+                        {/* Instagram share is not included because it's not supported */}
+                        <img
+                          className="cursor-pointer w-[40px]"
+                          src={telegramIcon}
+                          alt="telegram icon"
+                          onClick={() =>
+                            window.open(telegramShareUrl, "_blank")
+                          }
+                        />
+                        <img
+                          className="cursor-pointer w-[40px]"
+                          src={twitterIcon}
+                          alt="twitter icon"
+                          onClick={() => window.open(twitterShareUrl, "_blank")}
+                        />
+                      </div>
+                      <div className="flex gap-2 text-[12px] border rounded-3xl p-2 w-full">
+                        <input
+                          type="text"
+                          readOnly
+                          className="outline-none w-[60%] border-r px-2"
+                          value={window.location.href}
+                        />
+                        <p
+                          className="cursor-pointer w-fit text-[#64748B] hover:text-black"
+                          onClick={() => {
+                            setShareModal(false);
+                            handleCopyLink();
+                          }}
+                        >
+                          Copy link
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -236,7 +297,6 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
                   <div>
                     <div className="w-fit border-b border-[#0F172A]">
                       <h2 className="cursor-pointer text-[0.875rem] font-HelveticaNeueMedium text-[#0F172A]">
-                     
                         {selectedProduct.Manufacturer}
                       </h2>
                     </div>
@@ -245,7 +305,7 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
                 {/* Composition*/}
                 <div className="w-[7.188rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                    Composition <br/>
+                    Composition <br />
                     --
                   </h1>
                   <div>
@@ -261,8 +321,8 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
                 {/* Storage */}
                 <div className="w-[7.188rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                      Storage <br />
-                    {selectedProduct.safetyinformation?.split(',')[0]}
+                    Storage <br />
+                    {selectedProduct.safetyinformation?.split(",")[0]}
                   </h1>
                   <div>
                     <div className="w-fit">
@@ -275,7 +335,7 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
                 {/* Country of Origin*/}
                 <div className="w-[7.188rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                  Country <br /> India 
+                    Country <br /> India
                   </h1>
                   <div>
                     <div className="w-fit">
@@ -318,18 +378,20 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
                 inclusive of all taxes
               </p>
             </div> */}
-             <span className=" text-[0.625rem] font-HelveticaNeueMedium p-2 bg-[#C2F5E9] h-6">
-             {selectedProduct.discount.toFixed(2)}% OFF
-        </span>
-             <div className="flex justify-between items-center">
-            <h1 className="font-HelveticaNeueMedium text-[#031B89]">
-            MRP : Rs {selectedProduct.sp}
-            </h1>
-            <p className="text-[0.75rem] text-[#94A3B8] pl-1">
-              {/* MRP:  */}
-               <span className="line-through">{selectedProduct.maxRetailPrice} Rs</span>
-            </p>
-          </div>
+            <span className=" text-[0.625rem] font-HelveticaNeueMedium p-2 bg-[#C2F5E9] h-6">
+              {selectedProduct?.discount?.toFixed(2)}% OFF
+            </span>
+            <div className="flex justify-between items-center">
+              <h1 className="font-HelveticaNeueMedium text-[#031B89]">
+                MRP : Rs {selectedProduct.sp}
+              </h1>
+              <p className="text-[0.75rem] text-[#94A3B8] pl-1">
+                {/* MRP:  */}
+                <span className="line-through">
+                  {selectedProduct.maxRetailPrice} Rs
+                </span>
+              </p>
+            </div>
 
             {/* Delivery */}
             <div className="flex flex-col w-[19rem] p-2 gap-2 shadow-custom">
@@ -408,17 +470,23 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
                     <div>please Login</div>
                   )
                 } */}
-                
-                <select onChange={onQuantityChange} className={`left-[0] top-[2.8rem] border border-[#E2E8F0] w-full p-2 gap-2 rounded bg-white`} style={{height:40}}>
-                <option value="" selected disabled>select quantity</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-    <option value="6">6</option>
-        </select>
-        {error && <p className="text-[#EF4444] text-xs">{error}</p>}
+
+                <select
+                  onChange={onQuantityChange}
+                  className={`left-[0] top-[2.8rem] border border-[#E2E8F0] w-full p-2 gap-2 rounded bg-white`}
+                  style={{ height: 40 }}
+                >
+                  <option value="" selected disabled>
+                    select quantity
+                  </option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+                {error && <p className="text-[#EF4444] text-xs">{error}</p>}
 
                 {/* {isQuantityDropdown ? (
                   <QuantityDropdown
@@ -436,11 +504,11 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
                 {/* Add to Cart*/}
                 {/* <PrimaryButton title="Add To Cart"  onCartButtonClick={onCartSubmit}/> */}
                 <button
-      onClick={onCartSubmit}
-      className="w-full font-HelveticaNeueMedium rounded text-[white] bg-[#031B89] p-4 leading-[1.25rem]"
-    >
-      Add To Cart
-    </button>
+                  onClick={onCartSubmit}
+                  className="w-full font-HelveticaNeueMedium rounded text-[white] bg-[#031B89] p-4 leading-[1.25rem]"
+                >
+                  Add To Cart
+                </button>
               </div>
 
               {/* Detail */}
@@ -468,7 +536,9 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
               <Login isLogin={isLogin} setIsLogin={setIsLogin}/>
             )
           } */}
-          {!isLogin ? <Login isLogin={isLogin} setIsLogin={setIsLogin} /> : null}
+          {!isLogin ? (
+            <Login isLogin={isLogin} setIsLogin={setIsLogin} />
+          ) : null}
         </div>
       </div>
     </div>

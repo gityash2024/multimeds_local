@@ -7,6 +7,7 @@ import Search from "../assets/searchIcon.svg";
 import PincodeModal from "./PincodeModal";
 import SearchBarDropdown from "./SearchBarDropdown";
 import { gql,useQuery,useLazyQuery } from "@apollo/client";
+import products from "../productData";
 
 // const PRODUCT_LIST=gql`
 // query{
@@ -20,26 +21,28 @@ import { gql,useQuery,useLazyQuery } from "@apollo/client";
 //   }
 // }`;
 
-const PRODUCT_LIST = gql`
-  query SearchProducts($input: String!) {
-    searchProducts(input: $input) {
-      status
-      message
-      products {
-        id
-        productName
-        marketer
-        unitsInPack
-        maxRetailPrice
-        sp
-        discount
-        productImages
-        description
-        prescriptionRequired
-      }
-    }
-  }
-`;
+// const PRODUCT_LIST = gql`
+//   query SearchProducts($input: String!) {
+//     searchProducts(input: $input) {
+//       status
+//       message
+//       products {
+//         id
+//         productName
+//         marketer
+//         unitsInPack
+//         maxRetailPrice
+//         sp
+//         discount
+//         productImages
+//         description
+//         prescriptionRequired
+//       }
+//     }
+//   }
+// `;
+
+
 const SearchBar = ({
   isPincode,
   button,
@@ -56,7 +59,28 @@ const SearchBar = ({
   // const { loading, error, data: productList } = useQuery(PRODUCT_LIST, {
   //   variables: { input: input }, // Pass the dynamic input as a variable
   // });
-  const [SearchProducts, { loading, error, data }] = useLazyQuery(PRODUCT_LIST);
+  // const [SearchProducts, { loading, error, data }] = useLazyQuery(PRODUCT_LIST);
+
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  useEffect(() => {
+    const filtered = input ? products.filter(product => {
+      // Trim and replace multiple spaces with a single space
+      const inputLower = input.toLowerCase().trim().replace(/\s+/g, ' ');
+
+      const skuMatch = product.SKU && product.SKU.toLowerCase().includes(inputLower);
+      const shortTitleMatch = product['Short Title'] && product['Short Title'].toLowerCase().includes(inputLower);
+      const brandNameMatch = product['Brand Name'] && product['Brand Name'].toLowerCase().includes(inputLower);
+      const manufacturerMatch = product.Manufacturer && product.Manufacturer.toLowerCase().includes(inputLower);
+      const productCategoryMatch = product['Product Category'] && product['Product Category'].toLowerCase().includes(inputLower);
+
+      return skuMatch || shortTitleMatch || brandNameMatch || manufacturerMatch || productCategoryMatch;
+    }) : [];
+
+    setFilteredProducts(filtered);
+  }, [input]);
+
+
+
   const AddressData = [
     { id: 1, code: 560095 },
     { id: 2, code: 560096 },
@@ -66,38 +90,38 @@ const SearchBar = ({
 
   let searchDropdownRef = useRef();
 
-  useEffect(() => {
-    if (input) {
-      const getData = setTimeout(() => {
-        console.log('user input is');
-        console.log(input);
-        SearchProducts({ variables: { input: input } }).then(response=>{
-          console.log('res is');
-          console.log(response);
-          if(response.data.searchProducts.status === "SUCCESS"){
-            setProductList(response.data.searchProducts.products);
-          }
-        }).catch(error=>{
-          console.log(error);
-          alert("Something Went Wrong");
-        });
-      }, 1000); // Delay of 2000ms (2 seconds)
+  // useEffect(() => {
+  //   if (input) {
+  //     const getData = setTimeout(() => {
+  //       console.log('user input is');
+  //       console.log(input);
+  //       SearchProducts({ variables: { input: input } }).then(response=>{
+  //         console.log('res is');
+  //         console.log(response);
+  //         if(response.data.searchProducts.status === "SUCCESS"){
+  //           setProductList(response.data.searchProducts.products);
+  //         }
+  //       }).catch(error=>{
+  //         console.log(error);
+  //         alert("Something Went Wrong");
+  //       });
+  //     }, 1000); // Delay of 2000ms (2 seconds)
 
-      // Clear the timeout if the pinCode changes before the delay completes
-      return () => clearTimeout(getData);
-    }
-    let handler = (e) => {
-      if (!searchDropdownRef.current.contains(e.target) && !isInFocus) {
-        setIsSearchDropdown(false);
-      }
-    };
+  //     // Clear the timeout if the pinCode changes before the delay completes
+  //     return () => clearTimeout(getData);
+  //   }
+  //   let handler = (e) => {
+  //     if (!searchDropdownRef.current.contains(e.target) && !isInFocus) {
+  //       setIsSearchDropdown(false);
+  //     }
+  //   };
 
-    document.addEventListener("mousedown", handler);
+  //   document.addEventListener("mousedown", handler);
 
-    return () => {
-      document.removeEventListener("mousedown", handler);
-    };
-  },[input]);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handler);
+  //   };
+  // },[input]);
 
   // const { products } = productList;
 
@@ -197,7 +221,12 @@ const SearchBar = ({
           ref={searchDropdownRef}
           className={input !== "" && isSearchDropdown ? "null" : "hidden"}
         >
-          <SearchBarDropdown isHero={isHero}  data={productList.length>0? productList:[]}/>
+          {/* <SearchBarDropdown isHero={isHero}  data={productList.length>0? productList:[]}/> */}
+
+          {filteredProducts.length > 0 && (
+        <SearchBarDropdown isHero={isHero} data={filteredProducts} setFilteredProducts={setFilteredProducts} />
+      )}
+
         </div>
       </div>
 

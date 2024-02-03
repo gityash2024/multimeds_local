@@ -209,7 +209,10 @@ const products = [
      "MRP": 175,
      "SP": 149,
      "Discount %": 14.857142857142858,
-     "Images Link": "https:\/\/drive.google.com\/drive\/folders\/1Y-88jNdqsXSs7mZs5p5I0vTpfVXgz9o_?usp=drive_link"
+     "Images Link": "https:\/\/drive.google.com\/drive\/folders\/1Y-88jNdqsXSs7mZs5p5I0vTpfVXgz9o_?usp=drive_link",
+     "productImages": [
+
+        ]
     },
     {
      "Sl No": 6,
