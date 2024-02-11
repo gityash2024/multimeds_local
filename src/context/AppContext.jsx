@@ -1,31 +1,186 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
+import { gql, useQuery } from "@apollo/client";
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Loader from "../components/loader";
 const Context = createContext({});
 export default Context;
-
+const CART_LIST= gql`
+query{cartProductsListing {status,message,  carts {
+  id
+  product {
+    id
+    productName
+    productImages
+    manufacturer
+    composition
+    price
+    prescriptionRequired
+    type
+    tags
+    concerns
+    sku
+    manufacturerAddress
+    marketer
+    marketerAddress
+    description
+    directionToUse
+    safetyInformation
+    ingredients
+    productForm
+    consumeType
+    unitsInPack
+    boxContent
+    size
+    scentOrFlavour
+    stockQuantity
+    packForm
+    productWeightInGrams
+    lengthInCentimeters
+    widthInCentimeters
+    heightInCentimeters
+    hsn
+    gstPercentage
+    maxRetailPrice
+    sp
+    discount
+  }
+  quantity
+  prescription
+  user {
+    id
+    fullName
+    contactNumber
+    email
+    profilePicture
+    walletBalance
+    role
+    currentAddress {
+      id
+      houseNumber
+      aptOrBuildingName
+      streetOrAreaName
+      city
+      pincode
+      state
+      label
+    }
+    department {
+      name
+      description
+      permissions
+      creator {
+id
+    fullName
+    contactNumber
+    email
+    profilePicture
+    walletBalance
+    role        }
+    }
+  }
+  status
+  createdAt
+  updatedAt
+}}}
+`;
 export function AppContext({children}) {
-    const [selectedProduct, setSelectedProduct] = useState({
-        "id":1,
-        "productName": "Kapiva Noni Juice (1L) - Rich in Antioxidants, Boosts Energy, Builds Immunity, Natural Detoxifier",
-        "Category": "Plant based supplement",
-        "Brand": "Kapiva",
-        "Discount coupon code & Discount expiry": "",
-        "Storage Instructions": "Store in cool & dry place away from direct sunlight ,use within 30 days of opening ,avoid during pregnancy.",
-        "Composition": "Methyl salicylate, Diethyl phthalate, Castor oil, Industrial methylated spirit",
-        "Country of Origin": "India",
-        "Adding Stock": 50,
-        "productImages": ["https://m.media-amazon.com/images/W/MEDIAX_792452-T1/images/I/61az41InmzL._SL1080_.jpg"],
-        "description": "Multicure Doctor's Surgical Spirit I.P. is used as an antiseptic and disinfectant for cleaning and sanitizing wounds, cuts, and abrasions. It contains alcohol and can be used as a skin cleanser before surgery and injections.",
-       "price":300,
-       "Manufacturer":"Apollo",
-       "isPrescription":true,
-       "unitsInPack": 1,
-       "maxRetailPrice":230,
-        "discount": 10,
-        "sp":207
-      });
+
+    const [selectedProduct, setSelectedProduct] = useState(JSON.parse(localStorage.getItem('selectedProduct'))||{});
+    const [cartListFromContext,setCartList]=useState();
+    const [loader,setLoading]=useState(false);
+    const { loading, data: cartData, refetch: refetchCart } = useQuery(CART_LIST, { fetchPolicy: "network-only" });
+    const showLoader = () => setLoading(true);
+
+    const hideLoader = () => setLoading(false);
+
+    const showToast = (message, type = "default") => {
+        toast[type](message);
+    };
+    useEffect(()=>{
+      if(cartData){
+        console.log(cartData?.cartProductsListing?.carts,'=================== cart data from app context ======================')
+        setCartList(cartData?.cartProductsListing?.carts)
+      }
+    },[cartData])
+
+    const handleRefetchCart = async () => {
+      try {
+          showLoader();
+          const { data } = await refetchCart();
+          setCartList(data?.cartProductsListing?.carts);
+          hideLoader();
+      } catch (err) {
+          console.error('Refetch error:', err);
+          showToast("Failed to refresh cart data", "error");
+          hideLoader();
+      }
+  };
+
+    
+    useEffect(()=>{
+      localStorage.setItem('selectedProduct',JSON.stringify(selectedProduct))
+    },[selectedProduct])
+
+      
   return (
-    <Context.Provider value={{selectedProduct, setSelectedProduct}}>
+
+    <Context.Provider value={{selectedProduct, setSelectedProduct,handleRefetchCart,cartListFromContext}}>
+        <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+      {(loader ||loading) && <Loader />}
         {children}
     </Context.Provider>
   )
 }
+
+
+    
+
+      // const addToCart = (productToAdd) => {
+      //   // Check if the product is already in the cart
+      //   const existingProduct = cart.find(product => product.id === productToAdd.id);
+      
+      //   if (existingProduct) {
+      //     // If the product is already in the cart, just increase its quantity
+      //     const updatedCart = cart.map(product => {
+      //       if (product.id === productToAdd.id) {
+      //         return { ...product, quantity: product.quantity + 1 };
+      //       }
+      //       return product;
+      //     });
+      //     setCart(updatedCart);
+      //   } else {
+      //     // If the product is not in the cart, add it with a quantity of 1
+      //     setCart([...cart, { ...productToAdd, quantity: 1 }]);
+      //   }
+      // };
+
+      // const removeFromCart = (productId) => {
+      //   const updatedCart = cart.filter(product => product.id !== productId);
+      //   setCart(updatedCart);
+      // };
+      
+      // const updateProductQuantity = (productId, newQuantity) => {
+      //   // Map through the cart to find the product to update
+      //   const updatedCart = cart.map(product => {
+      //     if (product.id === productId) {
+      //       // Update the quantity of the product
+      //       return { ...product, quantity: newQuantity };
+      //     }
+      //     return product;
+      //   });
+      
+      //   // Update the cart state
+      //   setCart(updatedCart);
+      // };

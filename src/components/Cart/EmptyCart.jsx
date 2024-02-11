@@ -19,7 +19,7 @@ const EmptyCart = () => {
             </h2>
           </div>
 
-          <Link to="/">
+          <Link to="/products">
             <p className="text-[0.875rem] font-HelveticaNeueMedium text-[#7487FF]">
               Browse products
             </p>

@@ -16,14 +16,10 @@ const SearchBarDropdown = ({ isHero,data , setFilteredProducts }) => {
         <div className="w-full flex flex-col gap-1">
           {
             data.map((item,i)=>(
-            //   <Link className="py-2 px-1 rounded bg-[#F8FAFC]" key={item.id} >
-            //   <h1 className=" text-[0.875rem] font-HelveticaNeueLight">
-            //     {item.productName}
-            //   </h1>
-            // </Link>
-            <div className="py-2 px-1 rounded bg-[#F8FAFC]" key={item.id} onClick={()=>{setSelectedProduct(item); navigate(`/product/${item.id}`) ; setFilteredProducts([])}}>
+ 
+            <div style={{cursor:'pointer'}} className="py-2 px-1 rounded bg-[#F8FAFC]" key={item.id} onClick={()=>{setSelectedProduct(item); navigate(`/product/${item.id}`) ; setFilteredProducts([])}}>
               <h1 className=" text-[0.875rem] font-HelveticaNeueLight">
-              {item['Short Title']}
+              {item?.productName}
               </h1>
             </div>
             ))

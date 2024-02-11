@@ -7,7 +7,6 @@ import Login from "../Login";
 
 const CouponModal = ({ isSelected, handleClose, isLogin }) => {
   const [isInvalid, setIsInvalid] = useState(false);
-  const [isLoginModal, setIsLoginModal] = useState(false);
 
   return (
     <div className="w-screen h-screen fixed top-0 left-0 z-50 flex justify-center items-center bg-black bg-opacity-40">
@@ -15,19 +14,7 @@ const CouponModal = ({ isSelected, handleClose, isLogin }) => {
         <div className="flex justify-between py-2 px-4">
           <div className="flex flex-col gap-1">
             <h1 className=" font-HelveticaNeueMedium">Coupons and Offers</h1>
-            {!isLogin ? (
-              <p className="text-[0.875rem]">
-                <button
-                  onClick={() => {
-                    setIsLoginModal(true);
-                  }}
-                  className="font-HelveticaNeueMedium text-[#7487FF]"
-                >
-                  Log in
-                </button>{" "}
-                to see more relevant coupons or offers.
-              </p>
-            ) : null}
+          
           </div>
           <button onClick={handleClose}>
             <img src={Cross} className="w-6 h-6" />
@@ -73,7 +60,7 @@ const CouponModal = ({ isSelected, handleClose, isLogin }) => {
         </div>
       </div>
 
-      {isLoginModal ? <Login /> : null}
+      {/* {isLoginModal ? <Login /> : null} */}
     </div>
   );
 };

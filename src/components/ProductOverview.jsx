@@ -10,43 +10,43 @@ const ProductOverview = () => {
 
   const productInfoData = [];
 
-  if (selectedProduct["bulletPoint1"]) {
+  if (selectedProduct.bulletPoint1) {
     productInfoData.push({
       id: 1,
       Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct["bulletPoint1"].split("\n"),
+      content: selectedProduct.bulletPoint1.split("\n"),
     });
   }
   
-  if (selectedProduct["bulletPoint2"]) {
+  if (selectedProduct.bulletPoint2) {
     productInfoData.push({
       id: 2,
       Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct["bulletPoint2"].split("\n"),
+      content: selectedProduct.bulletPoint2.split("\n"),
     });
   }
   
-  if (selectedProduct["bulletPoint3"]) {
+  if (selectedProduct.bulletPoint3) {
     productInfoData.push({
       id: 3,
       Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct["bulletPoint3"].split("\n"),
+      content: selectedProduct.bulletPoint3.split("\n"),
     });
   }
   
-  if (selectedProduct["bulletPoint4"]) {
+  if (selectedProduct.bulletPoint4) {
     productInfoData.push({
       id: 4,
       Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct["bulletPoint4"].split("\n"),
+      content: selectedProduct.bulletPoint4.split("\n"),
     });
   }
   
-  if (selectedProduct["bulletPoint5"]) {
+  if (selectedProduct.bulletPoint5) {
     productInfoData.push({
       id: 5,
       Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct["bulletPoint5"].split("\n"),
+      content: selectedProduct.bulletPoint5.split("\n"),
     });
   }
   

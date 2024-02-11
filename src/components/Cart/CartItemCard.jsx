@@ -1,44 +1,120 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect, useContext } from "react";
+import { useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
+import { gql } from "@apollo/client";
 import PrimaryHighlight from "../PrimaryHighlight";
+import Delete from "../../assets/cart/deleteIcon.svg"; // Update this path as necessary
+import Context from "../../context/AppContext";
+import { useNavigate } from "react-router-dom";
 
-import DeviceImage from "../../assets/cart/deviceImage.png";
-import Delete from "../../assets/cart/deleteIcon.svg";
+const REMOVE_FROM_CART = gql`
+  mutation removeFromCart($cartData: ID!) {
+    removeFromCart(input: $cartData) {
+      status
+      message
+    }
+  }
+`;
 
-const CartItemCard = ({
-  isPrescription,
-  setProducts,
-  products,
-  needingProducts,
-  setNeedingProducts,
-}) => {
-  const [productCount, setProductCount] = useState(0);
+const UPDATE_CART_QUANTITY = gql`
+  mutation updateCartQuantity($cartData: String!, $quantity: Int!) {
+    updateCartQuantity(input: { cartId: $cartData, quantity: $quantity }) {
+      status
+      message
+    }
+  }
+`;
+
+const CartItemCard = ({ cartData, refetch,updateQuantity }) => {
+  const {setSelectedProduct} = useContext(Context);
+  const navigate=useNavigate()
+  console.log(cartData, "cartData cartData cartData cartData");
+  const [productCount, setProductCount] = useState(cartData?.quantity || 0);
   const [isHidden, setIsHidden] = useState(false);
 
-  return (
-    <div
-      className={
-        isHidden
-          ? "hidden"
-          : "flex flex-col rounded-2 gap-4 border border-[#E2E8F0] bg-white py-4 px-6 shadow-cartItem"
+  useEffect(()=>{
+    setProductCount(cartData?.quantity || 0)
+  },[cartData])
+
+  const [removeFromCart, { loading: removing, error: removeError }] = useMutation(REMOVE_FROM_CART, {
+    variables: { cartData: cartData?.id },
+    onCompleted: (data) => {
+      if (data.removeFromCart.status === "SUCCESS") {
+        refetch();
+        localStorage.setItem('changeInQuantity', productCount);
+        toast.success("Item removed from cart");
+      } else {
+        toast.error(data.removeFromCart.message);
       }
-    >
-      {isPrescription ? <PrimaryHighlight /> : null}
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  const [updateCartQuantity, { loading: updating, error: updateError }] = useMutation(UPDATE_CART_QUANTITY, {
+    variables: { cartData: cartData?.id, quantity: productCount },
+    onCompleted: (data) => {
+      if (data.updateCartQuantity.status === "SUCCESS") {
+        refetch();
+        localStorage.setItem('changeInQuantity', productCount);
+
+        toast.success("Cart updated successfully");
+      } else {
+        toast.error(data.updateCartQuantity.message);
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  useEffect(() => {
+    if (productCount !== cartData?.quantity) {
+      if (productCount === 0) {
+        removeFromCart();
+      } else {
+        updateCartQuantity();
+      }
+    }
+  }, [productCount]);
+
+  if (removing || updating) {
+    return <div>Loading...</div>; // Replace with your loader component
+  }
+
+  if (removeError || updateError) {
+    return <div>Error occurred</div>; // Replace with your error display component
+  }
+
+  const handleQuantityChange = (newQuantity) => {
+    if (newQuantity < 0) {
+      return;
+    }
+    setProductCount(newQuantity);
+    updateQuantity(newQuantity); // Update quantity in parent component
+
+  };
+
+
+  return (
+    <div className={isHidden ? "hidden" : "flex flex-col rounded-2 gap-4 border border-[#E2E8F0] bg-white py-4 px-6 shadow-cartItem"}>
+      {cartData?.product?.prescriptionRequired && <PrimaryHighlight />}
 
       {/* Product */}
       <div className="flex justify-between">
         <div className="flex justify-between items-center gap-2">
-          <img
-            src={DeviceImage}
+          <img style={{cursor:'pointer'}}
+            src={cartData?.product?.productImages[0]} onClick={() => {setSelectedProduct(cartData?.product);navigate(`/product/${cartData?.product?.id}`)}}
             className="rounded h-[3.625rem] w-[3.625rem] object-cover"
           />
 
           <div className="flex flex-col gap-1">
             <h1 className="w-[14rem] text-[0.875rem] font-HelveticaNeueMedium">
-              Dolonext DT
+             {cartData?.product?.productName}
             </h1>
             <h2 className="text-[0.875rem] text-[#475569]">
-              1 strip : 15 capsules
+              1 strip : {cartData?.product?.unitsInPack} capsules
             </h2>
             <h2 className="text-[0.75rem] font-HelveticaNeueItalic text-[#DC2626]">
               only 3 left in stock
@@ -56,8 +132,7 @@ const CartItemCard = ({
             <div>
               <div className="w-fit border-b border-[#0F172A]">
                 <h2 className="text-[0.875rem] font-HelveticaNeueMedium text-[#0F172A]">
-                  Pfizer Ltd
-                </h2>
+{cartData?.product?.manufacturer}                </h2>
               </div>
             </div>
           </div>
@@ -69,8 +144,7 @@ const CartItemCard = ({
             <div>
               <div className="w-fit border-b border-[#0F172A]">
                 <h2 className="text-[0.875rem] font-HelveticaNeueMedium text-[#0F172A]">
-                  Piroxicam (20mg)
-                </h2>
+{cartData?.product?.composition}                </h2>
               </div>
             </div>
           </div>
@@ -79,9 +153,6 @@ const CartItemCard = ({
         {/* buttons */}
         {productCount === 0 ? (
           <button
-            onClick={() => {
-              setProductCount(productCount + 1);
-            }}
             className="h-[1.75rem] w-[5.5rem] py-2 px-4 bg-[#7487FF] text-white rounded font-HelveticaNeueMedium"
           >
             ADD
@@ -89,70 +160,44 @@ const CartItemCard = ({
         ) : (
           <div className=" justify-center w-[5.5rem] h-[1.75rem] flex items-center gap-1">
             <button
-              onClick={() => {
-                setProductCount(productCount === 0 ? 0 : productCount - 1);
-              }}
+             onClick={() => handleQuantityChange(productCount - 1)} 
               className="py-1 px-2 bg-[#7487FF] rounded text-white w-[1.625rem] h-[1.75rem]"
             >
               <h1>-</h1>
             </button>
 
             <div className="flex justify-center items-center p-2 rounded bg-white w-4 h-[1.75rem]">
-              <h1>{productCount}</h1>
+              <h1>{productCount}</h1> 
             </div>
 
             <button
-              onClick={() => {
-                setProductCount(productCount + 1);
-              }}
+             onClick={() => handleQuantityChange(productCount + 1)} 
               className="py-1 px-2 bg-[#7487FF] rounded text-white w-[1.625rem] h-[1.75rem]"
             >
               <h1>+</h1>
             </button>
           </div>
         )}
-        {/* <div className=" flex gap-1">
-          <button
-            onClick={() => {
-              setProductCount(productCount === 0 ? 0 : productCount - 1);
-            }}
-            className="py-1 px-2 bg-[#7487FF] rounded text-white w-[1.625rem] h-[1.75rem]"
-          >
-            <h1>-</h1>
-          </button>
-
-          <div className="flex justify-center items-center p-2 rounded bg-white w-4 h-[1.75rem]">
-            <h1>{productCount}</h1>
-          </div>
-
-          <button
-            onClick={() => {
-              setProductCount(productCount + 1);
-            }}
-            className="py-1 px-2 bg-[#7487FF] rounded text-white w-[1.625rem] h-[1.75rem]"
-          >
-            <h1>+</h1>
-          </button>
-        </div> */}
+      
       </div>
 
       <div className="flex flex-col gap-2">
         <div className="flex justify-between">
           <div className="flex gap-1 items-center">
             <p className="text-[0.75rem] text-[#94A3B8]">
-              Rs <span className="line-through">1432</span>
+              Rs <span className="line-through">{cartData?.product?.maxRetailPrice}</span>
             </p>
             <h2 className="font-HelveticaNeueMedium text-[#031B89] text-[0.875rem]">
-              Rs 1234
+              Rs {cartData?.product?.sp}
             </h2>
             <h3 className="text-[0.625rem] font-HelveticaNeueMedium p-1 bg-[#C2F5E9] rounded-[0.125rem]">
-              30% OFF
+              {cartData?.product?.discount}% OFF
             </h3>
           </div>
 
           <button
             onClick={() => {
-              setProducts(products - 1);
+              removeFromCart().then(() => refetch());
             }}
           >
             <img src={Delete} className="h-6 w-6" />

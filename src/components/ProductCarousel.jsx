@@ -10,49 +10,125 @@ import { Link, useNavigate } from "react-router-dom";
 import data from "../data";
 import Context from "../context/AppContext";
 import { useQuery, gql,useMutation } from "@apollo/client";
-import transformProductData from '../util/transformProductData';
-import products from "../productData";
 const PRODUCT_LIST= gql`
-query{
-  getCarouselProducts{
+query {
+  getAllProducts {
     status
     message
-    products{
+    products {
       id
-      productName
-      marketer
-      unitsInPack
-      maxRetailPrice
-      sp
-      discount
-      productImages
-      description
-      prescriptionRequired
+  productName
+  productImages
+  manufacturer
+  composition
+  price
+  prescriptionRequired
+  type
+  tags
+  concerns
+  sku
+  manufacturerAddress
+  marketer
+  marketerAddress
+  description
+  directionToUse
+  safetyInformation
+  ingredients
+  productForm
+  consumeType
+  unitsInPack
+  boxContent
+  size
+  scentOrFlavour
+  stockQuantity
+  packForm
+  productWeightInGrams
+  lengthInCentimeters
+  widthInCentimeters
+  heightInCentimeters
+  hsn
+  gstPercentage
+  maxRetailPrice
+  sp
+  discount
     }
-    
   }
-  }`;
+}`;
+// const ADD_TO_CART= gql`mutation{addToCart(input:{productId:"3a92f6bd-c09a-42d5-aae8-dde29f2b5230",quantity:1}){status,message}}`;
+
+const ADD_TO_CART = gql`
+  mutation addToCart(
+    $productId: ID!
+    $quantity: Int!
+  
+      ) {
+        addToCart(
+      input: {
+        productId: $productId
+        quantity: $quantity
+      }
+    ) {
+      status
+      message
+    }
+  }
+`;
 
 const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) => {
-  const { loading, error, data:dataList } = useQuery(PRODUCT_LIST);
-  const navigate = useNavigate();
+  const [productId,setProductId]=useState("")
+  const [quantity,setProductQuantity]=useState(1)
+  const { loading, error, data:dataList } = useQuery(PRODUCT_LIST,{
+    onCompleted: (data) => {
+      // setLoading(false);
+      // console.log(data?.getAllProducts?.products,'++++++++++++=====+++====+++===+++====++====++=')
+      // console.log(transformedData)
+      setProductList(data?.getAllProducts?.products);
+      // console.log(transformedData,'========---------------------------------productb list')
+      setIsFetched(true);
+    },
+    onError: (err) => {
+      // setLoading(false)
+    }
+  });
+
+  const [addToCart, { loading: addToCartLoading }] = useMutation(
+    ADD_TO_CART,
+    {
+      variables: {
+     
+        productId: productId,
+        quantity: quantity,
+     
+      },
+      onCompleted: (data) => {
+        if (data.addToCart.status === "SUCCESS") {
+          // setProductId("")
+        } else {
+          // setLoading(false);
+
+          // toast.error("Error : Add Address ");
+        }
+      },
+      onError: (err) => {
+        // setLoading(false);
+
+        // toast.error("Error : " + err?.message);
+
+        // setBtnDisable(false)
+        // setLoading(false)
+      },
+    }
+  );
+    const navigate = useNavigate();
   const {setSelectedProduct} = useContext(Context)
   const [slide, setSlide] = useState(0);
   const [isFetched, setIsFetched] = useState(false);
   const [productList, setProductList] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const maxVisibleItems = 5;
-  useEffect(() => {
-    const transformedData = transformProductData(products);
-    console.log(transformedData)
-    setProductList(transformedData);
-    console.log(transformedData,'========---------------------------------productb list')
-    setIsFetched(true);
 
-  }, []);
 
-  useEffect(()=>{
-  },[productList])
+ 
   // useEffect(()=>{
   //   try{
   //   console.log('data is 123');
@@ -80,6 +156,13 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
   const handleLeftArrow = () => {
     setCurrentIndex(prevIndex => Math.max(prevIndex - maxVisibleItems, 0));
   };
+
+  const addToCartFunc=(item)=>{
+    setProductId(item.id);
+    setSelectedProduct(item);
+    // addToCart()
+    navigate(`/product/${item.id}`);
+  }
 
   return (
     <div>
@@ -114,6 +197,7 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
             {productList.length && productList.slice(currentIndex, currentIndex + maxVisibleItems).map((item) => (
               <ProductCarouselCard
                 key={item.id}
+                id={item.id}
                 title={item.productName}
                 discount={item.discount ? item.discount.toString().slice(0, 4) : '0'}
                 sp={item.sp}
@@ -122,8 +206,8 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
                 marketer={item.marketer}
                 image={item.productImages[0]}
                 openProduct={() => {
-                  setSelectedProduct(item);
-                  navigate(`/product/${item.id}`);
+                  
+                 addToCartFunc(item)
                 }}
               />
             ))}

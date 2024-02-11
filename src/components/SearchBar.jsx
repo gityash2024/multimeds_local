@@ -7,41 +7,50 @@ import Search from "../assets/searchIcon.svg";
 import PincodeModal from "./PincodeModal";
 import SearchBarDropdown from "./SearchBarDropdown";
 import { gql,useQuery,useLazyQuery } from "@apollo/client";
-import products from "../productData";
-
-// const PRODUCT_LIST=gql`
-// query{
-//   searchProducts(input:String){
-//     status
-//     message
-//     products{
-//       id
-//       productName
-//     }
-//   }
-// }`;
-
-// const PRODUCT_LIST = gql`
-//   query SearchProducts($input: String!) {
-//     searchProducts(input: $input) {
-//       status
-//       message
-//       products {
-//         id
-//         productName
-//         marketer
-//         unitsInPack
-//         maxRetailPrice
-//         sp
-//         discount
-//         productImages
-//         description
-//         prescriptionRequired
-//       }
-//     }
-//   }
-// `;
-
+const PRODUCT_LIST= gql`
+query {
+  getAllProducts {
+    status
+    message
+    products {
+      id
+  productName
+  productImages
+  manufacturer
+  composition
+  price
+  prescriptionRequired
+  type
+  tags
+  concerns
+  sku
+  manufacturerAddress
+  marketer
+  marketerAddress
+  description
+  directionToUse
+  safetyInformation
+  ingredients
+  productForm
+  consumeType
+  unitsInPack
+  boxContent
+  size
+  scentOrFlavour
+  stockQuantity
+  packForm
+  productWeightInGrams
+  lengthInCentimeters
+  widthInCentimeters
+  heightInCentimeters
+  hsn
+  gstPercentage
+  maxRetailPrice
+  sp
+  discount
+    }
+  }
+}`;
 
 const SearchBar = ({
   isPincode,
@@ -56,24 +65,18 @@ const SearchBar = ({
   const [isInFocus, setIsInFocus] = useState(false);
   const [isSelected, setIsSelected] = useState(-1);
   const [productList, setProductList] = useState([]);
-  // const { loading, error, data: productList } = useQuery(PRODUCT_LIST, {
-  //   variables: { input: input }, // Pass the dynamic input as a variable
-  // });
-  // const [SearchProducts, { loading, error, data }] = useLazyQuery(PRODUCT_LIST);
+  const { loading, error, data:dataList } = useQuery(PRODUCT_LIST);
+//  console.log(dataList,'{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{')
 
   const [filteredProducts, setFilteredProducts] = useState([]);
   useEffect(() => {
-    const filtered = input ? products.filter(product => {
-      // Trim and replace multiple spaces with a single space
+    const filtered = input ? dataList?.getAllProducts?.products.filter(product => {
       const inputLower = input.toLowerCase().trim().replace(/\s+/g, ' ');
 
-      const skuMatch = product.SKU && product.SKU.toLowerCase().includes(inputLower);
-      const shortTitleMatch = product['Short Title'] && product['Short Title'].toLowerCase().includes(inputLower);
-      const brandNameMatch = product['Brand Name'] && product['Brand Name'].toLowerCase().includes(inputLower);
-      const manufacturerMatch = product.Manufacturer && product.Manufacturer.toLowerCase().includes(inputLower);
-      const productCategoryMatch = product['Product Category'] && product['Product Category'].toLowerCase().includes(inputLower);
+      const manufacturerMatch = product.manufacturer && product.manufacturer.toLowerCase().includes(inputLower);
+      const productName = product.productName && product.productName.toLowerCase().includes(inputLower);
 
-      return skuMatch || shortTitleMatch || brandNameMatch || manufacturerMatch || productCategoryMatch;
+      return  manufacturerMatch || productName;
     }) : [];
 
     setFilteredProducts(filtered);
@@ -90,57 +93,12 @@ const SearchBar = ({
 
   let searchDropdownRef = useRef();
 
-  // useEffect(() => {
-  //   if (input) {
-  //     const getData = setTimeout(() => {
-  //       console.log('user input is');
-  //       console.log(input);
-  //       SearchProducts({ variables: { input: input } }).then(response=>{
-  //         console.log('res is');
-  //         console.log(response);
-  //         if(response.data.searchProducts.status === "SUCCESS"){
-  //           setProductList(response.data.searchProducts.products);
-  //         }
-  //       }).catch(error=>{
-  //         console.log(error);
-  //         alert("Something Went Wrong");
-  //       });
-  //     }, 1000); // Delay of 2000ms (2 seconds)
-
-  //     // Clear the timeout if the pinCode changes before the delay completes
-  //     return () => clearTimeout(getData);
-  //   }
-  //   let handler = (e) => {
-  //     if (!searchDropdownRef.current.contains(e.target) && !isInFocus) {
-  //       setIsSearchDropdown(false);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handler);
-
-  //   return () => {
-  //     document.removeEventListener("mousedown", handler);
-  //   };
-  // },[input]);
-
-  // const { products } = productList;
 
   const onSearchTextChange=(e)=>{
     e.preventDefault();
     const userInput = e.target.value;
     setInput(userInput);
-    // if (userInput.trim() !== '') {
-    //   SearchProducts({ variables: { input: userInput } }).then(response=>{
-    //     console.log('res is');
-    //     console.log(response);
-    //     if(response.data.searchProducts.status === "SUCCESS"){
-    //       setProductList(response.data.searchProducts.products);
-    //     }
-    //   }).catch(error=>{
-    //     console.log(error);
-    //     alert("Something Went Wrong");
-    //   });
-    // }
+
   }
   
   return (
@@ -149,7 +107,6 @@ const SearchBar = ({
         isHero ? "flex" : "w-full lg:flex hidden"
       } items-center py-0.5 px-2 md:max-w-[40.688rem] lg:mx-0 grow h-[2.75rem] border border-slate-300 rounded`}
     >
-      {/* Pincode Dropdown */}
       {isPincode ? (
         <button
           onClick={() => {

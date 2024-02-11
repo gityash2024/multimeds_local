@@ -13,6 +13,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "./loader";
 const google = window.google;
+
 const CREATE_ADDRESS = gql`
   mutation createAddress(
     $houseNumber: String!

@@ -4,31 +4,31 @@ import GoToButton from "./GoToButton";
 import { Link } from "react-router-dom";
 import CartProductCard from "./CartProductCard";
 
-const CartModal = ({ items, setItems }) => {
-  // const renderItems = () => {
-  //   const divElements = [];
-  //   for (let i = 0; i < 2; i++) {
-  //     divElements.push(
-  //       <CartProductCard setItems={setItems} items={items} isCartModal />
-  //     );
-  //   }
-  //   return divElements;
-  // };
+const CartModal = ({ cartData ,refetch}) => {
+  const calculateTotal = () => {
+    let amount=0
+    cartData.forEach(element => {
+     amount+= element.product.sp * element.quantity
+    });
+    return amount;
 
+  };
+
+  
+  const totalAmount = calculateTotal();
   return (
     <div className="absolute right-0 z-50 flex flex-col w-[28.25rem] rounded border gap-4 bg-white border-[#E2E8F0] py-4 px-6 text-[#0F172A]">
       {/* heading */}
       <div className="flex justify-between items-center border-b border-[#A9B5FF] py-2">
         <h1 className="font-HelveticaNeueMedium">My Cart</h1>
 
-        {/* number of items and price */}
         <div className="flex gap-1">
-          <h2 className=" text-[0.875rem]">{items} Items</h2>
-          {items > 0 ? (
+          <h2 className=" text-[0.875rem]">{cartData?.length||0} Items</h2>
+          {cartData.length > 0 ? (
             <>
               <h2 className=" text-[0.875rem]">|</h2>
               <h3 className=" text-[0.875rem] font-HelveticaNeueMedium">
-                Total: Rs 00.00
+                Total: Rs {totalAmount}.00
               </h3>
             </>
           ) : null}
@@ -36,7 +36,7 @@ const CartModal = ({ items, setItems }) => {
       </div>
 
       {/* items */}
-      {items === 0 ? (
+      {cartData.length === 0 ? (
         <div className="flex justify-center items-center p-1 h-[10.125rem] bg-white rounded">
           <p className="text-[0.875rem] text-[#64748B] font-HelveticaNeueMedium">
             Your cart is empty!
@@ -44,15 +44,14 @@ const CartModal = ({ items, setItems }) => {
         </div>
       ) : (
         <>
-          {/* renderItems() */}
-          <CartProductCard setItems={setItems} items={items} isCartModal />
-          <CartProductCard setItems={setItems} items={items} isCartModal />
+         {cartData.length > 0 && <CartProductCard  key={`${cartData[0]?.productId}-${cartData[0]?.quantity}`}   refetch={refetch} items={cartData[0]} isCartModal />}
+         {cartData.length > 1 && <CartProductCard    key={`${cartData[1]?.productId}-${cartData[1]?.quantity}`}  refetch={refetch} items={cartData[1]} isCartModal />}
         </>
       )}
 
-      {items > 2 ? (
+      {cartData.length > 2 ? (
         <div className="text-[0.875rem] text-[#475569] flex justify-end">
-          <Link>+ {items - 2} more items</Link>
+          <Link>+ {cartData.length - 2} more items</Link>
         </div>
       ) : null}
 

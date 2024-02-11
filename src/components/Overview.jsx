@@ -6,6 +6,7 @@ import AuthorCard from "./AuthorCard";
 import AuthorImage from "../assets/product/authorImage.png";
 
 const Overview = ({ productInfoData, isActive, setIsActive }) => {
+  console.log(productInfoData)
   return (
     <div className="flex flex-col justify-between py-6 w-[14.188rem] h-[36.188rem] rounded bg-white">
       {/* Heading */}

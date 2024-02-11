@@ -7,6 +7,7 @@ import RightArrow from "../../assets/rightArrowActive.svg";
 import CouponModal from "./CouponModal";
 
 const Coupons = () => {
+ 
   const [isApplied, setIsApplied] = useState(true);
   const [isCouponModal, setIsCouponModal] = useState(false);
 
@@ -28,9 +29,10 @@ const Coupons = () => {
               Applied : WELCOME30
             </h1>
             <button
-              onClick={() => {
-                setIsApplied(false);
-              }}
+            style={{cursor:"not-allowed"}}
+              // onClick={() => {
+              //   setIsApplied(false);
+              // }}
             >
               <img src={CrossIcon} alt="cross icon" className="w-6 h-6" />
             </button>

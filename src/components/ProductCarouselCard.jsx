@@ -3,13 +3,13 @@ import React from "react";
 import SecondaryButton from "./SecondaryButton";
 
 const ProductCarouselCard = ({id,title, discount, image, units, price, openProduct,maxRetailPrice,sp,marketer }) => {
- if(image?.length) console.log(image[0],'++++++++++++++ images +________________________')
+//  if(image?.length) console.log(image[0],'++++++++++++++ images +________________________')
   return (
     <div className="w-[14.375rem] flex gap-[0.781rem] flex-col justify-center items-stretch p-2">
       {/* Product Image */}
-      <div className="flex justify-center items-center relative h-[8.438rem] w-full" onClick={()=>{openProduct()}}>
-        {image?.length && <img
-          src={image[0]}
+      <div className="flex justify-center items-center relative h-[8.438rem] w-full" >
+        {image?.length && <img onClick={()=>{openProduct()}}
+          src={image}
           className="h-full object-cover"
         />}
         <h1 className="absolute top-0 left-0 text-[0.625rem] font-HelveticaNeueMedium p-2 bg-[#C2F5E9]">

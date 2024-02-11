@@ -1,52 +1,113 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
-
 import whatsappIcon from "../assets/whatsapp.png";
-import instagramIcon from "../assets/instagram.png";
 import telegramIcon from "../assets/telegram.png";
 import twitterIcon from "../assets/twitter.png";
-
-import PrimaryHighlight from "./PrimaryHighlight";
 import SecondaryHighlight from "./SecondaryHighlight";
-import PrimaryButton from "./PrimaryButton";
-
-import ProductImage from "../assets/product/productImage.png";
+import { gql, useMutation } from "@apollo/client";
 import Bookmark from "../assets/product/bookmarkIcon.svg";
 import Share from "../assets/product/shareIcon.svg";
 import Arrow from "../assets/product/arrow.svg";
-import Dropdown from "../assets/product/downArrowIcon.svg";
-import DropdownUp from "../assets/dropdownUpArrow.svg";
 import OfferCoupon from "./OfferCoupon";
 import ProductImageCarousel from "./ProductImageCarousel";
 import { Link, useNavigate } from "react-router-dom";
 import PincodeModal from "./PincodeModal";
-import QuantityDropdown from "./Product/QuantityDropdown";
 import Context from "../context/AppContext";
 import Login from "./Login";
 import SubscriptionCard from "./Subscription";
-const ProductSection = () => {
+import { toast } from "react-toastify";
+
+const ADD_TO_FAVORITE = gql`
+  mutation setAsFavorite($productId: String!) {
+    setAsFavorite(input: { productId: $productId }) {
+      status
+      message
+    }
+  }
+`;
+const UPDATE_CART_QUANTITY = gql`
+  mutation updateCartQuantity($cartId: String!, $quantity: Int!) {
+    updateCartQuantity(input: { cartId: $cartId, quantity: $quantity }) {
+      status
+      message
+    }
+  }
+`;
+
+const ADD_TO_CART = gql`
+  mutation addToCart($productId: ID!, $quantity: Int!) {
+    addToCart(input: { productId: $productId, quantity: $quantity }) {
+      status
+      message
+    }
+  }
+`;
+
+const ProductSection = (props) => {
+  const {  refetch } = props;
+  const { selectedProduct,handleRefetchCart,cartListFromContext } = useContext(Context);
+  const [cartList] = useState(cartListFromContext||[]);
+
   const currentUrl = encodeURIComponent(window.location.href);
   const whatsappShareUrl = `https://wa.me/?text=${currentUrl}`;
   const telegramShareUrl = `https://t.me/share/url?url=${currentUrl}`;
   const twitterShareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}`;
-
+  const [cartId, setCartId] = useState("");
+console.log(selectedProduct,'selectedProduct')
   const navigate = useNavigate();
-  let userDetails = localStorage.getItem("token");
-  const ref = useRef();
   const shareModalRef = useRef();
-  const { selectedProduct } = useContext(Context);
-  console.log(selectedProduct);
   const [isAddressModal, setIsAddressModal] = useState(false);
   const [error, setError] = useState();
-  const [quantityCount, setQuantityCount] = useState(1);
   const [shareModal, setShareModal] = useState(false);
-  const [isQuantityDropdown, setIsQuantityDropdown] = useState(false);
-  const [isSelected, setIsSelected] = useState(-1);
-  const [quantity, setQuantity] = useState(0);
-  let [cartItems, setCartItems] = useState([]);
-  let [totalMrp, setTotalMrp] = useState(0);
-  let [totalSp, setTotalSp] = useState(0);
-  let [itemObj, setItemObj] = useState({});
+  const [quantity, setQuantity] = useState(Number(0));
   const [isLogin, setIsLogin] = useState(true);
+  const [productInCart, setProductAlreadyInCart] = useState(false);
+
+  const [setAsFavorite] = useMutation(
+    ADD_TO_FAVORITE,
+    {
+      variables: {
+        productId: selectedProduct?.id,
+      },
+      onCompleted: (data) => {
+        if (data.setAsFavorite.status === "SUCCESS") {
+          refetch();
+
+        } else {
+        }
+      },
+      onError: (err) => {
+      },
+    }
+  );
+  const [updateCartQuantity] = useMutation(UPDATE_CART_QUANTITY, {
+    variables: { cartId, quantity },
+    onCompleted: (data) => {
+      if (data.updateCartQuantity.status === "SUCCESS") {
+        setTimeout(()=>{
+          navigate('/cart');
+        },500) ;
+
+      } else {
+
+      }
+    }
+  });
+
+  const [addToCart] = useMutation(ADD_TO_CART, {
+    variables: { productId: selectedProduct?.id, quantity },
+    onCompleted: (data) => {
+      if (data.addToCart.status === "SUCCESS") {
+       
+        setTimeout(()=>{
+          navigate('/cart');
+        },500)
+      } 
+    }
+  });
+
+
+
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -57,10 +118,7 @@ const ProductSection = () => {
         setShareModal(false);
       }
     };
-    // let handler = (e) => {
-    //   console.log('1');
-    //   setIsLogin(true);
-    // };
+
     const handleScroll = () => {
       if (shareModal) {
         setShareModal(false);
@@ -76,51 +134,20 @@ const ProductSection = () => {
       window.removeEventListener("scroll", handleScroll);
       // document.removeEventListener("mousedown", handler);
     };
-  }, [shareModal, isLogin, cartItems]);
+  }, [shareModal, isLogin]);
 
-  function changeQuantity(event) {
-    if (!isNaN(event.target.value))
-      setQuantityCount(
-        event.target.value > 0 || event.target.value == ""
-          ? event.target.value
-          : 1
-      );
-  }
+  const handleSaveProduct = () => {
+    setAsFavorite();
+  };
 
   const onQuantityChange = (e) => {
     setError("");
     e.preventDefault();
-    let product = selectedProduct;
-
-    const existingProductIndex = cartItems.findIndex(
-      (item) => item.id === product.id
-    );
-
-    if (existingProductIndex !== -1) {
-      // If the product exists, update the quantity
-      let newState = [...cartItems];
-      newState[existingProductIndex].count = parseInt(e.target.value);
-      // newState[existingProductIndex].totalMaxRetailPrice = product.maxRetailPrice*parseInt(e.target.value);
-      // newState[existingProductIndex].totalSP = product.sp*parseInt(e.target.value);
-      let MrpCost = product.maxRetailPrice * parseInt(e.target.value);
-      let spCost = product.sp * parseInt(e.target.value);
-      setTotalMrp(MrpCost);
-      setTotalSp(spCost);
-      setCartItems(newState);
-    } else {
-      // If the product doesn't exist, add it to the cart
-      product.count = parseInt(e.target.value);
-      // product.totalMaxRetailPrice= product.maxRetailPrice*parseInt(e.target.value);
-      // product.totalSP = product.sp*parseInt(e.target.value)
-      let MrpCost = product.maxRetailPrice * parseInt(e.target.value);
-      let spCost = product.sp * parseInt(e.target.value);
-      setTotalMrp(MrpCost);
-      setTotalSp(spCost);
-      setCartItems((prevCartItems) => [...prevCartItems, product]);
-    }
-
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    setQuantity(Number(e.target.value));
+  
   };
+
+
 
   const handleCopyLink = () => {
     navigator.clipboard
@@ -132,38 +159,47 @@ const ProductSection = () => {
         console.error("Failed to copy: ", err);
       });
   };
-  const onCartSubmit = (e) => {
-    setError("");
-    e.preventDefault();
-    if (userDetails) {
-      setIsLogin(true);
-      if (cartItems.length > 0) {
-        // navigate(`/account/orders/order-details`);
-        let newStateObj = {};
-        newStateObj.totalSP = totalSp;
-        newStateObj.MrpCost = totalMrp;
-        newStateObj.cartItems = cartItems;
-        navigate("/account/orders/order-details", { state: newStateObj });
-      } else {
-        setError("Quantity is required");
-        // alert('Please Select Quantity ')
-      }
-    } else {
-      setIsLogin(false);
-    }
-  };
+
   const shareOnWhatsApp = () => {
     window.open(whatsappShareUrl, "_blank");
   };
 
+ 
   useEffect(() => {
-    setShareModal(false);
-  }, []);
+    handleRefetchCart();
+    // eslint-disable-next-line
+  }, [selectedProduct]);
+
+  useEffect(() => {
+    const productInCart = cartList.find(item => item.product.id === selectedProduct?.id);
+    if (productInCart) {
+      setCartId(productInCart.id);
+      setQuantity(productInCart.quantity);
+      setProductAlreadyInCart(true);
+    } else {
+      setQuantity(0);
+      setProductAlreadyInCart(false);
+    }
+    // eslint-disable-next-line
+  }, [cartListFromContext, selectedProduct]);
+
+  const handleAddToCart=()=>{
+    if(quantity){
+
+      if(productInCart){
+        updateCartQuantity().then(() => refetch());
+      }else{
+        addToCart().then(() => refetch());
+      }
+    }else{
+      toast.info("Please select a valid quantity")
+    }
+  }
+
   return (
     <div className="flex py-12 px-[6.25rem] justify-center gap-[1.25rem] bg-white mb-4">
-      {/* Product*/}
+     
       <div className="flex flex-col gap-[1.25rem]">
-        {/* Path */}
         <h className="text-[0.875rem] text-[#64748B]">
           <span
             onClick={() => {
@@ -187,16 +223,13 @@ const ProductSection = () => {
             Product Page
           </span>
         </h>
-        {/* {JSON.stringify(cartItems)} */}
-        {/* Images */}
+
         <div className="flex flex-col items-center bg-[#F8FAFC] w-[35.813rem] ">
           <ProductImageCarousel image={selectedProduct["productImages"]} />
         </div>
       </div>
 
-      {/* Product Details */}
       <div>
-        {/* section 1 */}
         <div className="flex flex-col gap-6 py-6">
           <div className="border-b border-[#E2E8F0] pb-6 px-4">
             <div className="flex flex-col gap-2 text-[#0F172A]">
@@ -206,7 +239,11 @@ const ProductSection = () => {
                   {selectedProduct["productName"]}
                 </h1>
                 <div className="flex relative gap-1">
-                  <button style={{ cursor: "not-allowed" }}>
+                  <button
+                    onClick={() => {
+                      handleSaveProduct(selectedProduct);
+                    }}
+                  >
                     <img
                       className="w-[35px]"
                       src={Bookmark}
@@ -233,7 +270,6 @@ const ProductSection = () => {
                           alt="whatsapp icon"
                           onClick={shareOnWhatsApp}
                         />
-                        {/* Instagram share is not included because it's not supported */}
                         <img
                           className="cursor-pointer w-[40px]"
                           src={telegramIcon}
@@ -271,15 +307,13 @@ const ProductSection = () => {
                 </div>
               </div>
 
-              {/* Highlights */}
               <div className="flex gap-2">
-                {/* <PrimaryHighlight /> */}
                 <SecondaryHighlight title="Pain relief" />
                 <SecondaryHighlight title="Ibuprofen" />
               </div>
 
               <p className="text-[0.75rem] font-HelveticaNeueMedium">
-                15 tabs in one sheet.{" "}
+              {selectedProduct.unitsInPack} unit in one sheet.{" "}
                 <Link className="text-[#7487FF]">See other variants</Link>
               </p>
             </div>
@@ -360,38 +394,44 @@ const ProductSection = () => {
                 </p>
               </div>
               <Link>
+                  {/* eslint-disable-next-line */}
                 <img src={Arrow} className="w-6 h-6" />
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Section 2 */}
         <div>
-          {/* Pricing */}
           <div className="flex justify-between p-4 text-[#0F172A] rounded-4">
-            {/* <div>
-              <h1 className="text-[1.25rem] font-HelveticaNeueMedium leading-[1.563rem]">
-                MRP : Rs {selectedProduct.Price}
-              </h1>
-              <p className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                inclusive of all taxes
-              </p>
-            </div> */}
             <span className=" text-[0.625rem] font-HelveticaNeueMedium p-2 bg-[#C2F5E9] h-6">
               {selectedProduct?.discount?.toFixed(2)}% OFF
             </span>
-            <div className="flex justify-between items-center">
-              <h1 className="font-HelveticaNeueMedium text-[#031B89]">
-                MRP : Rs {selectedProduct.sp}
-              </h1>
-              <p className="text-[0.75rem] text-[#94A3B8] pl-1">
-                {/* MRP:  */}
-                <span className="line-through">
-                  {selectedProduct.maxRetailPrice} Rs
-                </span>
-              </p>
-            </div>
+            <div>
+                <div className="flex justify-between items-center">
+                  <h1 className="font-HelveticaNeueMedium text-[#031B89]">
+                    MRP : Rs {selectedProduct.sp}
+                  </h1>
+                  <p className="text-[0.75rem] text-[#94A3B8] pl-1">
+                    <span className="line-through">
+                      {selectedProduct.maxRetailPrice} Rs
+                    </span>
+                  </p>
+                </div>
+
+                <br/>
+
+                <div className="flex justify-between items-center">
+                  <h1 className="font-HelveticaNeueMedium text-[#031B89]">
+                    TOTAL : Rs {quantity * selectedProduct.sp}
+                  </h1>
+                  <p className="text-[0.75rem] text-[#94A3B8] pl-1">
+                    <span className="line-through">
+                      {quantity * selectedProduct.maxRetailPrice} Rs
+                    </span>
+                  </p>
+                </div>
+              </div>
+
 
             {/* Delivery */}
             <div className="flex flex-col w-[19rem] p-2 gap-2 shadow-custom">
@@ -437,81 +477,35 @@ const ProductSection = () => {
             </div>
           </div>
 
-          {/* Buying Section */}
           <div className="flex flex-col p-4 gap-1 w-[40.438rem]">
-            {/* Buy options */}
             <div className="flex flex-col gap-2">
-              {/* Add to cart Options */}
               <div className="relative flex flex-col gap-1">
-                {/* Choose Quantity */}
-                {/* <button
-                  onClick={() => {
-                    setIsQuantityDropdown(true);
-                  }}
-                  className="flex items-center justify-between border p-2 rounded"
-                >
-                  <input type="text" className="outline-none w-full text-left text-[#94A3B8] text-[0.875rem]" value={isSelected === -1 ? "" : isSelected} onChange={(e)=>{ if(!isNaN(e.target.value)) setIsSelected(e.target.value); else setIsSelected(-1)}} placeholder="Choose Quantity"/>
-                 
-                  <img
-                    src={isQuantityDropdown ? Dropdown : DropdownUp}
-                    className="h-[1.5rem] w-[1.5rem]"
-                  />
-                </button> */}
-                {/* {
-                  userDetails ?
-                  (
-                    <QuantityDropdown
-                    isSelected={isSelected}
-                    setIsSelected={setIsSelected}
-                    setIsQuantityDropdown={setIsQuantityDropdown}
-                  />
-                  )
-                  :(
-                    <div>please Login</div>
-                  )
-                } */}
-
                 <select
                   onChange={onQuantityChange}
+                  value={quantity}
                   className={`left-[0] top-[2.8rem] border border-[#E2E8F0] w-full p-2 gap-2 rounded bg-white`}
                   style={{ height: 40 }}
                 >
-                  <option value="" selected disabled>
+                  <option value={0} selected disabled>
                     select quantity
                   </option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                  <option value={4}>4</option>
+                  <option value={5}>5</option>
+                  <option value={6}>6</option>
                 </select>
                 {error && <p className="text-[#EF4444] text-xs">{error}</p>}
 
-                {/* {isQuantityDropdown ? (
-                  <QuantityDropdown
-                    isSelected={isSelected}
-                    setIsSelected={setIsSelected}
-                    setIsQuantityDropdown={setIsQuantityDropdown}
-                  />
-                ) : null} */}
-                {/* <div className="flex gap-4"><p className="text-[#94A3B8] text-[12px] italic">Choose Quantity:</p>{!quantityCount && <p className="text-red-500 text-[12px] italic">*Please add at least 1 quanity!</p>}</div>
-                <div className="flex items-center justify-between border p-2 rounded">
-                  <button className="text-[#031B89] text-[24px] font-HelveticaNeueBold border-r px-24" onClick={()=>{setQuantityCount(prev => { if(prev>1) prev--; return prev;})}}> - </button>
-                  <input className="outline-none text-center" type="text" ref={ref} placeholder="1" value={quantityCount} onChange={changeQuantity} />
-                  <button button className="text-[#031B89] text-[24px] font-HelveticaNeueBold border-l px-24" onClick={()=>{setQuantityCount(prev=>Number(prev)+1)}}> + </button>
-                </div> */}
-                {/* Add to Cart*/}
-                {/* <PrimaryButton title="Add To Cart"  onCartButtonClick={onCartSubmit}/> */}
                 <button
-                  onClick={onCartSubmit}
+                onClick={()=>{handleAddToCart()}}
                   className="w-full font-HelveticaNeueMedium rounded text-[white] bg-[#031B89] p-4 leading-[1.25rem]"
                 >
-                  Add To Cart
+                  {productInCart?'Update':'Add To'} Cart
                 </button>
               </div>
 
-              {/* Detail */}
               <div>
                 <h1 className="uppercase text-[0.75rem] font-HelveticaNeueMedium text-[#94A3B8]">
                   COD available
@@ -519,10 +513,8 @@ const ProductSection = () => {
               </div>
             </div>
 
-            {/* Subscription */}
             <SubscriptionCard />
 
-            {/* Offers */}
             <div className="flex flex-col gap-2">
               <OfferCoupon />
               <Link className="text-[0.875rem] font-HelveticaNeueMedium text-[#7487FF]">
@@ -530,12 +522,7 @@ const ProductSection = () => {
               </Link>
             </div>
           </div>
-          {/* {
-            !isLogin &&
-            (
-              <Login isLogin={isLogin} setIsLogin={setIsLogin}/>
-            )
-          } */}
+
           {!isLogin ? (
             <Login isLogin={isLogin} setIsLogin={setIsLogin} />
           ) : null}

@@ -4,48 +4,80 @@ import IndexSortBy from "./IndexSortBy";
 import data from "../../data";
 import { useQuery, gql,useMutation } from "@apollo/client";
 import CartItemCard from "../Cart/CartItemCard";
-import products from "../../productData";
-import transformProductData from '../../util/transformProductData';
 import { useNavigate } from "react-router-dom";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Loader from "../loader";
 const PRODUCT_LIST= gql`
-query{
-  getAllProducts{
+query {
+  getAllProducts {
     status
     message
-    products{
+    products {
       id
-      productName
-      marketer
-      unitsInPack
-      maxRetailPrice
-      sp
-      discount
-      productImages
-      description
-      prescriptionRequired
+  productName
+  productImages
+  manufacturer
+  composition
+  price
+  prescriptionRequired
+  type
+  tags
+  concerns
+  sku
+  manufacturerAddress
+  marketer
+  marketerAddress
+  description
+  directionToUse
+  safetyInformation
+  ingredients
+  productForm
+  consumeType
+  unitsInPack
+  boxContent
+  size
+  scentOrFlavour
+  stockQuantity
+  packForm
+  productWeightInGrams
+  lengthInCentimeters
+  widthInCentimeters
+  heightInCentimeters
+  hsn
+  gstPercentage
+  maxRetailPrice
+  sp
+  discount
     }
   }
-  }`;
+}`;
+
+
 
 const FindByIndex = ({ isIllness }) => {
   console.log('isIllness');
   console.log(isIllness);
   const navigate=useNavigate()
-  const { loading, error, data:dataList } = useQuery(PRODUCT_LIST);
   const [isFetched, setIsFetched] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [productList, setProductList] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [activeLetter, setActiveLetter] = useState('All');
-  const [isPrescriptionRequired, setIsPrescriptionRequired] = useState(null); 
-  useEffect(() => {
-    const transformedData = transformProductData(products);
-    setProductList(transformedData);
-    console.log(transformedData)
-    setFilteredProducts(transformedData); // Initially, no filter applied
+  const [isPrescriptionRequired, setIsPrescriptionRequired] = useState(null);
+  const { loadingProduct, errorproduct, data:dataListProduct } = useQuery(PRODUCT_LIST,{
+    onCompleted: (data) => {
+      setProductList(data?.getAllProducts?.products);
+      setFilteredProducts(data?.getAllProducts?.products); // Set initial filtered products
         setIsFetched(true);
+        setIsLoading(false)
+    },
+    onError: (err) => {
+      setIsLoading(false)
 
-  }, []);
+    }
+  });   
+
   const handleAlphabetFilter = (letter) => {
     setActiveLetter(letter);
     applyFilters(letter, isPrescriptionRequired);
@@ -56,11 +88,7 @@ const FindByIndex = ({ isIllness }) => {
     applyFilters(activeLetter, required);
   };
 
-  const clearFilters = () => {
-    setActiveLetter('All');
-    setIsPrescriptionRequired(null);
-    setFilteredProducts(productList); // Reset to all products
-  };
+
   const applyFilters = (letter, prescription) => {
     let filtered = productList;
 
@@ -85,26 +113,18 @@ const FindByIndex = ({ isIllness }) => {
       {letter}
     </button>
   ));
-  // useEffect(()=>{
-  //   try{
-  //   console.log('data is 123');
 
-  //   console.log(dataList.getAllProducts.products);
-  //   setProductList(dataList.getAllProducts.products);
-  //   setIsFetched(true);
-  //   }catch(err){
-  //     console.log(err);
-  //   }
-    
-  // },[dataList])
 
   return (
      <div>
+      {/* <ToastContainer /> */}
+      {
+        isLoading && <Loader /> 
+      }
        {
          isFetched ?
          (
           <div className="flex flex-col justify-between py-12 px-[6.25rem] gap-[1.25rem] bg-white mb-4">
-          {/* Path */}
           <h1 className="w-full text-[0.875rem] text-[#64748B]">
           <span onClick={()=>{navigate('/')}} className="text-[#94A3B8] font-HelveticaNeueMedium" style={{cursor:'pointer'}}>
                Home/

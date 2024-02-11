@@ -7,13 +7,14 @@ import { AppContext } from "./context/AppContext";
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink, ApolloLink } from "@apollo/client";
 
 export const httpLink = createHttpLink({
-  uri: 'https://api.mymultimeds.com/graphql', // Your production GraphQL endpoint URI
+  // uri: 'https://api.mymultimeds.com/graphql', // Your production GraphQL endpoint URI
+  uri: 'http://localhost:3030/graphql', // Your local GraphQL endpoint URI
 });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   // Retrieve the token from local storage every time a request is made
   const token = localStorage.getItem('token');
-  console.log(token, '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  // console.log(token, '++++++ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
 
   // Add the token to the headers
   operation.setContext({
