@@ -42,8 +42,7 @@ const ADD_TO_CART = gql`
   }
 `;
 
-const ProductSection = (props) => {
-  const {  refetch } = props;
+const ProductSection = () => {
   const { selectedProduct,handleRefetchCart,cartListFromContext } = useContext(Context);
   const [cartList] = useState(cartListFromContext||[]);
 
@@ -70,7 +69,7 @@ console.log(selectedProduct,'selectedProduct')
       },
       onCompleted: (data) => {
         if (data.setAsFavorite.status === "SUCCESS") {
-          refetch();
+          handleRefetchCart();
 
         } else {
         }
@@ -187,9 +186,9 @@ console.log(selectedProduct,'selectedProduct')
     if(quantity){
 
       if(productInCart){
-        updateCartQuantity().then(() => refetch());
+        updateCartQuantity().then(() => handleRefetchCart());
       }else{
-        addToCart().then(() => refetch());
+        addToCart().then(() => handleRefetchCart());
       }
     }else{
       toast.info("Please select a valid quantity")

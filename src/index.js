@@ -7,8 +7,8 @@ import { AppContext } from "./context/AppContext";
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink, ApolloLink } from "@apollo/client";
 
 export const httpLink = createHttpLink({
-  uri: 'https://api.mymultimeds.com/graphql', // Your production GraphQL endpoint URI
-  // uri: 'http://localhost:3030/graphql', // Your local GraphQL endpoint URI
+  // uri: 'https://api.mymultimeds.com/graphql', // Your production GraphQL endpoint URI
+  uri: 'http://localhost:3030/graphql', // Your local GraphQL endpoint URI
 });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
