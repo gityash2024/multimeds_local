@@ -135,7 +135,7 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
         localStorage.setItem('token', res.data.verifyOTP.token);
         setUserDetails(res.data.verifyOTP.token);
         localStorage.setItem('userInfo', JSON.stringify(res.data.verifyOTP.userDetails));
-        navigate('/');
+        navigate('/refferal-login');
       } else {
         toast.error(`Otp not verified!`);
       }

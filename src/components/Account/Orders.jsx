@@ -4,6 +4,7 @@ import Dropdown from "../../assets/dropdownArrow.svg";
 import DropdownUp from "../../assets/dropdownUpArrow.svg";
 import DateDropdown from "./DateDropdown";
 import OrdersSection from "./OrdersSection";
+import Subscription from "./Subscriptions/subscription";
 
 const Orders = () => {
   const [isActive, setIsActive] = useState("processing");
@@ -94,7 +95,7 @@ const Orders = () => {
       </div>
 
       {/* orders */}
-      <OrdersSection />
+      {isActive==='Subscriptions'?<Subscription></Subscription>:<OrdersSection />}
 
       
     </div>

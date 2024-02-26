@@ -18,9 +18,9 @@ const Coupons = (props) => {
         let sp = 0;
         let discount = 0;
         cartListCoupon?.forEach(item => {
-          mrp += item.product.maxRetailPrice * item.quantity;
-          sp += item.product.sp * item.quantity;
-          discount += (item.product.maxRetailPrice - item.product.sp) * item.quantity;
+          mrp += item?.product?.maxRetailPrice * item?.quantity;
+          sp += item?.product?.sp * item?.quantity;
+          discount += (item?.product?.maxRetailPrice - item?.product?.sp) * item?.quantity;
         });
         setTotalMrp(mrp);
         setTotalSp(sp);

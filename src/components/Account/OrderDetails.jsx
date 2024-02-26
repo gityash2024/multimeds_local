@@ -5,7 +5,7 @@ import Coupons from "../Cart/Coupons";
 import PrescriptionUpload from "../Cart/PrescriptionUpload";
 import Bill from "../Cart/Bill";
 import DeliveringTo from "../Cart/DeliveringTo";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CancelledIcon from "../../assets/account/cancelled.svg";
 
 const OrderDetails = ({
@@ -15,6 +15,7 @@ const OrderDetails = ({
   products,
   needingProducts,
 }) => {
+  const navigate=useNavigate()
   const location = useLocation();
   const stateFromSource = location.state;
 
@@ -186,7 +187,7 @@ const OrderDetails = ({
           />
 
           <div className="py-4 flex flex-col gap-2">
-            <button className="w-full rounded p-4 text-white bg-[#031B89] font-HelveticaNeueMedium">
+            <button onClick={()=>{navigate("/track-order")}} className="w-full rounded p-4 text-white bg-[#031B89] font-HelveticaNeueMedium">
               Track your order
             </button>
 

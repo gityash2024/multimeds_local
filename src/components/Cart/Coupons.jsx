@@ -29,10 +29,9 @@ const Coupons = () => {
               Applied : WELCOME30
             </h1>
             <button
-            style={{cursor:"not-allowed"}}
-              // onClick={() => {
-              //   setIsApplied(false);
-              // }}
+              onClick={() => {
+                setIsApplied(false);
+              }}
             >
               <img src={CrossIcon} alt="cross icon" className="w-6 h-6" />
             </button>

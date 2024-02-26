@@ -1,0 +1,261 @@
+.refferal-login-container {
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    min-height: 100vh;
+    align-items: center;
+    flex-direction: column;
+  }
+  .refferal-login-refferal-login {
+    gap: 24px;
+    width: 100%;
+    height: auto;
+    display: flex;
+    padding: 24px;
+    overflow: hidden;
+    box-shadow: 0px 4px 17px 0px rgba(16, 16, 16, 0.10000000149011612) ;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 1);
+  }
+  .refferal-login-refferal8 {
+    width: 400px;
+    height: 80vh;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    flex-grow: 1;
+    align-items: flex-start;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background-color: rgba(250, 250, 250, 1);
+  }
+  .refferal-login-refferal150 {
+    gap: 8px;
+    top: 26px;
+    left: 15px;
+    width: 4px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .refferal-login-rectangle6 {
+    width: 4px;
+    height: 4px;
+    border-radius: 4px;
+  }
+  .refferal-login-rectangle5 {
+    width: 4px;
+    height: 50px;
+    border-radius: 4px;
+  }
+  .refferal-login-rectangle7 {
+    width: 4px;
+    height: 4px;
+    border-radius: 4px;
+  }
+  .refferal-login-rectangle8 {
+    width: 4px;
+    height: 4px;
+    border-radius: 4px;
+  }
+  .refferal-login-rectangle9 {
+    width: 4px;
+    height: 4px;
+    border-radius: 4px;
+  }
+  .refferal-login-refferal151 {
+    gap: 4px;
+    top: 372px;
+    left: 47px;
+    width: 307px;
+    display: flex;
+    position: absolute;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .refferal-login-text {
+    color: var(--dl-color-slate-900);
+    height: auto;
+    text-align: left;
+    line-height: 20px;
+  }
+  .refferal-login-text02 {
+    color: var(--dl-color-slate-500);
+    width: 307px;
+    height: auto;
+    text-align: center;
+    line-height: 17.5px;
+  }
+  .refferal-login-securedatabro {
+    top: 168px;
+    left: 134px;
+    width: 134.12161254882812px;
+    height: 146.58071899414062px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .refferal-login-shield {
+    top: 0px;
+    left: 0px;
+    width: 134.12161254882812px;
+    height: 146.58071899414062px;
+    display: flex;
+    position: absolute;
+    align-items: flex-start;
+    flex-shrink: 1;
+  }
+  .refferal-login-vector {
+    top: 0px;
+    left: 0px;
+    width: 67px;
+    height: 147px;
+    position: absolute;
+  }
+  .refferal-login-vector1 {
+    top: -1.8189894035458565e-12px;
+    left: 67.0607681274414px;
+    width: 67px;
+    height: 147px;
+    position: absolute;
+  }
+  .refferal-login-vector2 {
+    top: 5.883448600769043px;
+    left: 4.915107250213623px;
+    width: 124px;
+    height: 135px;
+    position: absolute;
+  }
+  .refferal-login-vector3 {
+    top: 5.924799919128418px;
+    left: 67.0607681274414px;
+    width: 62px;
+    height: 135px;
+    position: absolute;
+  }
+  .refferal-login-vector4 {
+    top: 18.909196853637695px;
+    left: 40.43984603881836px;
+    width: 54px;
+    height: 52px;
+    position: absolute;
+  }
+  .refferal-login-vector5 {
+    top: 60.184852600097656px;
+    left: 37.57777404785156px;
+    width: 59px;
+    height: 49px;
+    position: absolute;
+  }
+  .refferal-login-vector6 {
+    top: 74.24303436279297px;
+    left: 60.3513069152832px;
+    width: 13px;
+    height: 23px;
+    position: absolute;
+  }
+  .refferal-login-refferal11 {
+    gap: 32px;
+    width: 400px;
+    display: flex;
+    flex-grow: 1;
+    align-items: flex-start;
+    flex-shrink: 0;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .refferal-login-refferal259 {
+    gap: 16px;
+    display: flex;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .refferal-login-refferal107 {
+    gap: 4px;
+    display: flex;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .refferal-login-text04 {
+    color: var(--dl-color-slate-900);
+    height: auto;
+    align-self: stretch;
+    text-align: left;
+    line-height: 30px;
+  }
+  .refferal-login-text06 {
+    color: var(--dl-color-slate-600);
+    height: auto;
+    align-self: stretch;
+    text-align: left;
+    line-height: 20px;
+  }
+  .refferal-login-refferal106 {
+    gap: 8px;
+    display: flex;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .refferal-login-refferal10 {
+    gap: 8px;
+    display: flex;
+    padding: 13px 16px;
+    overflow: hidden;
+    align-self: stretch;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(203, 213, 225, 1);
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 4px;
+  }
+  .refferal-login-text08 {
+    color: var(--dl-color-slate-400);
+    height: auto;
+    text-align: left;
+    line-height: 17.5px;
+  }
+  .refferal-login-text10 {
+    color: rgba(15, 23, 42, 1);
+    height: auto;
+    align-self: stretch;
+    text-align: left;
+    line-height: 15px;
+  }
+  .refferal-login-text11 {
+    color: var(--dl-color-slate-900);
+  }
+  .refferal-login-error {
+    color: red;
+    margin-top: 4px;
+  }
+  
+ 
+  
+  /* Make sure the input field matches the design */
+  .refferal-login-refferal10 input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .mb-3 {
+    margin-bottom: 1rem; /* Adjust the value as needed */
+  }
+  
+  .mt-3 {
+    margin-top: 1rem; /* Adjust the value as needed */
+  }
+  

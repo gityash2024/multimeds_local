@@ -4,8 +4,10 @@ import SearchBar from "./SearchBar";
 
 import Order from "../assets/orderIcon.svg";
 import Categories from "./Categories";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+  const navigate=useNavigate()
   return (
     <div className="w-full flex flex-col py-14 justify-center items-center bg-white mb-4 text-[#0F172A]">
       {/* Heading and Subheading */}
@@ -29,7 +31,7 @@ const HeroSection = () => {
         />
         <a className="flex justify-end gap-1 items-center font-HelveticaNeueMedium cursor-pointer grow">
           <img src={Order} alt="order icon" />
-          <h1>Track your order</h1>
+          <h1 onClick={() => {navigate('/track-order')}}>Track your order</h1>
         </a>
       </div>
 

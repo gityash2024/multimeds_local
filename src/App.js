@@ -32,6 +32,20 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import ContactUs from "./pages/ContactUs";
 import Blog from "./pages/Blog";
 import BlogDetails from "./components/blogdetails";
+import Referrals from "./components/Account/Refferal/Refferal";
+import RefferaLogin from "./components/LoginRefferal/RefferalLogin";
+import Wallet from "./components/Account/Wallet/wallet";
+import TxnSuccess from "./components/Transactions/TxnSuccess";
+import TxnFail from "./components/Transactions/TxnFail";
+import TrackOrder from "./components/Cart/TrackOrder/TrackOrder";
+import TrackOrderDetail from "./components/Cart/TrackOrder/TrackOrderDetails";
+import Support from "./components/Account/Support/support";
+import Subscription from "./components/Account/Subscriptions/subscription";
+import OrderStatus from "./components/Cart/OrderStatus/OrderStatus";
+import NotFound from "./components/404/404";
+import OfferCoupon from "./components/OfferCoupon";
+import Coupons from "./components/Cart/Bill";
+import CouponModal from "./components/Cart/CouponModal";
 const ProtectedRoute = ({ children }) => {
   const isUserLoggedIn = localStorage.getItem("userInfo");
 
@@ -77,10 +91,67 @@ function App() {
           }
         />
         <Route
+          path="transaction/success"
+          element={
+            <ProtectedRoute>
+              <TxnSuccess />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="transaction/fail"
+          element={
+            <ProtectedRoute>
+              <TxnFail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="track-order"
+          element={
+            <ProtectedRoute>
+              <TrackOrder />
+            </ProtectedRoute>
+          }
+        />
+       
+        <Route
+          path="track-order/details/:id"
+          element={
+            <ProtectedRoute>
+              <TrackOrderDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="products"
           element={
             <ProtectedRoute>
               <Products />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="support"
+          element={
+            <ProtectedRoute>
+              <Support />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="subscription"
+          element={
+            <ProtectedRoute>
+              <Subscription />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="order-status"
+          element={
+            <ProtectedRoute>
+              <OrderStatus />
             </ProtectedRoute>
           }
         />
@@ -105,6 +176,14 @@ function App() {
           element={
             <ProtectedRoute>
               <PrivacyPolicy />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="refferal"
+          element={
+            <ProtectedRoute>
+              <Referrals />
             </ProtectedRoute>
           }
         />
@@ -189,6 +268,21 @@ function App() {
           }
         />
         <Route
+          path="wallet"
+          element={
+            <ProtectedRoute>
+              <Wallet />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="refferal-login"
+          element={
+              <RefferaLogin />
+          }
+        />
+     
+        <Route
           path="prescription-analyzed"
           element={
             <ProtectedRoute>
@@ -196,8 +290,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+           <Route
+          path="*"
+          element={
+              <NotFound />
+          }
+        />
+        
         {/* Add any additional protected routes here */}
       </Routes>
+
 
       <Footer />
     </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const AccountNav = ({ setElement ,setSubElement}) => {
-  const [isActive, setIsActive] = useState(1);
+  const [isActive, setIsActive] = useState(localStorage.getItem("referral") ? 6 : 1);
 
   const accountOptions = [
     { id: 1, name: "account", child: "profile" },
@@ -17,6 +17,7 @@ const AccountNav = ({ setElement ,setSubElement}) => {
   ];
 
   const handleClick = (name, id,child) => {
+    console.log(name, id,child,"==================")
     setIsActive(id);
     setElement(name);
     setSubElement(child)

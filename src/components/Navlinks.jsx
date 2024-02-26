@@ -54,7 +54,7 @@ const Navlinks = () => {
       </ul>
 
       <div className="flex items-center gap-12 py-1 px-4 font-HelveticaNeueMedium">
-        <Link className="flex gap-1 items-center">
+        <Link to="/refferal" className="flex gap-1 items-center">
           <img
             src={Referral}
             alt="referral icon"

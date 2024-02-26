@@ -59,7 +59,7 @@ const AccountDropdown = () => {
           } rounded p-1 hover:bg-[#F8FAFC]`}
         >
           <h1 className="text-[0.875rem] font-HelveticaNeueMedium">
-            My Wallet
+            My 
           </h1>
         </Link>
 

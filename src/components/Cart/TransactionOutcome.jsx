@@ -38,7 +38,7 @@ const TransactionOutcome = ({ isFailed }) => {
           {isFailed ? (
             <PrimaryButton title="Retry payment" />
           ) : (
-            <Link to="/">
+            <Link to="/track-order">
               <p className="text-[0.875rem] font-HelveticaNeueMedium text-[#7487FF]">
                 Track your order here
               </p>

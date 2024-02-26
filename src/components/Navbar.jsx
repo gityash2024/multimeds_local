@@ -88,7 +88,7 @@ const Navbar = ({ isDiscountBanner  }) => {
         />
 
         <div className="xl:flex gap-2 font-HelveticaNeueMedium hidden">
-          <Link className="flex gap-1 cursor-pointer items-center">
+          <Link to="/track-order" className="flex gap-1 cursor-pointer items-center">
             <img
               src={Order}
               alt="order icon"

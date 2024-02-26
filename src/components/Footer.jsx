@@ -1,11 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import FooterLogo from "../assets/footer/footerLogo.svg";
 import Facebook from "../assets/footer/facebook.svg";
 import Instagram from "../assets/footer/instagram.svg";
+import CouponModal from "./Cart/CouponModal";
 
 const Footer = () => {
+  const navigate=useNavigate()
+  const[isOpen,setIsopne]=useState(false)
+  const handleClose=()=>{
+    setIsopne(false);
+  }
   return (
     <div className="w-full flex flex-col justify-center items-center bg-[#031B89] text-white py-14 px-8 gap-6">
       <div className="w-full flex flex-wrap gap-4">
@@ -63,17 +69,19 @@ const Footer = () => {
             <Link to="/account">
               <li>Profile</li>
             </Link>
-            <Link to="#">
-              <li>Offers</li>
-            </Link>
-            <Link to="#">
+            <Link onClick={() => setIsopne(true)}>
+                  <li>Offers</li>
+                </Link>
+
+            <Link to="/track-order">
               <li>Track your Order</li>
             </Link>
-            <Link to="#">
+            <Link to="/account" onClick={() => {localStorage.setItem('referral',true)}} >
               <li>Referrals</li>
             </Link>
           </ul>
         </div>
+        {isOpen && <CouponModal handleClose={handleClose}/>}
         <div className="flex flex-col gap-4">
           <h1 className="font-HelveticaNeueMedium">More about Us</h1>
           <ul className="flex flex-col text-[0.875rem] gap-1">

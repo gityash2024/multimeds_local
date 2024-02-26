@@ -1,58 +1,40 @@
 import React, { useContext, useState } from "react";
-
 import Overview from "./Overview";
 import ProductSubstitutes from "./ProductSubstitutes";
 import Context from "../context/AppContext";
+import { gql, useQuery } from "@apollo/client";
 
+const GET_PRODUCT_BULLET_POINTS = gql`
+  query getProductBulletPoints($id: ID!) {
+    getProductBulletPoints(input: $id) {
+      status
+      message
+      points {
+        id
+        point
+      }
+    }
+  }
+`;
+ 
 const ProductOverview = () => {
   const {selectedProduct} = useContext(Context);
   const [isActive, setIsActive] = useState(1);
+  const { data, loading, error } = useQuery(GET_PRODUCT_BULLET_POINTS, {
+    variables: { id: selectedProduct.id },
+    skip: !selectedProduct.id 
+  });
+  const productInfoData = data?.getProductBulletPoints.points.map((point, index) => ({
+    id: index + 1,
+    Heading: "PRODUCT INTRODUCTION",
+    content: point.point.split("\n"),
+  })) || [];
 
-  const productInfoData = [];
-
-  if (selectedProduct.bulletPoint1) {
-    productInfoData.push({
-      id: 1,
-      Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct.bulletPoint1.split("\n"),
-    });
-  }
-  
-  if (selectedProduct.bulletPoint2) {
-    productInfoData.push({
-      id: 2,
-      Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct.bulletPoint2.split("\n"),
-    });
-  }
-  
-  if (selectedProduct.bulletPoint3) {
-    productInfoData.push({
-      id: 3,
-      Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct.bulletPoint3.split("\n"),
-    });
-  }
-  
-  if (selectedProduct.bulletPoint4) {
-    productInfoData.push({
-      id: 4,
-      Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct.bulletPoint4.split("\n"),
-    });
-  }
-  
-  if (selectedProduct.bulletPoint5) {
-    productInfoData.push({
-      id: 5,
-      Heading: "PRODUCT INTRODUCTION",
-      content: selectedProduct.bulletPoint5.split("\n"),
-    });
-  }
-  
-
+  // Filter for active content
   const res = productInfoData.filter((item) => item.id === isActive);
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
   return (
     <div className="flex py-12 px-[6.25rem] justify-center gap-2 mb-4">
       <Overview

@@ -5,10 +5,11 @@ import { Link } from "react-router-dom";
 import CartProductCard from "./CartProductCard";
 
 const CartModal = ({ cartData ,refetch}) => {
+  console.log(cartData)
   const calculateTotal = () => {
     let amount=0
     cartData.forEach(element => {
-     amount+= element.product.sp * element.quantity
+     amount+= element?.product?.sp * element?.quantity
     });
     return amount;
 

@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MyProfile from "./MyProfile";
 import MyPrescriptions from "./MyPrescriptions";
 import MyAddresses from "./MyAddresses";
 import AccountNav from "./AccountNav";
 import Orders from "./Orders";
+import Referrals from "./Refferal/Refferal";
+import Wallet from "./Wallet/wallet";
+import Support from "./Support/support";
 
 const MyAccount = () => {
-  const [element, setElement] = useState("account");
+  console.log(localStorage.getItem("referral"))
+  const activeTab =localStorage.getItem("referral") ?"referrals" :"account";
+  
+  const [element, setElement] = useState(activeTab);
   const [subElement, setSubElement] = useState("profile");
+
+  useEffect(()=>{
+    return ()=>{
+      localStorage.removeItem("referral")
+    }
+
+  },[])
 
   return (
     <div className="flex items-center justify-center py-12 px-[6.25rem]">
@@ -31,6 +44,21 @@ const MyAccount = () => {
             {element === "orders" && (
               <>
                 <Orders />
+              </>
+            )}
+            {element === "referrals" && (
+              <>
+                <Referrals  />
+              </>
+            )}
+            {element === "wallet" && (
+              <>
+                 <Wallet/>
+              </>
+            )}
+            {element === "support" && (
+              <>
+              <Support/>
               </>
             )}
           </div>
