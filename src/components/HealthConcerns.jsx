@@ -15,11 +15,11 @@ const HealthConcerns = () => {
         Shop by Health Concerns
       </h1>
       <div className="xl:flex grid lg:grid-cols-3 md:grid-cols-2 gap-y-12 sm:place-content-between place-items-center xl:items-center xl:justify-between">
-        <HealthConcernCard title="Raspiratory Problems" image={Respiratory} />
-        <HealthConcernCard title="Stomach Problems" image={Stomach} />
-        <HealthConcernCard title="Bones & Joints Problems" image={BonesAndJoints} />
-        <HealthConcernCard title="Heart Problems" image={HeartImage} />
-        <HealthConcernCard title="Kidney Problems" image={Kidney} />
+        <HealthConcernCard title="Respiratory Problem" image={Respiratory} />
+        <HealthConcernCard title="Stomach problem" image={Stomach} />
+        <HealthConcernCard title="Bones Problem" image={BonesAndJoints} />
+        <HealthConcernCard title="Heart problem" image={HeartImage} />
+        <HealthConcernCard title="Kidney Problem" image={Kidney} />
       </div>
     </div>
   );

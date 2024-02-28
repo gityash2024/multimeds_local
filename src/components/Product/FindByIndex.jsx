@@ -4,7 +4,7 @@ import IndexSortBy from "./IndexSortBy";
 import data from "../../data";
 import { useQuery, gql,useMutation } from "@apollo/client";
 import CartItemCard from "../Cart/CartItemCard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../loader";
@@ -57,7 +57,8 @@ query {
 
 const FindByIndex = ({ isIllness }) => {
   console.log('isIllness');
-  console.log(isIllness);
+  const { type } = useParams();
+  console.log(type)
   const navigate=useNavigate()
   const [isFetched, setIsFetched] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,8 +68,14 @@ const FindByIndex = ({ isIllness }) => {
   const [isPrescriptionRequired, setIsPrescriptionRequired] = useState(null);
   const { loadingProduct, errorproduct, data:dataListProduct } = useQuery(PRODUCT_LIST,{
     onCompleted: (data) => {
-      setProductList(data?.getAllProducts?.products);
-      setFilteredProducts(data?.getAllProducts?.products); // Set initial filtered products
+      let products = data?.getAllProducts?.products;
+      if(type){
+        setProductList(products?.filter((product) => product.concerns[0] === type));
+        setFilteredProducts(products?.filter((product) => product.concerns[0] === type));
+      }else{
+        setProductList(data?.getAllProducts?.products);
+        setFilteredProducts(data?.getAllProducts?.products); 
+      }
         setIsFetched(true);
         setIsLoading(false)
     },

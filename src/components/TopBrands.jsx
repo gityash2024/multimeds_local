@@ -17,9 +17,9 @@ const TopBrands = ({ title }) => {
         <h1 className="text-2xl font-HelveticaNeueBold mb-8 #0F172A">
           {title}
         </h1>
-        <a href="" className="font-HelveticaNeueMedium text-[#7487FF]">
+        {/* <a href="" className="font-HelveticaNeueMedium text-[#7487FF]">
           View All
-        </a>
+        </a> */}
       </div>
       <div className="grid xl:grid-cols-7 md:grid-cols-4 grid-cols-2 gap-6">
         <TopBrandsCard title="Dabur" image={Dabur} />

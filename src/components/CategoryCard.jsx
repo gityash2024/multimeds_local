@@ -1,8 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const CategoryCard = ({ title, image }) => {
+  const navigate=useNavigate()
   return (
-    <div className="cursor-pointer">
+    <div onClick={() => {navigate('/products')}} className="cursor-pointer">
       <img alt={`${title} image`} src={image} className="rounded-lg" />
       <h1 className="mt-3 font-HelveticaNeueMedium">{title}</h1>
     </div>

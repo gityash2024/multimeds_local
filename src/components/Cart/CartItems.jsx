@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Context from "../../context/AppContext";
 import axios from "axios";
 import { gql, useMutation } from "@apollo/client";
+import Loader from "../loader";
 
 const CREATE_PAYMENT_INTENT = gql`
   mutation CreatePaymentIntent($input: CreatePaymentIntentsInput!) {
@@ -19,6 +20,15 @@ const CREATE_PAYMENT_INTENT = gql`
     }
   }
 `;
+const CLEAR_CART = gql`
+mutation {
+  clearCart {
+    status
+    message
+  }
+}
+
+`;
 
 const VERIFY_PAYMENT_SIGNATURE = gql`
   mutation VerifyPaymentSignature($input: VerifyPaymentSignatureInput!) {
@@ -28,16 +38,6 @@ const VERIFY_PAYMENT_SIGNATURE = gql`
     }
   }
 `;
-
-const PROCESS_SUCCESS_PAYMENT = gql`
-  mutation ProcessSuccessPayment($input: ProcessPaymentInput!) {
-    processSuccessPayment(input: $input) {
-      status
-      message
-    }
-  }
-`;
-
 
 
 const CartItems = ({
@@ -50,10 +50,25 @@ const CartItems = ({
   const navigate=useNavigate()
   const [itemsNeedingPrescription, setItemsNeedingPrescription] = useState([]);
   const [regularItems, setRegularItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [totalMrp, setTotalMrp] = useState(0);
+  const [totalSp, setTotalSp] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
 
+  useEffect(()=>{
+    let mrp = 0;
+        let sp = 0;
+        let discount = 0;
+        cart?.forEach(item => {
+          mrp += item?.product?.maxRetailPrice * item?.quantity;
+          sp += item?.product?.sp * item?.quantity;
+          discount += (item?.product?.maxRetailPrice - item?.product?.sp) * item?.quantity;
+        });
+        setTotalMrp(mrp);
+        setTotalSp(sp);
+        setTotalDiscount(discount);
 
-
-
+  },[cart])
 
 
   const handleRefetch = async () => {
@@ -74,6 +89,7 @@ const CartItems = ({
         setRegularItems(nonPrescriptionItems);
         renderNeedingProducts();
         renderProducts();
+
 
     }
 
@@ -126,27 +142,36 @@ const [verifySignature] = useMutation(VERIFY_PAYMENT_SIGNATURE, {
   }
 });
 
-const [processPayment] = useMutation(PROCESS_SUCCESS_PAYMENT, {
+const [clearCart] = useMutation(CLEAR_CART, {
   onError: (error) => {
-    console.error('Error processing success payment:', error);
-    alert('Error processing the payment.');
+    console.error('Error clearing cart:', error);
   },
   onCompleted: (data) => {
-    console.log('Payment processed successfully:', data.processSuccessPayment);
+    console.log('Cart cleared:', data.clearCart);
+    if (data.clearCart.status === "SUCCESS") {
+      handleRefetch();
+      navigate("/transaction/success");
+    } else {
+      console.error('Error clearing cart:', data.clearCart.message);
+    }
   }
 });
 
 
 
+
 async function displayRazorpay() {
+  setLoading(true); 
   const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+
   if (!res) {
     alert("Razorpay SDK failed to load. Are you online?");
+    setLoading(false); 
     return;
   }
 
-  const amount = 2130; // Replace with dynamic value
-  const currency = "INR"; // Replace with dynamic value
+  const amount = Number(( totalSp ? (((totalSp -34.49 - 165.65)>0)?(totalSp -34.49 - 165.65).toFixed(2):0):0)*100); 
+  const currency = "INR";
 
   createPayment({
     variables: {
@@ -159,10 +184,10 @@ async function displayRazorpay() {
     const { orderId, status, message } = response.data.createPaymentIntents;
     if (status !== "created") {
       alert(`Failed to create payment intent: ${message}`);
+      setLoading(false); // Stop loading on failure to create payment intent
       return;
     }
 
-    // Configure Razorpay options
     const options = {
       key: "rzp_test_FELPeq7HeVvV2w",
       amount: amount.toString(),
@@ -171,7 +196,7 @@ async function displayRazorpay() {
       description: "Test Transaction",
       order_id: orderId,
       handler: async function (response) {
-        // Verify payment signature
+        // Razorpay payment was completed, keep loading true until verification and navigation complete
         verifySignature({
           variables: {
             input: {
@@ -182,22 +207,14 @@ async function displayRazorpay() {
           }
         }).then((verificationResponse) => {
           if (verificationResponse.data.verifyPaymentSignature.status === "SUCCESS") {
-            // Process success payment
-            processPayment({
-              variables: {
-                input: {
-                  amount: amount.toString(),
-                  paymentMethod: "Razorpay"
-                }
-              }
-            }).then((paymentResponse) => {
-              if (paymentResponse?.data?.processSuccessPayment?.status === "SUCCESS") {
-                alert("Payment successful");
-              } else {
-                alert("Payment could not be verified");
-              }
+            clearCart().catch((error) => {
+              console.error('Clear cart failed after successful payment', error);
             });
+          } else {
+            navigate("/transaction/fail");
           }
+        }).finally(() => {
+          setLoading(false); // Stop loading after navigation is triggered
         });
       },
       prefill: {
@@ -207,13 +224,23 @@ async function displayRazorpay() {
       },
       theme: {
         color: "#61dafb"
+      },
+      modal: {
+        // This is triggered when the modal is closed
+        ondismiss: function() {
+          setLoading(false); // Stop loading when user manually closes the Razorpay modal
+        }
       }
     };
 
     const paymentObject = new window.Razorpay(options);
     paymentObject.open();
+  }).catch((err) => {
+    console.error("Error during payment creation or Razorpay modal opening:", err);
+    setLoading(false); // Ensure loading is stopped if there's an error in this process
   });
 }
+
 
 
   function loadScript(src) {
@@ -281,7 +308,7 @@ async function displayRazorpay() {
         <DeliveringTo isAddressSelected isAddressInvalid={true} />
 
         <div className="p-4 flex flex-col gap-2">
-          <Link onClick={displayRazorpay} className={`${ "bg-[#A5B4FC]" } w-full font-HelveticaNeueMedium rounded text-[white] text-center p-4 leading-[1.25rem]`}>
+          <Link onClick={displayRazorpay} style={{ cursor: "pointer" }} className={`${ "bg-[#A5B4FC]" } w-full font-HelveticaNeueMedium rounded text-[white] text-center p-4 leading-[1.25rem]`}>
             PROCEED
           </Link>
          
@@ -292,8 +319,9 @@ async function displayRazorpay() {
          
         </div>
       </div>
+      {loading ? <Loader /> : null}
     </div>
   );
-};
+};  
 
 export default CartItems;

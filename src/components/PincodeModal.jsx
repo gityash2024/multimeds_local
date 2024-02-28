@@ -1,14 +1,31 @@
 import React, { useEffect, useRef, useState } from "react";
 import AddressCard from "./AddressCard";
 import PincodesModal from "./PincodesModal";
-
+import { gql, useQuery } from "@apollo/client";
 import Cross from "../assets/crossIcon.svg";
 import { useNavigate } from "react-router-dom";
-
+const GET_MY_ADDRESSES = gql`
+  query getMyAddresses {
+    getMyAddresses {
+      status
+      message
+      addresses {
+        id
+        houseNumber
+        aptOrBuildingName
+        streetOrAreaName
+        city
+        pincode
+        state 
+        label 
+      }
+    }
+  }
+`;
 const PincodeModal = ({
   addresses,
   onAddressSelect,
-  
+  setisdropdown,
   setIsPincodeModal,
   isDropdown,
 }) => {
@@ -16,7 +33,12 @@ const PincodeModal = ({
   const [isSelected, setIsSelected] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   let pincodeModalRef = useRef();
-  const navigate =useNavigate()
+  const navigate =useNavigate();
+  const { loading, error, data, refetch } = useQuery(GET_MY_ADDRESSES);
+  useEffect(()=>{
+    refetch()
+    console.log(data?.getMyAddresses?.addresses,'-----------------------------------------------------------------------------')
+  },[])
   useEffect(() => {
     let handler = (e) => {
       if (!pincodeModalRef.current.contains(e.target)) {
@@ -30,7 +52,7 @@ const PincodeModal = ({
     };
   });
 
-  const filteredAddresses = addresses.filter(address =>
+  const filteredAddresses = data?.getMyAddresses?.addresses?.filter(address =>
     address.pincode.includes(searchTerm)
   );
 
@@ -72,7 +94,7 @@ const PincodeModal = ({
                 {isDropdown ? (
                     <div className="flex justify-between text-[0.75rem]">
                         <h1>Select an Address :</h1>
-                        <button className="text-[#031B89]">+ Add New</button>
+                        <button className="text-[#031B89]" onClick={() => {setisdropdown(false);navigate('/account');}}>+ Add New</button>
                     </div>
                 ) : null}
 
@@ -83,7 +105,7 @@ const PincodeModal = ({
                             item={item}
                             isSelected={isSelected}
                             setIsSelected={setIsSelected}
-                            onAddressSelect={onAddressSelect}
+                            onAddressSelect={()=>onAddressSelect(item)}
                         />
                     ))}
                 </div>:<p className="text-[0.75rem] font-HelveticaNeueMedium">No Address Found</p>}

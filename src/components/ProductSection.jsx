@@ -105,7 +105,9 @@ console.log(selectedProduct,'selectedProduct')
   });
 
 
-
+const handleAddressSelect=()=>{
+  console.log("address selected")
+}
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -460,6 +462,7 @@ console.log(selectedProduct,'selectedProduct')
                       <div className="w-screen h-screen fixed top-0 left-0 z-50 flex justify-center items-center bg-black bg-opacity-40">
                         <PincodeModal
                           setIsPincodeModal={setIsAddressModal}
+                          onAddressSelect={handleAddressSelect}
                           isLoggedIn={true}
                           isDropdown={false}
                         />

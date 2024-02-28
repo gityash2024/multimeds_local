@@ -124,6 +124,14 @@ function App() {
           }
         />
         <Route
+          path="products/:type"
+          element={
+            <ProtectedRoute>
+              <Products />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="products"
           element={
             <ProtectedRoute>
