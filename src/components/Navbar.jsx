@@ -15,6 +15,7 @@ import Login from "./Login";
 import CartModal from "./Cart/CartModal";
 import { useLocation } from "react-router-dom";
 import Context from "../context/AppContext";
+import CouponModal from "./Cart/CouponModal";
 
 
 
@@ -23,7 +24,10 @@ const Navbar = ({ isDiscountBanner  }) => {
   const [items, setItems] = useState(cartListFromContext||[]);
 
   const navigate = useNavigate();
-  
+  const[isOpen,setIsopne]=useState(false)
+  const handleClose=()=>{
+    setIsopne(false);
+  }
   const handleRefetch = async () => {
     try {
         handleRefetchCart();
@@ -97,7 +101,7 @@ const Navbar = ({ isDiscountBanner  }) => {
             <h1>Track your order</h1>
           </Link>
           <div className="h-[1.375rem] border-l-2 border-slate-900" />
-          <Link className="flex gap-1 cursor-pointer items-center">
+          <Link onClick={()=>{setIsopne(true)}} className="flex gap-1 cursor-pointer items-center">
             <img
               src={Offer}
               alt="offer icon"
@@ -106,6 +110,7 @@ const Navbar = ({ isDiscountBanner  }) => {
             <h1>Explore Offers</h1>
           </Link>
         </div>
+        {isOpen && <CouponModal handleClose={handleClose}/>}
 
         {
           userDetails ?

@@ -2,10 +2,9 @@ import React, { useContext, useState } from "react";
 import ProductCard from "./Product/ProductCard";
 import { Link, useNavigate } from "react-router-dom";
 import Context from "../context/AppContext";
-const SearchBarDropdown = ({ isHero,data , setFilteredProducts }) => {
+const SearchBarDropdown = ({ isHero,data , setFilteredProducts ,clickSearch}) => {
   console.log(data);
   const navigate = useNavigate();
-  const {setSelectedProduct} = useContext(Context);
   return (
     <div
       className={`${
@@ -15,9 +14,9 @@ const SearchBarDropdown = ({ isHero,data , setFilteredProducts }) => {
       <div className="flex flex-col gap-2">
         <div className="w-full flex flex-col gap-1">
           {
-            data.map((item,i)=>(
- 
-            <div style={{cursor:'pointer'}} className="py-2 px-1 rounded bg-[#F8FAFC]" key={item.id} onClick={()=>{setSelectedProduct(item); navigate(`/product/${item.id}`) ; setFilteredProducts([])}}>
+            data?.map((item,i)=>(
+              
+            <div onClick={() => {clickSearch(item)}} style={{cursor:'pointer'}} className="py-2 px-1 rounded bg-[#F8FAFC]" key={item.id} >
               <h1 className=" text-[0.875rem] font-HelveticaNeueLight">
               {item?.productName}
               </h1>

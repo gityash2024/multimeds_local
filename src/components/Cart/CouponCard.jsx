@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import CouponCardLogo from "../../assets/cart/couponCardIcon.svg";
 import DropDownIcon from "../../assets/cart/dropDownIcon.svg";
 import DropUpIcon from "../../assets/cart/dropUpIcon.svg";
+import { useNavigate } from "react-router-dom";
 
-const CouponCard = ({ isDisabled, isInvalid }) => {
+const CouponCard = ({ isDisabled, isInvalid,handleClose }) => {
   const [isDropdown, setIsDropdown] = useState(false);
+  const navigate=useNavigate()
 
   return (
     <div
@@ -29,7 +31,8 @@ const CouponCard = ({ isDisabled, isInvalid }) => {
 
         <div>
           <button
-            disabled={isDisabled}
+            // disabled={isDisabled}
+            onClick={()=>{navigate('/cart');handleClose()}}
             className="text-[0.875rem] font-HelveticaNeueMedium text-[#7487FF]"
           >
             Apply

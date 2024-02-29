@@ -463,17 +463,16 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, referctAdderss }) => {
   const validateForm = () => {
     const newErrors = {};
     let isValid = true;
-    const containsNumber = /.*\d.*/; // Regular expression to check for numbers
 
     if (!houseNumber.trim()) {
       newErrors.houseNumber = true;
       isValid = false;
     }
-    if (!aptOrBuildingName.trim() || containsNumber.test(aptOrBuildingName)) {
+    if (!aptOrBuildingName.trim() ) {
       newErrors.aptOrBuildingName = true;
       isValid = false;
     }
-    if (!streetOrAreaName.trim() || containsNumber.test(streetOrAreaName)) {
+    if (!streetOrAreaName.trim()) {
       newErrors.streetOrAreaName = true;
       isValid = false;
     }
@@ -482,11 +481,11 @@ const AddAddressModal = ({ ref, address, setIsAddAddress, referctAdderss }) => {
       newErrors.pincode = true;
       isValid = false;
     }
-    if (!city.trim() || containsNumber.test(city)) {
+    if (!city.trim() ) {
       newErrors.city = true;
       isValid = false;
     }
-    if (!state.trim() || containsNumber.test(state)) {
+    if (!state.trim() ) {
       newErrors.state = true;
       isValid = false;
     }

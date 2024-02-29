@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import Dropdown from "../assets/dropdownArrow.svg";
 import DropdownUp from "../assets/dropdownUpArrow.svg";
@@ -7,6 +7,7 @@ import Search from "../assets/searchIcon.svg";
 import PincodeModal from "./PincodeModal";
 import SearchBarDropdown from "./SearchBarDropdown";
 import { gql,useQuery,useLazyQuery } from "@apollo/client";
+import Context from "../context/AppContext";
 const PRODUCT_LIST= gql`
 query {
   getAllProducts {
@@ -86,9 +87,9 @@ const SearchBar = ({
   const [isSearchDropdown, setIsSearchDropdown] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
-
+  const {setSelectedProduct} = useContext(Context);
   const { loading, error, data: dataList } = useQuery(PRODUCT_LIST);
-
+const navigate=useNavigate()
   useEffect(() => {
     if (input) {
       const filtered = dataList?.getAllProducts?.products?.filter((product) => {
@@ -107,6 +108,13 @@ const SearchBar = ({
   const onSearchTextChange = (e) => {
     setInput(e.target.value);
   };
+
+  const handleClick=(data)=>{
+    console.log(data,'data transfer');
+    setSelectedProduct(data);
+    navigate(`/product/${data.id}`) ;
+    setInput('')
+  }
 
   return (
     <div
@@ -145,7 +153,7 @@ const SearchBar = ({
           <img src={Search} alt="search icon" className="min-h-[1.5rem] min-w-[1.5rem]" />
         </Link>
         <input
-          onBlur={() => setIsSearchDropdown(false)}
+          
           onFocus={() => setIsSearchDropdown(true)}
           type="text"
           value={input}
@@ -156,7 +164,7 @@ const SearchBar = ({
           } text-[0.875rem] placeholder:text-[#94A3B8] focus:outline-none`}
         />
         {input && isSearchDropdown && (
-          <SearchBarDropdown isHero={isHero} data={filteredProducts} />
+          <SearchBarDropdown isHero={isHero} data={filteredProducts} clickSearch={handleClick} />
         )}
       </div>
 

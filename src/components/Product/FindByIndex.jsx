@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../loader";
+import Context from "../../context/AppContext";
 const PRODUCT_LIST= gql`
 query {
   getAllProducts {
@@ -55,9 +56,13 @@ query {
 
 
 
-const FindByIndex = ({ isIllness }) => {
-  console.log('isIllness');
+const FindByIndex = () => {
+  let isIllness=false;
   const { type } = useParams();
+  if(type){
+    isIllness=true
+  }
+  const {setSelectedProduct}=useContext(Context)
   console.log(type)
   const navigate=useNavigate()
   const [isFetched, setIsFetched] = useState(false);
@@ -144,7 +149,7 @@ const FindByIndex = ({ isIllness }) => {
           {/* Heading */}
           <div className="w-full flex justify-between items-center">
             <h1 className="text-[1.25rem] font-HelveticaNeueMedium text-[#031B89]">
-              {isIllness ? "Sort By Illness" : "Find your Medicines"}
+              {isIllness ? `Sort By Illness (${type})` : "Find your Medicines"}
             </h1>
     
             {/* SortBy */}
@@ -192,113 +197,20 @@ const FindByIndex = ({ isIllness }) => {
         </div>
       ) : (
             // find by illness
-            <div className="flex gap-12">
-              <div className="flex flex-col gap-[1.25rem]">
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
-    
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
+            <div className="grid grid-cols-5 gap-4">
+            {filteredProducts.map((product, i) => (
+              <div style={{ cursor: 'pointer' }} onClick={() =>{ setSelectedProduct(product); navigate(`/product/${product.id}`)}} key={"product-" + product.id} className="flex items-center">
+                <img
+                  src={product.productImages[0]}
+                  alt={product.productName}
+                  className={isIllness ? "w-16 h-16 mr-2" : "w-24 h-24 mr-4"}
+                />
+                <h2 className={isIllness ? "text-[0.875rem] " : "text-[0.875rem] font-HelveticaNeueMedium"}>
+                  {isIllness ? product.productName : product.manufacturer}
+                </h2>
               </div>
-              <div className="flex flex-col gap-[1.25rem]">
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
-    
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
-              </div>
-              <div className="flex flex-col gap-[1.25rem]">
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
-    
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
-              </div>
-              <div className="flex flex-col gap-[1.25rem]">
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
-    
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
-              </div>
-              <div className="flex flex-col gap-[1.25rem]">
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
-    
-                <div className="flex flex-col gap-3 p-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">A</h1>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                  <h2 className="text-[0.875rem]">Brand Name</h2>
-                </div>
-              </div>
-            </div>
+            ))}
+          </div>
           )}
         </div>
          )

@@ -244,7 +244,7 @@ console.log(profilePicture,'pro')
         disabled={!!userInfo.contactNumber}
       />
           <button style={{width:'155px'}} className="xl:block hidden bg-[#7487FF] text-white font-HelveticaNeueMedium ${
-             py-2 px-4 rounded" onClick={handleSubmit} disabled={!name || !email || !phone|| disaleBtn}>Update Profile</button>
+             py-2 px-4 rounded" onClick={handleSubmit} disabled={!name || !email ||!profilePicture|| !phone|| disaleBtn}>Update Profile</button>
           <div></div>
         </div>
       </div>

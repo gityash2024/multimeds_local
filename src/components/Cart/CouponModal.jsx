@@ -4,10 +4,11 @@ import Cross from "../../assets/crossIcon.svg";
 import CouponCard from "./CouponCard";
 import Warning from "../../assets/cart/warning.svg";
 import Login from "../Login";
+import { useNavigate } from "react-router-dom";
 
 const CouponModal = ({ isSelected, handleClose, isLogin }) => {
   const [isInvalid, setIsInvalid] = useState(false);
-
+const navigate=useNavigate()
   return (
     <div className="w-screen h-screen fixed top-0 left-0 z-50 flex justify-center items-center bg-black bg-opacity-40">
       <div className="flex flex-col gap-3 border border-[#CBD5E1] w-[45.25rem] py-4 bg-white rounded-xl shadow-login">
@@ -35,6 +36,7 @@ const CouponModal = ({ isSelected, handleClose, isLogin }) => {
               />
 
               <button
+                
                 disabled={!isSelected || isInvalid}
                 className={`${
                   isSelected ? "bg-[#031B89]" : "bg-[#A5B4FC]"
@@ -53,9 +55,9 @@ const CouponModal = ({ isSelected, handleClose, isLogin }) => {
           </div>
 
           <div className="flex flex-col gap2">
-            <CouponCard />
-            <CouponCard />
-            <CouponCard isDisabled />
+            <CouponCard handleClose={handleClose} />
+            <CouponCard handleClose={handleClose} />
+            <CouponCard handleClose={handleClose} isDisabled />
           </div>
         </div>
       </div>
