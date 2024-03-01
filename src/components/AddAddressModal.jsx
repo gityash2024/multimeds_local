@@ -9,7 +9,7 @@ import ActiveHomeIcon from "../assets/newAddress/activeHomeIcon.svg";
 import WorkIcon from "../assets/newAddress/workIcon.svg";
 import ActiveWorkIcon from "../assets/newAddress/activeWorkIcon.svg";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "./loader";
 const google = window.google;

@@ -2,7 +2,7 @@ import React, { useState ,useRef} from "react";
 import { gql, useMutation } from "@apollo/client";
 import ProfilePicture from "../../assets/accountProfile.png";
 import ProfileInput from "../../components/Account/ProfileInput";
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from "../loader";
 const UPDATE_PROFILE = gql`
@@ -150,18 +150,7 @@ console.log(profilePicture,'pro')
 
   return (
     <div className="w-full flex flex-col gap-4">
-         <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+    
                 {loading && <Loader />}
 
       {/* Heading */}

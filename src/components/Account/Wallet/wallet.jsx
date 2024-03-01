@@ -1,12 +1,68 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { useQuery } from '@apollo/client';
+import gql from 'graphql-tag';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Refresh, WalletOutlined, CancelOutlined } from '@mui/icons-material';
 
+import Loader from '../../loader';
+import './wallet.css';
 
-import './wallet.css'
+const GET_WALLET_BALANCE = gql`
+  query GetWalletBalance {
+    getWalletBalance {
+      status
+      message
+      walletBalance
+    }
+  }
+`;
 
-const Wallet = (props) => {
+// Dummy transactions data for demonstration
+const dummyTransactions = [
+  { id: 1, date: '2024-03-01', amount: 100, transactionId: 'xxxxxxxxxxxxxxxxxxx  ', type: 'Deposit' },
+  { id: 2, date: '2024-02-28', amount: -50, transactionId: 'xxxxxxxxxxxxxxxxxxx', type: 'Withdrawal' },
+];
+
+const Wallet = () => {
+  const { loading: balanceLoading, error: balanceError, data: balanceData, refetch: refetchBalance } = useQuery(GET_WALLET_BALANCE);
+  const [transactionsData] = useState(dummyTransactions); // Use state with dummy data for now
+  const [loading, setLoading] = useState(false);
+  const [dateFilter, setDateFilter] = useState({ startDate: null, endDate: null });
+
+  const walletBalance = balanceData?.getWalletBalance?.walletBalance;
+  let transactions = transactionsData;
+
+  const handleRefetchBalance = async () => {
+    try {
+      setLoading(true);
+      await refetchBalance();
+      toast.success('Wallet balance updated successfully!');
+    } catch (error) {
+      toast.error('Failed to update wallet balance!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDateFilter = (startDate, endDate) => {
+    setDateFilter({ startDate, endDate });
+  };
+
+  const resetDateFilter = () => {
+    setDateFilter({ startDate: null, endDate: null });
+  };
+
+  // Apply local date range filter
+  if (dateFilter.startDate && dateFilter.endDate) {
+    transactions = transactions.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate >= dateFilter.startDate && transactionDate <= dateFilter.endDate;
+    });
+  }
+
   return (
     <div className="wallet-container">
-     
       <div className="wallet-frame424">
         <span className="wallet-text 18Medium">
           <span></span>
@@ -17,35 +73,17 @@ const Wallet = (props) => {
               <div className="wallet-money-wallet">
                 <div className="wallet-group">
                   <div className="wallet-group1">
-                    <img
-                      alt="PathI519"
-                      src="/external/pathi519-f28c.svg"
-                      className="wallet-path"
-                    />
-                    <img
-                      alt="PathI519"
-                      src="/external/pathi519-xio.svg"
-                      className="wallet-path1"
-                    />
-                    <img
-                      alt="PathI519"
-                      src="/external/pathi519-72gb.svg"
-                      className="wallet-path2"
-                    />
-                    <img
-                      alt="PathI519"
-                      src="/external/pathi519-381e.svg"
-                      className="wallet-path3"
-                    />
+                    <WalletOutlined />
                   </div>
                 </div>
               </div>
               <span className="wallet-text02 16Medium">
                 <span>Wallet Balance</span>
               </span>
+              <button onClick={handleRefetchBalance} className="refetch-balance-icon"><Refresh /></button>
             </div>
             <span className="wallet-text04 40Bold">
-              <span>Rs. 240.65</span>
+              <span>Rs. {walletBalance?.toFixed(2)}</span>
             </span>
           </div>
           <div className="wallet-frame2811">
@@ -59,108 +97,34 @@ const Wallet = (props) => {
                 <span className="wallet-text08 14Regular">
                   <span>Choose Date Range</span>
                 </span>
-                <div className="wallet-arrows-diagrams-arrow">
-                  <div className="wallet-group2">
-                    <img
-                      alt="PathI519"
-                      src="/external/pathi519-wlq.svg"
-                      className="wallet-path4"
-                    />
-                  </div>
-                </div>
+                {/* Date range selector */}
+                <input type="date" value={dateFilter.startDate ? dateFilter.startDate.toISOString().split('T')[0] : ''} onChange={(e) => handleDateFilter(new Date(e.target.value), dateFilter.endDate)} />
+                <input type="date" value={dateFilter.endDate ? dateFilter.endDate.toISOString().split('T')[0] : ''} onChange={(e) => handleDateFilter(dateFilter.startDate, new Date(e.target.value))} />
+                <button onClick={resetDateFilter}><CancelOutlined /></button>
               </div>
             </div>
             <div className="wallet-frame473">
-              <div className="wallet-frame380">
-                <span className="wallet-text10 14MediumItalic">
-                  <span>Date</span>
-                </span>
-                <span className="wallet-text12 14MediumItalic">
-                  <span>Transaction Amount</span>
-                </span>
-                <span className="wallet-text14 14MediumItalic">
-                  <span>Transaction ID</span>
-                </span>
-                <span className="wallet-text16 14MediumItalic">
-                  <span>Type</span>
-                </span>
-              </div>
-              <div className="wallet-frame381">
-                <span className="wallet-text18 14Medium">
-                  <span>13th September 2023</span>
-                </span>
-                <span className="wallet-text20 14Medium">
-                  <span>Rs 1300</span>
-                </span>
-                <span className="wallet-text22 14Medium">
-                  <span>#299120103</span>
-                </span>
-                <span className="wallet-text24 14Medium">
-                  <span>Refund : Cancelled Order</span>
-                </span>
-              </div>
-              <div className="wallet-frame382">
-                <span className="wallet-text26 14Medium">
-                  <span>13th September 2023</span>
-                </span>
-                <span className="wallet-text28 14Medium">
-                  <span>Rs 130</span>
-                </span>
-                <span className="wallet-text30 14Medium">
-                  <span>#299120103</span>
-                </span>
-                <span className="wallet-text32 14Medium">
-                  <span>Cashback</span>
-                </span>
-              </div>
-              <div className="wallet-frame385">
-                <span className="wallet-text34 14Medium">
-                  <span>13th September 2023</span>
-                </span>
-                <span className="wallet-text36 14Medium">
-                  <span>Rs 130</span>
-                </span>
-                <span className="wallet-text38 14Medium">
-                  <span>#299120103</span>
-                </span>
-                <span className="wallet-text40 14Medium">
-                  <span>Referral</span>
-                </span>
-              </div>
-              <div className="wallet-frame383">
-                <span className="wallet-text42 14Medium">
-                  <span>13th September 2023</span>
-                </span>
-                <span className="wallet-text44 14Medium">
-                  <span>Rs 130</span>
-                </span>
-                <span className="wallet-text46 14Medium">
-                  <span>#299120103</span>
-                </span>
-                <span className="wallet-text48 14Medium">
-                  <span>Money used in order</span>
-                </span>
-              </div>
-              <div className="wallet-frame384">
-                <span className="wallet-text50 14Medium">
-                  <span>13th September 2023</span>
-                </span>
-                <span className="wallet-text52 14Medium">
-                  <span>Rs 130</span>
-                </span>
-                <span className="wallet-text54 14Medium">
-                  <span>#299120103</span>
-                </span>
-                <span className="wallet-text56 14Medium">
-                  <span>Money used in order</span>
-                </span>
-              </div>
+              {transactions?.length > 0 ? (
+                transactions.map(transaction => (
+                  <div key={transaction.id} className={`wallet-frame380 ${transaction.type === 'Deposit' ? 'green' : 'red'}`}>
+                    <span className="wallet-text10 14MediumItalic">{transaction.date}</span>
+                    <span className="wallet-text12 14MediumItalic">Rs {transaction.amount}</span>
+                    <span className="wallet-text14 14MediumItalic">{transaction.transactionId}</span>
+                    <span className="wallet-text16 14MediumItalic">{transaction.type}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="wallet-frame380 no-transactions-found" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <span className="wallet-text10 14MediumItalic">No Transactions Found</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+      {loading && <Loader />}
     </div>
-  )
-}
+  );
+};
 
-export default Wallet
+export default Wallet;

@@ -36,6 +36,7 @@ root.render(
     <BrowserRouter>
       <AppContext>
         <App />
+       
       </AppContext>
     </BrowserRouter>
   </ApolloProvider>

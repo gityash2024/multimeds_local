@@ -93,7 +93,7 @@ const OrderDetails = ({
               <h1 className="text-[#64748B] text-[0.625rem] font-HelveticaNeueItalic">
                 Total No items
               </h1>
-              <h2 className="text-[0.75rem] font-medium">{stateFromSource.cartItems.length}</h2>
+              <h2 className="text-[0.75rem] font-medium">{stateFromSource?.cartItems?.length}</h2>
             </div>
           </div>
 
@@ -117,9 +117,9 @@ const OrderDetails = ({
               {/* <OrderItemCard isPrescription isOrdered />
               <OrderItemCard isPrescription isOrdered /> */}
               {
-                stateFromSource.cartItems.length>0 &&
+                stateFromSource?.cartItems.length>0 &&
                 (
-                  stateFromSource.cartItems.map((item,i)=>(
+                  stateFromSource?.cartItems.map((item,i)=>(
                     item.prescriptionRequired ?
                     (
                       <OrderItemCard isOrdered  dataObj={item} key={i} prescriptionRequired/>
@@ -144,7 +144,7 @@ const OrderDetails = ({
 
             <div className="flex flex-col gap-2">
               {
-                stateFromSource.cartItems.length>0 &&
+                stateFromSource?.cartItems.length>0 &&
                 (
                   stateFromSource.cartItems.map((item,i)=>(
                     !item.prescriptionRequired ?
@@ -170,7 +170,7 @@ const OrderDetails = ({
 
         {/* Prescription */}
         <div className="w-[26.875rem] pt-8 rounded">
-          <Coupons />
+          {/* <Coupons /> */}
 
           <PrescriptionUpload
             isUploaded={isUploaded}
@@ -178,7 +178,7 @@ const OrderDetails = ({
             isOrdered={true}
           />
 
-          <Bill totalMrp={stateFromSource.MrpCost} totalSp={stateFromSource.totalSP}/>
+          <Bill totalMrp={stateFromSource?.MrpCost} totalSp={stateFromSource?.totalSP}/>
 
           <DeliveringTo
             isAddressSelected

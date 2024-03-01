@@ -1,9 +1,21 @@
 import React from 'react'
 import './OrderStatus.css'
 import { useNavigate } from 'react-router-dom'
-
+import { useQuery, gql } from '@apollo/client';
+const GET_WALLET_BALANCE = gql`
+  query GetWalletBalance {
+    getWalletBalance {
+      status
+      message
+      walletBalance
+    }
+  }
+`;
 const OrderStatus = (props) => {
-  const navigate=useNavigate()
+  const navigate=useNavigate();
+  const { loading: balanceLoading, error: balanceError, data: balanceData, refetch: refetchBalance } = useQuery(GET_WALLET_BALANCE);
+  const walletBalance = balanceData?.getWalletBalance?.walletBalance;
+
   return (
     <div className="order-status-container">
 
@@ -588,7 +600,7 @@ const OrderStatus = (props) => {
                         <span>-Rs 34.49</span>
                       </span>
                       <span className="order-status-text148 12Regular">
-                        <span>-Rs 165.65</span>
+                        <span>-Rs {Number(walletBalance)||0}</span>
                       </span>
                     </div>
                   </div>

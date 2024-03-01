@@ -75,7 +75,7 @@ const Orders = () => {
           </div>
 
           {/* choose date */}
-          <button
+          {/* <button
             onClick={() => {
               setIsDropdown(true);
             }}
@@ -90,7 +90,7 @@ const Orders = () => {
             {isDropdown ? (
               <DateDropdown setIsDropdown={setIsDropdown} setDate={setDate} />
             ) : null}
-          </button>
+          </button> */}
         </div>
       </div>
 

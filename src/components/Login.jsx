@@ -10,7 +10,7 @@ import PrimaryButton from "./PrimaryButton";
 import Google from "../assets/login/googleLogo.svg";
 import Edit from "../assets/login/editIcon.svg";
 import Check from "../assets/login/checkIcon.svg";
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from "./loader";
 const SENDOTP = gql`
@@ -184,18 +184,7 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
 
   return (
     <div>
-    <ToastContainer
-        position="top-right"
-        autoClose={1000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+
       <div
         ref={ref}
         className="w-screen h-screen fixed top-0 left-0 z-50 flex justify-center items-center bg-black bg-opacity-40"

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../loader";
 import Context from "../../context/AppContext";
@@ -193,7 +193,6 @@ export default function ProductCard(props) {
         isCartModal ? "py-0 px-0 border-none" : " py-4"
       } w-full flex flex-col gap-4 shadow-cart-item border-[#E2E8F0] text-[#0F172A]`}
     >
-       {/* <ToastContainer /> */}
       {
         isLoading && <Loader /> 
       }

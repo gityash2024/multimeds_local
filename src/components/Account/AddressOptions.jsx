@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { gql, useMutation } from "@apollo/client";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 
 const AddressOptions = ({ isDefault,address,setLoading,setIsOptionsModal,refetch,editAddress }) => {
 

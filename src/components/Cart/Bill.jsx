@@ -1,12 +1,24 @@
 import React,{useEffect, useState} from "react";
 import { gql, useQuery,useMutation } from "@apollo/client";
 import Loader from '../loader';
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Document from "../../assets/cart/documentIcon.svg";
-
+const GET_WALLET_BALANCE = gql`
+  query GetWalletBalance {
+    getWalletBalance {
+      status
+      message
+      walletBalance
+    }
+  }
+`;
 const Coupons = (props) => {
-  const {cartListCoupon}=props;
+
+  const { loading: balanceLoading, error: balanceError, data: balanceData, refetch: refetchBalance } = useQuery(GET_WALLET_BALANCE);
+  const walletBalance = balanceData?.getWalletBalance?.walletBalance;
+  const {cartListCoupon,discountPercent}=props;
+  console.log(discountPercent)
   // console.log(cartListCoupon,'++++=++++==++++++====+++===+++===+++===+++====+++====+++===+++====++++====++===++++==++++==++++===+++==++++=+++++')
   const [cart, setCart] = useState([]);
   const [totalMrp, setTotalMrp] = useState(0);
@@ -42,18 +54,7 @@ const Coupons = (props) => {
   return (
 
     <div className="flex flex-col border-b border-dashed border-[#CBD5E1] px-3 py-6 gap-4 bg-white text-[#0F172A]">
-        {/* <ToastContainer
-          position="top-right"
-          autoClose={2000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />   */}
+      
           <div className="flex gap-1 items-center">
         <img src={Document} className="h-6 w-6" />
         <h1 className=" font-HelveticaNeueMedium">Bill Summary</h1>
@@ -79,8 +80,8 @@ const Coupons = (props) => {
             {/* <h1>-200</h1> */}
             <h1>-{totalDiscount.toFixed(2)}</h1>
             <div className="text-[#64748B] flex flex-col items-end gap-1">
-              <h2>-Rs 34.49</h2>
-              <h2>-Rs 165.65</h2>
+              <h2>-Rs {((totalSp*discountPercent)/100)||0}</h2>
+              <h2>-Rs {Number(walletBalance)||0}</h2>
             </div>
           </div>
         </div>
@@ -94,7 +95,7 @@ const Coupons = (props) => {
       {/* Total Ammount */}
       <div className=" font-HelveticaNeueMedium flex justify-between items-center">
         <h1>Total Amount:</h1>
-        <h2>Rs. {totalSp ? (((totalSp -34.49 - 165.65)>0)?(totalSp -34.49 - 165.65).toFixed(2):0):0}</h2>
+        <h2>Rs. {totalSp ? (((totalSp -(((totalSp*discountPercent)/100)||0) - (Number(walletBalance)||0))>0)?(totalSp -(((totalSp*discountPercent)/100)||0) - (Number(walletBalance)||0)).toFixed(2):0):0}</h2>
       </div>
 
       {/* COD */}

@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react'
 import { gql, useQuery } from "@apollo/client";
-import { ToastContainer,toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../components/loader";
 const Context = createContext({});
@@ -126,18 +126,7 @@ export function AppContext({children}) {
   return (
 
     <Context.Provider value={{selectedProduct, setSelectedProduct,handleRefetchCart,cartListFromContext}}>
-        <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+
       {(loader ||loading) && <Loader />}
         {children}
     </Context.Provider>

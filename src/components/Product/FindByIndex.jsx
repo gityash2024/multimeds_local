@@ -3,9 +3,8 @@ import ProductCard from "../Product/ProductCard";
 import IndexSortBy from "./IndexSortBy";
 import data from "../../data";
 import { useQuery, gql,useMutation } from "@apollo/client";
-import CartItemCard from "../Cart/CartItemCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../loader";
 import Context from "../../context/AppContext";
@@ -129,7 +128,6 @@ const FindByIndex = () => {
 
   return (
      <div>
-      {/* <ToastContainer /> */}
       {
         isLoading && <Loader /> 
       }

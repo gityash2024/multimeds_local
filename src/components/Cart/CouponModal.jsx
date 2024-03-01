@@ -24,7 +24,7 @@ const navigate=useNavigate()
 
         <div className="flex flex-col px-4 gap-3">
           <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="Enter coupon code here"
@@ -44,7 +44,7 @@ const navigate=useNavigate()
               >
                 Apply
               </button>
-            </div>
+            </div> */}
 
             {isInvalid ? (
               <div className="w-full flex gap-2 items-center text-[#DC2626] font-HelveticaNeueMedium  text-[0.75rem] p-1 rounded">

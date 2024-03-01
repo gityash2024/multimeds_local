@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { gql } from "@apollo/client";
 import Loader from '../loader';
 import  "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 
 const GET_MY_PRESCRIPTIONS = gql`
   query getMyPrescriptions {
@@ -123,7 +123,6 @@ const PrescriptionUpload = () => {
 
     return (
       <div className='flex flex-col border-b border-dashed border-[#CBD5E1] px-3 py-6 gap-4 bg-white text-[#0F172A]'>
-                  {/* <ToastContainer position="top-right" autoClose={5000} /> */}
 
       <div className='flex gap-1 items-center justify-between'>
           <div className='flex items-center gap-1'>

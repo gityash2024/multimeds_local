@@ -3,7 +3,7 @@ import whatsappIcon from "../assets/whatsapp.png";
 import telegramIcon from "../assets/telegram.png";
 import twitterIcon from "../assets/twitter.png";
 import SecondaryHighlight from "./SecondaryHighlight";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import Bookmark from "../assets/product/bookmarkIcon.svg";
 import Share from "../assets/product/shareIcon.svg";
 import Arrow from "../assets/product/arrow.svg";
@@ -15,6 +15,8 @@ import Context from "../context/AppContext";
 import Login from "./Login";
 import SubscriptionCard from "./Subscription";
 import { toast } from "react-toastify";
+import Loader from "./loader";
+import CouponModal from "./Cart/CouponModal";
 
 const ADD_TO_FAVORITE = gql`
   mutation setAsFavorite($productId: String!) {
@@ -42,10 +44,25 @@ const ADD_TO_CART = gql`
   }
 `;
 
+const GET_USER_SUBSCRIPTIONS = gql`
+  query GetUserSubscriptions {
+    getUserSubscriptions {
+      status
+      message
+      subscriptions {
+        productId
+      }
+    }
+  }
+`;
+
+
 const ProductSection = () => {
   const { selectedProduct,handleRefetchCart,cartListFromContext } = useContext(Context);
+  const { subscriptionLoading, error: subscriptionError, data:subscriptionData } = useQuery(GET_USER_SUBSCRIPTIONS);
+console.log(subscriptionData)
   const [cartList] = useState(cartListFromContext||[]);
-
+  const[isOpen,setIsopne]=useState(false)
   const currentUrl = encodeURIComponent(window.location.href);
   const whatsappShareUrl = `https://wa.me/?text=${currentUrl}`;
   const telegramShareUrl = `https://t.me/share/url?url=${currentUrl}`;
@@ -60,7 +77,7 @@ console.log(selectedProduct,'selectedProduct')
   const [quantity, setQuantity] = useState(Number(0));
   const [isLogin, setIsLogin] = useState(true);
   const [productInCart, setProductAlreadyInCart] = useState(false);
-
+const[selectedAddress,setSelectedAddress]=useState({})
   const [setAsFavorite] = useMutation(
     ADD_TO_FAVORITE,
     {
@@ -105,8 +122,10 @@ console.log(selectedProduct,'selectedProduct')
   });
 
 
-const handleAddressSelect=()=>{
-  console.log("address selected")
+const handleAddressSelect=(data)=>{
+  console.log("address selected",data)
+  setSelectedAddress(data);
+  setIsAddressModal(false)
 }
 
   useEffect(() => {
@@ -195,6 +214,9 @@ const handleAddressSelect=()=>{
     }else{
       toast.info("Please select a valid quantity")
     }
+  }
+  const handleClose=()=>{
+    setIsopne(false);
   }
 
   return (
@@ -309,8 +331,10 @@ const handleAddressSelect=()=>{
               </div>
 
               <div className="flex gap-2">
-                <SecondaryHighlight title="Pain relief" />
-                <SecondaryHighlight title="Ibuprofen" />
+                {selectedProduct?.tags[0]&&<SecondaryHighlight title={selectedProduct?.tags[0]} />}
+                {selectedProduct?.tags[1]&&<SecondaryHighlight title={selectedProduct?.tags[1]} />}
+                {selectedProduct?.tags[2]&&<SecondaryHighlight title={selectedProduct?.tags[2]} />}
+               {selectedProduct?.tags[3]&& <SecondaryHighlight title={selectedProduct?.tags[3]} />}
               </div>
 
               <p className="text-[0.75rem] font-HelveticaNeueMedium">
@@ -341,12 +365,11 @@ const handleAddressSelect=()=>{
                 <div className="w-[7.188rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
                     Composition <br />
-                    --
+                    {selectedProduct?.composition||'--'}
                   </h1>
                   <div>
                     <div className="w-fit border-b border-[#0F172A]">
                       <h2 className="cursor-pointer text-[0.875rem] max-w-[160px] font-HelveticaNeueMedium text-[#0F172A] truncate hover:text-clip">
-                        {selectedProduct["Composition"]}
                       </h2>
                     </div>
                   </div>
@@ -357,12 +380,13 @@ const handleAddressSelect=()=>{
                 <div className="w-[7.188rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
                     Storage <br />
-                    {selectedProduct.safetyinformation?.split(",")[0]}
+                    {selectedProduct?.safetyInformation}
+
                   </h1>
                   <div>
                     <div className="w-fit">
                       <h2 className="text-[0.875rem] font-HelveticaNeueMedium text-[#0F172A]">
-                        {selectedProduct["Storage Instructions"]}
+                        {/* {selectedProduct?.safetyInformation} */}
                       </h2>
                     </div>
                   </div>
@@ -384,7 +408,7 @@ const handleAddressSelect=()=>{
             </div>
 
             {/* Generic Substitutes */}
-            <div className="flex bg-[#EFF6FF] p-2 gap-2">
+            {/* <div className="flex bg-[#EFF6FF] p-2 gap-2">
               <div className="flex flex-col w-[16rem] gap-2">
                 <h1 className="font-HelveticaNeueMedium">
                   Opt for generic substitutes!
@@ -395,10 +419,9 @@ const handleAddressSelect=()=>{
                 </p>
               </div>
               <Link>
-                  {/* eslint-disable-next-line */}
                 <img src={Arrow} className="w-6 h-6" />
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -448,7 +471,7 @@ const handleAddressSelect=()=>{
                   <div className="flex justify-between text-[0.875rem] font-HelveticaNeueMedium">
                     <h1 className="text-[#64748B]">
                       Delivering to:{" "}
-                      <span className="text-[#0F172A]">560023</span>
+                      <span className="text-[#0F172A]">{selectedAddress?.pincode||'xxxxxx'}</span>
                     </h1>
                     <button
                       onClick={() => {
@@ -519,15 +542,17 @@ const handleAddressSelect=()=>{
 
             <div className="flex flex-col gap-2">
               <OfferCoupon />
-              <Link className="text-[0.875rem] font-HelveticaNeueMedium text-[#7487FF]">
+              <Link onClick={()=>{setIsopne(true)}}className="text-[0.875rem] font-HelveticaNeueMedium text-[#7487FF]">
                 Explore more offers
               </Link>
             </div>
           </div>
+          {isOpen && <CouponModal handleClose={handleClose}/>}
 
           {!isLogin ? (
             <Login isLogin={isLogin} setIsLogin={setIsLogin} />
           ) : null}
+          {subscriptionLoading && <Loader/> }
         </div>
       </div>
     </div>

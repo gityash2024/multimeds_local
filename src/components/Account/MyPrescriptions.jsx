@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Prescription from "./Prescription";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import Loader from "../loader";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "../modal";
@@ -168,18 +168,7 @@ useEffect(()=>{
 
   return (
     <div className="flex flex-col gap-4">
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+    
       {(loadingg || loading) && <Loader />}
       <div className="w-full flex justify-between items-center">
         <h1 className="text-[1.125rem] font-HelveticaNeueMedium text-[#0F172A]">

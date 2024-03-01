@@ -46,6 +46,9 @@ import NotFound from "./components/404/404";
 import OfferCoupon from "./components/OfferCoupon";
 import Coupons from "./components/Cart/Bill";
 import CouponModal from "./components/Cart/CouponModal";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import VerifyingPrescription from "./components/verifying-prescription/verifying-prescription";
 const ProtectedRoute = ({ children }) => {
   const isUserLoggedIn = localStorage.getItem("userInfo");
 
@@ -284,6 +287,14 @@ function App() {
           }
         />
         <Route
+          path="verifying-prescription"
+          element={
+            <ProtectedRoute>
+              <VerifyingPrescription />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="refferal-login"
           element={
               <RefferaLogin />
@@ -310,6 +321,8 @@ function App() {
 
 
       <Footer />
+      <ToastContainer 
+          position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover/>
     </div>
   );
 }

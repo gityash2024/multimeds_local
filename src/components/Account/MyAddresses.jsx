@@ -1,7 +1,7 @@
 import React, { useState,useEffect ,useRef} from "react";
 import Address from "./Address";
 import AddAddressModal from "../AddAddressModal";
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import Loader from "../loader";
 import 'react-toastify/dist/ReactToastify.css';
 import { gql, useQuery } from "@apollo/client";
@@ -47,18 +47,6 @@ if(editAddress){
 
   return (
     <div className="flex flex-col gap-4">
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
 
       {/* header */}
       <div className="w-full flex justify-between items-center">

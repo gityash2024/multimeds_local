@@ -61,7 +61,8 @@ const CompareProductsCard = ({
           ADD TO CART
         </button>
         <div className="py-2 px-[0.688rem] text-[#7487FF] rounded">
-          <div onClick={gotoProduct} className="cursor-pointer">Go to product</div>
+          <div  className="cursor-pointer">Go to product</div>
+          {/* <div onClick={gotoProduct} className="cursor-pointer">Go to product</div> */}
         </div>
       </div>
     </div>
