@@ -538,7 +538,7 @@ const handleAddressSelect=(data)=>{
               </div>
             </div>
 
-            <SubscriptionCard />
+            <SubscriptionCard  />
 
             <div className="flex flex-col gap-2">
               <OfferCoupon />

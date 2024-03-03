@@ -6,8 +6,15 @@ import Context from '../context/AppContext';
 
 // Define your GraphQL mutations and queries here
 const CREATE_SUBSCRIPTION_MUTATION = gql`
-  mutation CreateSubscription($input: SubscriptionInput!) {
-    createSubscription(input: $input) {
+  mutation createSubscription( $productId: ID!
+    $addressId: ID!
+    $deliveryInDays: String!
+  ) {
+    createSubscription(input:{
+      productId: $productId
+      addressId: $addressId
+      deliveryInDays: $deliveryInDays
+    }) {
       status
       message
     }
@@ -33,22 +40,6 @@ const GET_MY_ADDRESSES = gql`
   }
 `;
 
-const GET_USER_SUBSCRIPTIONS_QUERY = gql`
-  query GetUserSubscriptions {
-    getUserSubscriptions {
-      status
-      message
-      subscriptions {
-        id
-        productId
-        addressId
-        deliveryInDays
-        status
-        userId
-      }
-    }
-  }
-`;
 
 const EDIT_SUBSCRIPTION_MUTATION = gql`
   mutation EditSubscription($input: SubscriptionInput!) {
@@ -81,7 +72,7 @@ const SubscriptionOption = ({ description, originalPrice, discountedPrice, disco
   </div>
 );
 
-const SubscriptionCard = ({ handleRefetch }) => {
+const SubscriptionCard = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -110,18 +101,15 @@ const SubscriptionCard = ({ handleRefetch }) => {
       try {
         const { data } = await createSubscription({
           variables: {
-            input: {
-              productId: selectedProduct.id,
-              addressId: selectedAddressId,
-              deliveryInDays: selectedOption === "Monthly - every 30 days" ? "30" : "90", // Assuming different delivery days based on subscription option
-            },
-          },
+            productId: selectedProduct.id,
+            addressId: selectedAddressId,
+            deliveryInDays: selectedOption === "Monthly - every 30 days" ? "30" : "90"
+          }
         });
-        if (data?.createSubscription?.status === 'success') {
+        if (data?.createSubscription?.status === 'SUCCESS') {
           toast.success("Subscription successful!");
-          handleRefetch();
         } else {
-          throw new Error(data?.createSubscription?.message || 'Failed to subscribe');
+          throw new Error( 'Failed to subscribe');
         }
       } catch (error) {
         toast.error(error.message || 'Failed to subscribe. Please try again.');
@@ -132,11 +120,12 @@ const SubscriptionCard = ({ handleRefetch }) => {
       toast.error("Please select a subscription option and an address before subscribing.");
     }
   };
-
+  
   return (
     <div className="w-[615px] h-[261px] px-3 py-5 bg-white rounded shadow border border-slate-100 flex-col justify-center items-start gap-3 inline-flex">
-      <div className="self-stretch h-[23px] flex-col justify-center items-start gap-1 flex">
+      <div className="self-stretch h-[23px] flex-col justify-center  items-start gap-1 flex">
         <div className="w-[501px] h-[23px] text-slate-900 text-lg font-medium font-['Helvetica Neue'] leading-snug">Subscribe and Save :</div>
+        {/* <div  className="w-[501px]  h-[23px] text-slate-500 text-sm font-normal font-['Helvetica Neue'] leading-tight">Manage Subscriptions</div> */}
       </div>
       {subscriptionOptions.map((option, index) => (
         <SubscriptionOption

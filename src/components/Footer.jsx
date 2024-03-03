@@ -46,19 +46,19 @@ const Footer = () => {
         <div className="flex flex-col gap-4">
           <h1 className="font-HelveticaNeueMedium">Multimeds pharma</h1>
           <ul className="flex flex-col text-[0.875rem] gap-1">
-            <Link to="#">
+            <Link  to="/products">
               <li>Medicines</li>
             </Link>
-            <Link to="#">
+            <Link  to="/products">
               <li>Devices</li>
             </Link>
-            <Link to="#">
+            <Link  to="/products">
               <li>Sort by Condition</li>
             </Link>
-            <Link to="#">
+            <Link  to="/products">
               <li>Essentials</li>
             </Link>
-            <Link to="#">
+            <Link  to="/products">
               <li>Over the Counter</li>
             </Link>
           </ul>

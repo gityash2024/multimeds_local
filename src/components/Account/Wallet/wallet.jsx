@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { toast } from 'react-toastify';
@@ -17,18 +17,36 @@ const GET_WALLET_BALANCE = gql`
     }
   }
 `;
+const GET_TRANSACTIONS = gql`
+query{getTransactionHistory{
+  status
+  message
+  transactions{
+    id
+    amount
+    paymentMethod
+    status
+    createdAt
+    updatedAt
+    
+  }
+}}
+`;
 
-// Dummy transactions data for demonstration
-const dummyTransactions = [
-  { id: 1, date: '2024-03-01', amount: 100, transactionId: 'xxxxxxxxxxxxxxxxxxx  ', type: 'Deposit' },
-  { id: 2, date: '2024-02-28', amount: -50, transactionId: 'xxxxxxxxxxxxxxxxxxx', type: 'Withdrawal' },
-];
 
 const Wallet = () => {
   const { loading: balanceLoading, error: balanceError, data: balanceData, refetch: refetchBalance } = useQuery(GET_WALLET_BALANCE);
-  const [transactionsData] = useState(dummyTransactions); // Use state with dummy data for now
+  const [transactionsData,setTransactionsData] = useState([]); // Use state with dummy data for now
   const [loading, setLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState({ startDate: null, endDate: null });
+
+  const { loading: transactionsLoading, error: transactionsError, data: transactionData, refetch: refetchTransactions } = useQuery(GET_TRANSACTIONS);
+
+  useEffect(() => {
+    if (transactionData) {
+      setTransactionsData(transactionData.getTransactionHistory.transactions);
+    }
+  }, [transactionData]);
 
   const walletBalance = balanceData?.getWalletBalance?.walletBalance;
   let transactions = transactionsData;
@@ -37,6 +55,7 @@ const Wallet = () => {
     try {
       setLoading(true);
       await refetchBalance();
+      await refetchTransactions();
       toast.success('Wallet balance updated successfully!');
     } catch (error) {
       toast.error('Failed to update wallet balance!');
@@ -65,7 +84,7 @@ const Wallet = () => {
     <div className="wallet-container">
       <div className="wallet-frame424">
         <span className="wallet-text 18Medium">
-          <span></span>
+          <span style={{fontWeight: 'bold'}}>Wallet</span>
         </span>
         <div className="wallet-frame467">
           <div className="wallet-frame281">
@@ -90,7 +109,7 @@ const Wallet = () => {
             <div className="wallet-frame295">
               <div className="wallet-frame278">
                 <span className="wallet-text06 16Medium">
-                  <span>Transaction History</span>
+                  <span style={{fontWeight: 'bold'}}>Transaction History</span>
                 </span>
               </div>
               <div className="wallet-frame276">
@@ -103,14 +122,15 @@ const Wallet = () => {
                 <button onClick={resetDateFilter}><CancelOutlined /></button>
               </div>
             </div>
+
             <div className="wallet-frame473">
               {transactions?.length > 0 ? (
                 transactions.map(transaction => (
-                  <div key={transaction.id} className={`wallet-frame380 ${transaction.type === 'Deposit' ? 'green' : 'red'}`}>
-                    <span className="wallet-text10 14MediumItalic">{transaction.date}</span>
+                  <div key={transaction.id} className={`wallet-frame380 ${transaction.paymentMethod === 'Deposit' ? 'green' : 'red'}`}>
+                    <span className="wallet-text10 14MediumItalic">{transaction.createdAt}</span>
                     <span className="wallet-text12 14MediumItalic">Rs {transaction.amount}</span>
-                    <span className="wallet-text14 14MediumItalic">{transaction.transactionId}</span>
-                    <span className="wallet-text16 14MediumItalic">{transaction.type}</span>
+                    <span className="wallet-text14 14MediumItalic">{transaction.id}</span>
+                    <span className="wallet-text16 14MediumItalic">{transaction.paymentMethod}</span>
                   </div>
                 ))
               ) : (
@@ -119,6 +139,7 @@ const Wallet = () => {
                 </div>
               )}
             </div>
+
           </div>
         </div>
       </div>

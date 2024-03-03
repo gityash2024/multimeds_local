@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { toast } from 'react-toastify';
 import Loader from '../../loader';
@@ -24,7 +24,7 @@ const GET_USER_SUBSCRIPTIONS = gql`
 
 const CANCEL_SUBSCRIPTION = gql`
   mutation CancelSubscription($subscriptionId: ID!) {
-    cancelSubscription(input: { subscriptionId: $subscriptionId }) {
+    cancelSubscription(input: $subscriptionId ) {
       status
       message
     }
@@ -33,6 +33,11 @@ const CANCEL_SUBSCRIPTION = gql`
 
 const Subscription = (props) => {
   const { loading, error, data, refetch } = useQuery(GET_USER_SUBSCRIPTIONS);
+  useEffect(()=>{
+    refetch();
+    console.log(data,'+==========+++++===++++====+++===+++===++===++++===++==')
+  },[])
+
   const [cancelSubscription] = useMutation(CANCEL_SUBSCRIPTION);
   const [loadingCancel, setLoadingCancel] = useState(false);
 
@@ -43,11 +48,11 @@ const Subscription = (props) => {
         variables: { subscriptionId },
       });
       setLoadingCancel(false);
-      toast.success(data?.cancelSubscription?.message);
+      toast.success('Subscription cancelled successfully');
       refetch();
     } catch (error) {
       setLoadingCancel(false);
-      toast.error(error.message);
+      toast.error('Error : ' + error?.message);
     }
   };
 
@@ -65,6 +70,7 @@ const Subscription = (props) => {
       </div>
     );
   }
+
 
   return (
     <div className="subscription-container">
@@ -187,7 +193,7 @@ const Subscription = (props) => {
                 </span>
               </div>
               <span className="subscription-text30 14Medium">
-                <span>Change</span>
+                {/* <span>Change</span> */}
               </span>
             </div>
           </div>

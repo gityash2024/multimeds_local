@@ -72,14 +72,10 @@ const FindByIndex = () => {
   const [isPrescriptionRequired, setIsPrescriptionRequired] = useState(null);
   const { loadingProduct, errorproduct, data:dataListProduct } = useQuery(PRODUCT_LIST,{
     onCompleted: (data) => {
-      let products = data?.getAllProducts?.products;
-      if(type){
-        setProductList(products?.filter((product) => product.concerns[0] === type));
-        setFilteredProducts(products?.filter((product) => product.concerns[0] === type));
-      }else{
+   
         setProductList(data?.getAllProducts?.products);
         setFilteredProducts(data?.getAllProducts?.products); 
-      }
+      
         setIsFetched(true);
         setIsLoading(false)
     },
@@ -110,7 +106,12 @@ const FindByIndex = () => {
 
     // Filter by letter if not 'All'
     if (letter !== 'All') {
-      filtered = filtered.filter((product) => product.productName.toUpperCase().startsWith(letter));
+      if(isIllness){
+        filtered = filtered.filter((product) => product.concerns[0].toUpperCase().startsWith(letter));
+      }else{
+
+        filtered = filtered.filter((product) => product.productName.toUpperCase().startsWith(letter));
+      }
     }
 
     setFilteredProducts(filtered);
@@ -147,7 +148,7 @@ const FindByIndex = () => {
           {/* Heading */}
           <div className="w-full flex justify-between items-center">
             <h1 className="text-[1.25rem] font-HelveticaNeueMedium text-[#031B89]">
-              {isIllness ? `Sort By Illness (${type})` : "Find your Medicines"}
+              {isIllness ? `Sort By Illness` : "Find your Medicines"}
             </h1>
     
             {/* SortBy */}
@@ -199,12 +200,12 @@ const FindByIndex = () => {
             {filteredProducts.map((product, i) => (
               <div style={{ cursor: 'pointer' }} onClick={() =>{ setSelectedProduct(product); navigate(`/product/${product.id}`)}} key={"product-" + product.id} className="flex items-center">
                 <img
-                  src={product.productImages[0]}
-                  alt={product.productName}
+                  src={product?.productImages[0]}
+                  alt={product?.productName}
                   className={isIllness ? "w-16 h-16 mr-2" : "w-24 h-24 mr-4"}
                 />
                 <h2 className={isIllness ? "text-[0.875rem] " : "text-[0.875rem] font-HelveticaNeueMedium"}>
-                  {isIllness ? product.productName : product.manufacturer}
+                  {isIllness ? product?.productName : product?.manufacturer}
                 </h2>
               </div>
             ))}
@@ -216,6 +217,7 @@ const FindByIndex = () => {
            <div></div>
          )
        }
+       {!filteredProducts.length && <div className="w-full mb-4 flex justify-center items-center gap-2 font-HelveticaNeueMedium text-[#94A3B8] text-[0.875rem]">No products found</div>}
      </div>
   );
 };
