@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
     if (userInfoString) {
       const userInfo = JSON.parse(userInfoString);
       console.log("userInfo", userInfo);
-      return !!userInfo.id; // Check if "id" field exists and is truthy
+      return !!userInfo?.id; // Check if "id" field exists and is truthy
     }
     return false; // Default to not logged in if no userinfo is found
   });

@@ -24,11 +24,11 @@ const MyProfile = (key) => {
   const fileInputRef = useRef();
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
-  const [name, setName] = useState(userInfo.fullName || "");
+  const [name, setName] = useState(userInfo?.fullName || "");
   const [disaleBtn, setBtnDisable] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState(userInfo.email || "");
-  const [phone, setPhone] = useState(userInfo.contactNumber || "");
+  const [email, setEmail] = useState(userInfo?.email || "");
+  const [phone, setPhone] = useState(userInfo?.contactNumber || "");
   const [profilePicture, setProfilePicture] = useState(userInfo?.profilePicture);
   const [publicUrl, setProfilePictureUri] = useState(userInfo?.profilePicture);
   const [errors, setErrors] = useState({});

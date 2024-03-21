@@ -184,7 +184,7 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
         setUserDetails(res.data.verifyOTP.token);
         localStorage.setItem(
           "userInfo",
-          JSON.stringify(res.data.verifyOTP.userDetails)
+          JSON.stringify(res.data.verifyOTP.user)
         );
         navigate("/refferal-login");
       } else {

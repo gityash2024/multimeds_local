@@ -12,7 +12,7 @@ const AddressCard = ({ onAddressSelect, isSelected, item }) => {
       <div className="flex text-[0.75rem] font-HelveticaNeueMedium gap-1">
         <p>{item.label}</p>
         <p>|</p>
-        <p>{data.name || 'xxxx..xx'} ({data.contactNumber})</p>
+        <p>{data?.name || 'xxxx..xx'} ({data?.contactNumber})</p>
       </div>
       <p className="text-[0.75rem] text-left">
         {item?.houseNumber}, {item?.aptOrBuildingName}, {item?.streetOrAreaName}, {item?.city} ({item?.state}) {item?.pincode}
