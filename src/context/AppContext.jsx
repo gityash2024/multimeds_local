@@ -109,6 +109,9 @@ export function AppContext({children}) {
 
     const [selectedProduct, setSelectedProduct] = useState(JSON.parse(localStorage.getItem('selectedProduct'))||{});
     const [cartListFromContext,setCartList]=useState();
+    const[useWallet,setUseWallet]=useState(false);
+    const [isLoggedIn, setUserLoggedIn] = useState(false);
+    const[userWalletDebit,setAmountDebitedFromWallet]=useState(0);
     const [loader,setLoading]=useState(false);
     const { loading, data: cartData, refetch: refetchCart } = useQuery(CART_LIST, { fetchPolicy: "network-only" });
     const showLoader = () => setLoading(true);
@@ -146,7 +149,7 @@ export function AppContext({children}) {
       
   return (
 
-    <Context.Provider value={{selectedProduct, setSelectedProduct,handleRefetchCart,cartListFromContext}}>
+    <Context.Provider value={{selectedProduct, setCartList,setSelectedProduct,handleRefetchCart,cartListFromContext,useWallet,setUseWallet,userWalletDebit,setAmountDebitedFromWallet,setUserLoggedIn,isLoggedIn}}>
 
       {(loader ||loading) && <Loader />}
         {children}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
 
@@ -19,6 +19,7 @@ import "react-phone-number-input/style.css";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import Loader from "./loader";
+import Context from "../context/AppContext";
 
 const SENDOTP = gql`
   mutation sendOTP($input: OTPInput!) {
@@ -168,6 +169,7 @@ const CHECK_USER = gql`
 const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
   const loginRef = useRef();
   const navigate = useNavigate();
+  const {setUserLoggedIn,setCartList}=useContext(Context)
   const [errorMessage, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isReferralWindow, setIsReferralWindow] = useState(false);
@@ -288,12 +290,20 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
 
       if (res.data.verifyOTP.status === "SUCCESS") {
         localStorage.setItem("token", res.data.verifyOTP.token);
+        localStorage.setItem('shouldShowBanner', 'true');
+
         setUserDetails(res.data.verifyOTP.token);
         localStorage.setItem(
           "userInfo",
           JSON.stringify(res.data.verifyOTP.user)
         );
         localStorage.setItem("isLoggedInNow", true);
+        setReferralCode("");
+        setOtp("");
+        setIsReferralWindow(false);
+        setIsLogin(false);
+        setUserLoggedIn(true);
+        setCartList([]);
         navigate("/");
       } else {
         toast.error(`OTP not verified!`);
@@ -370,11 +380,11 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
 
   const CheckUser = async (e) => {
  
-    e.preventDefault();
+    e?.preventDefault();
     const userCheckInput =
-      loginMethod === "email"
-        ? { email: inputValue }
-        : { phoneNumber: phoneNumber };
+    googleLogin
+        ? { email: googleResponse?.email }
+        : { contactNumber: phoneNumber };
 
     checkUser({
       variables: { input: userCheckInput },
@@ -432,6 +442,15 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
           JSON.stringify(response.data.googleSignIn.user)
         );
         localStorage.setItem("isLoggedInNow", true);
+        localStorage.setItem('shouldShowBanner', 'true');
+        setGoogleLogin(false);
+        
+        setReferralCode("");
+        setOtp("");
+        setIsReferralWindow(false);
+        setIsLogin(false);
+        setUserLoggedIn(true);
+        setCartList([]);
         navigate("/");
       } else {
         toast.error(response.data.googleSignIn.message);

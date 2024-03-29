@@ -23,7 +23,7 @@ const GET_WALLET_BALANCE = gql`
 `;
 
 const CREATE_PAYMENT_INTENT = gql`
-  mutation CreatePaymentIntent($input: CreatePaymentIntentsInput!) {
+  mutation createPaymentIntents($input: CreatePaymentIntentsInput!) {
     createPaymentIntents(input: $input) {
       orderId
       status
@@ -58,7 +58,7 @@ const CartItems = ({
 }) => {
   const { loading: balanceLoading, error: balanceError, data: balanceData, refetch: refetchBalance } = useQuery(GET_WALLET_BALANCE);
   const walletBalance = balanceData?.getWalletBalance?.walletBalance;
-  const {handleRefetchCart,cartListFromContext} = useContext(Context);
+  const {handleRefetchCart,cartListFromContext,userWalletDebit,useWallet} = useContext(Context);
   const [cart, setCart] = useState(cartListFromContext||[]);
   const navigate=useNavigate()
   const [itemsNeedingPrescription, setItemsNeedingPrescription] = useState([]);
@@ -67,21 +67,11 @@ const CartItems = ({
   const [totalMrp, setTotalMrp] = useState(0);
   const [totalSp, setTotalSp] = useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
+  const [finalPrice, setFinalPrice] = useState(0);
+  const[appliedCoupon,setAppliedCoupon]=useState(null)
+  const [showModal, setShowModal] = useState(false);
 
-  useEffect(()=>{
-    let mrp = 0;
-        let sp = 0;
-        let discount = 0;
-        cart?.forEach(item => {
-          mrp += item?.product?.maxRetailPrice * item?.quantity;
-          sp += item?.product?.sp * item?.quantity;
-          discount += (item?.product?.maxRetailPrice - item?.product?.sp) * item?.quantity;
-        });
-        setTotalMrp(mrp);
-        setTotalSp(sp);
-        setTotalDiscount(discount);
 
-  },[cart])
 
 
   const handleRefetch = async () => {
@@ -169,11 +159,47 @@ const [clearCart] = useMutation(CLEAR_CART, {
     }
   }
 });
+const calculateCartTotals = () => {
+  let mrp = 0;
+  let discount = 0;
+  cart?.forEach(item => {
+    const quantity = item?.quantity || 0;
+    mrp += item?.product?.stocks?.[0]?.mrpPerSheet * quantity;
+    discount += (item?.product?.stocks?.[0]?.mrpPerSheet * quantity) * (item?.product?.coupon?.percentage / 100);
+  });
+
+  
+  const couponDiscount = Number(mrp) * (Number(appliedCoupon?.percentage||0)/ 100);
+  console.log(appliedCoupon?.percentage,'couponDiscount')
+  discount += couponDiscount;
+  
+  let walletAmountToUse = Number(userWalletDebit);
+  console.log(mrp, discount, walletAmountToUse)
+  const finalAmount = mrp - discount - walletAmountToUse;
+
+  setTotalMrp(mrp);
+  setTotalDiscount(discount);
+  setFinalPrice(finalAmount);
+};
 
 
+useEffect(() => {
+  calculateCartTotals();
+}, [cart, appliedCoupon,useWallet , userWalletDebit, walletBalance]);
 
 
 async function displayRazorpay() {
+  console.log(finalPrice);
+  
+  if (finalPrice <= 0) {
+    navigate("/verifying-prescription");
+    setTimeout(() => {
+      navigate("/transaction/success");
+    }, 10000);
+    localStorage.removeItem("useWalletForPayment")
+    localStorage.removeItem("amountDebitedFromWallet")
+    return;
+  }
   setLoading(true);
   const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
 
@@ -183,14 +209,12 @@ async function displayRazorpay() {
     return;
   }
 
-  const amount = Number((totalSp ? (((totalSp - (((totalSp*appliedCoupon?.discountPercent)/100)||0) - (Number(walletBalance)||0)) > 0) ? (totalSp - ((totalSp*appliedCoupon?.discountPercent)/100||0) - (Number(walletBalance)||0)).toFixed(2) : 0) : 0) * 100);
-  const currency = "INR";
 
   createPayment({
     variables: {
       input: {
-        amount,
-        currency
+        'amount':parseInt(finalPrice),
+        'currency':"INR"
       }
     }
   }).then((response) => {
@@ -203,8 +227,8 @@ async function displayRazorpay() {
 
     const options = {
       key: "rzp_test_FELPeq7HeVvV2w",
-      amount: amount.toString(),
-      currency: currency,
+      amount: (finalPrice*100)?.toString(),
+      currency: 'INR',
       name: "Multimeds",
       description: "Test Transaction",
       order_id: orderId,
@@ -238,6 +262,9 @@ async function displayRazorpay() {
           console.error('Error verifying payment signature:', error);
           setLoading(false);
           navigate("/transaction/fail");
+        }).finally(() => {
+          localStorage.removeItem("useWalletForPayment")
+          localStorage.removeItem("amountDebitedFromWallet")
         });
       },
       prefill: {
@@ -278,28 +305,13 @@ async function displayRazorpay() {
       document.body.appendChild(script);
     });
   }
-  const [showModal, setShowModal] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
 
   // Dummy coupon data for demonstration
-  const coupons = [
-    {
-      code: "WELCOME30",
-      description: "Get 30% discount on all medicines above Rs 499*.",
-      discountPercent: 30,
-      terms: [
-        "Get up to 10% off (no limit) + extra 15% coupon discount (up to ₹320) on your first allopathy medicine order of ₹999 & above.",
-        "Get up to 10% off (no limit) + extra 5% coupon discount (up to ₹300) on your first allopathy medicine order of ₹499 & above.",
-        "The offers cannot be redeemed for cash or clubbed with any other offer or promotion.",
-        "In case of any further query pertaining to the use of vouchers or regarding the sale/offers, please email our customer care at care@1mg.com.",
-        "Tata 1mg reserves its absolute right at any time to add, alter, withdraw, modify or change or vary any or all the terms and conditions of the offer at its sole discretion and the same shall be binding on the customer at all times."
-      ]
-    }
-    // Add more dummy coupons as needed
-  ];
+
 
   const handleApplyCoupon = (coupon) => {
     // Apply coupon logic here
+    
     console.log("Applying coupon:", coupon.code);
     setAppliedCoupon(coupon);
     setShowModal(false);
@@ -322,14 +334,14 @@ async function displayRazorpay() {
     <div className="flex justify-center py-12 px-[6.25rem] gap-[1.25rem]">
       {/* Items */}
       <div className="flex flex-col w-[49.375rem] gap-4">
-        {!isPrescriptionApproved && (
+        {/* {!isPrescriptionApproved && (
           <div className="w-full flex gap-2 bg-[#FEF2F2] text-[#DC2626] font-HelveticaNeueMedium text-[0.875rem] p-1 rounded">
             <img src={Warning} alt="warning" />
             <h1>
               Your prescription was not approved. Please re-upload your prescription.
             </h1>
           </div>
-        )}
+        )} */}
   
         {itemsNeedingPrescription.length > 0 && (
           <div className="flex flex-col pb-8 gap-4 border-b border-[#E2E8F0]">
@@ -363,11 +375,11 @@ async function displayRazorpay() {
         {appliedCoupon ? `Remove ${appliedCoupon.code}` : "Apply Promo Code"}
       </button>
    {showModal && (
-            <CouponsModal coupons={coupons} applyCoupon={handleApplyCoupon} closeModal={toggleModal} />
+            <CouponsModal  applyCoupon={handleApplyCoupon} closeModal={toggleModal} />
           )}  
         <PrescriptionUpload />
   
-        <Bill cartListCoupon={cart} discountPercent={appliedCoupon?.discountPercent} />
+        <Bill cartListCoupon={cart} discountPercent={appliedCoupon?.percentage} />
   
         <DeliveringTo isAddressSelected isAddressInvalid={true} />
   
@@ -380,12 +392,12 @@ async function displayRazorpay() {
             {showModal ? "LOADING..." : "PROCEED"}
           </button>
           
-          {!appliedCoupon && (
+          {/* {!appliedCoupon && (
             <div className="w-full flex gap-1 bg-[#FEF2F2] text-[#DC2626] font-HelveticaNeueMedium text-[0.875rem] p-1 rounded">
               <img src={Warning} alt="warning" />
               <h1>You cannot proceed without uploading a prescription.</h1>
             </div>
-          )}
+          )} */}
         </div>
       </div>
   

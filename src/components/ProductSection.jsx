@@ -463,7 +463,7 @@ const handleAddressSelect=(data)=>{
                       <h2 className="cursor-pointer text-[0.75rem] font-HelveticaNeueMedium text-[#0F172A]">
                       <span style={{fontWeight:'bold'}}>Manufacturer</span>  <br />
 
-                        {selectedProduct?.stocks[0].manufacturer}
+                        {selectedProduct?.stocks?.[0].manufacturer}
                       </h2>
                     </div>
                   </div>
@@ -540,11 +540,11 @@ const handleAddressSelect=(data)=>{
             <div>
                 <div className="flex justify-between items-center">
                   <h1 className="font-HelveticaNeueMedium text-[#031B89]">
-                    MRP : Rs {selectedProduct.stocks[0]?.mrpPerSheet-(selectedProduct.stocks[0]?.mrpPerSheet*selectedProduct?.coupon?.percentage/100)}
+                    MRP : Rs {selectedProduct.stocks?.[0]?.mrpPerSheet-(selectedProduct.stocks?.[0]?.mrpPerSheet*selectedProduct?.coupon?.percentage/100)}
                   </h1>
                   <p className="text-[0.75rem] text-[#94A3B8] pl-1">
                     <span className="line-through">
-                      {selectedProduct.stocks[0]?.mrpPerSheet} Rs
+                      {selectedProduct.stocks?.[0]?.mrpPerSheet} Rs
                     </span>
                   </p>
                 </div>
@@ -553,11 +553,11 @@ const handleAddressSelect=(data)=>{
 
                 <div className="flex justify-between items-center">
                   <h1 className="font-HelveticaNeueMedium text-[#031B89]">
-                    TOTAL : Rs {quantity * (selectedProduct.stocks[0]?.mrpPerSheet-(selectedProduct.stocks[0]?.mrpPerSheet*selectedProduct?.coupon?.percentage/100))||0}
+                    TOTAL : Rs {quantity * (selectedProduct.stocks?.[0]?.mrpPerSheet-(selectedProduct.stocks?.[0]?.mrpPerSheet*selectedProduct?.coupon?.percentage/100))||0}
                   </h1>
                   <p className="text-[0.75rem] text-[#94A3B8] pl-1">
                     <span className="line-through">
-                      {quantity * selectedProduct.stocks[0]?.mrpPerSheet} Rs
+                      {quantity * selectedProduct.stocks?.[0]?.mrpPerSheet} Rs
                     </span>
                   </p>
                 </div>

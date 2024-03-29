@@ -83,6 +83,15 @@ const Wallet = () => {
     });
   }
 
+  useEffect(() => {
+    refetchBalance();
+    refetchTransactions();
+  })
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return new Date(Number(dateString)).toLocaleDateString(undefined, options);
+  };
   return (
     <div className="wallet-container">
       <div className="wallet-frame424">
@@ -132,11 +141,11 @@ const Wallet = () => {
             <div className="wallet-frame473">
               {transactions?.length > 0 ? (
                 transactions.map(transaction => (
-                  <div key={transaction.id} className={`wallet-frame380 ${transaction.paymentMethod === 'Deposit' ? 'green' : 'red'}`}>
-                    <span className="wallet-text10 14MediumItalic">{new Date(transaction.createdAt).toLocaleString()}</span>
-                    <span className="wallet-text12 14MediumItalic">Rs {transaction.amount}</span>
-                    <span className="wallet-text14 14MediumItalic">{transaction.id}</span>
-                    <span className="wallet-text16 14MediumItalic">{transaction.paymentMethod}</span>
+                  <div key={transaction.id} className={`wallet-frame380`}>
+                    <span className="wallet-text10 14MediumItalic" style={{color:"black"}}>{formatDate(transaction.createdAt)}</span>
+                    <span className={`wallet-text12 14MediumItalic `} style={{color:"red"}}>Rs {transaction.amount}</span>
+                    <span className="wallet-text14 14MediumItalic" style={{color:"black"}}>{transaction.id}</span>
+                    <span className="wallet-text16 14MediumItalic" style={{color:"black"}}>{transaction.paymentMethod}</span>
                   </div>
                 ))
               ) : (

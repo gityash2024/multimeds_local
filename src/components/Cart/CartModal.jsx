@@ -12,10 +12,11 @@ const CartModal = ({ cartData ,refetch}) => {
     cartData.forEach(element => {
       console.log(element)
       console.log(element?.product?.stocks?.[0]?.mrpPerSheet)
-      console.log(element?.product?.coupons?.[0]?.percentage)
+      console.log(element?.product?.coupon?.percentage)
       console.log(element?.quantity)
-     amount+= Number(element?.product?.stocks?.[0]?.mrpPerSheet)-(Number(element?.product?.coupons?.[0]?.percentage )/ 100) * Number(element?.quantity)
+     amount+=( Number(element?.product?.stocks?.[0]?.mrpPerSheet)-(Number(element?.product?.coupon?.percentage )/ 100) * Number(element?.product?.stocks?.[0]?.mrpPerSheet))*Number(element?.quantity)
     });
+    console.log(amount)
     return amount;
 
   };
@@ -34,7 +35,7 @@ const CartModal = ({ cartData ,refetch}) => {
             <>
               <h2 className=" text-[0.875rem]">|</h2>
               <h3 className=" text-[0.875rem] font-HelveticaNeueMedium">
-                Total: Rs {totalAmount}.00
+                Total: Rs {totalAmount?.toFixed(2)}
               </h3>
             </>
           ) : null}

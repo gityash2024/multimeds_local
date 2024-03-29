@@ -1,49 +1,81 @@
-import React from 'react'
-import './TrackOrder.css'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react';
+import './TrackOrder.css';
+import { useNavigate } from 'react-router-dom';
 
-const TrackOrder = (props) => {
-  const navigate=useNavigate()
+const TrackOrder = () => {
+  const navigate = useNavigate();
+  const [orderId, setOrderId] = useState('');
+  const [error, setError] = useState('');
+
+  const handleInputChange = (event) => {
+    const { value } = event.target;
+    setOrderId(value);
+    // Update the error message as the user types
+    validateOrderId(value);
+  };
+
+  const validateOrderId = (value) => {
+    if (!value.trim()) {
+      setError('Order ID is required');
+    } else if (/\s/.test(value)) {
+      setError('No whitespace allowed');
+    } else {
+      setError('');
+    }
+  };
+
+  const trackOrder = () => {
+    if (!error && orderId) {
+      // If there's no error and orderId is not empty, proceed to navigate
+      navigate(`/track-order/details/${orderId}`);
+    } else {
+      // If the input is not valid, set an appropriate error message
+      setError('Please enter a valid Order ID');
+    }
+  };
+
   return (
     <div className="track-order-container">
-     
       <div className="track-order-frame215">
         <div className="track-order-frame424">
           <div className="track-order-frame510">
             <span className="track-order-text 24Bold">
-              <span>Track your order</span>
+              Track your order
             </span>
           </div>
           <div className="track-order-frame259">
             <div className="track-order-frame107">
               <span className="track-order-text02 20Medium">
-                <span>Enter your Order ID</span>
+                Enter your Order ID
               </span>
               <span className="track-order-text04 16Light">
-                <span>You can track your order by entering your order ID</span>
+                You can track your order by entering your order ID
               </span>
             </div>
             <div className="track-order-frame106">
-              <div className="track-order-frame10">
-                <span className="track-order-text06 14Medium">
-                  <span>XX-XXXXXXXX</span>
+              <input
+                type="text"
+                className={`track-order-input ${error ? 'input-error' : ''} p-2`}
+                style={{border:"1px solid #E2E8F0",borderRadius:"8px"}}
+                value={orderId}
+                onChange={handleInputChange}
+                placeholder="Enter Order Id"
+              />
+              {error && <div className="error-message">{error}</div>}
+              <div onClick={trackOrder} style={{cursor:"pointer"}} className="track-order-frame12">
+                <span className="track-order-text08 16Medium">
+                  TRACK ORDER
                 </span>
               </div>
-              <div  onClick={()=>{navigate("/track-order/details/hiwdjo")}} style={{cursor:"pointer"}} className="track-order-frame12">
-                <span className="track-order-text08 16Medium" >
-                  <span>TRACK ORDER</span>
-                </span>
-              </div>
-              <span className="track-order-text10 14Medium">
-                <span className="track-order-text11">Need help?</span>
-                <span> Contact Us</span>
+              <span className="track-order-text10 14Medium" onClick={() => navigate('/contact-us')} style={{cursor:"pointer"}}>
+                Need help? Contact Us
               </span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TrackOrder
+export default TrackOrder;

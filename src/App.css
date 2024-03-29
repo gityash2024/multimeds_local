@@ -141,4 +141,14 @@ body {
   .PhoneInputInput{
     padding: 5px !important;
   }
+
+  .input-error {
+    border: 1px solid red;
+  }
+  
+  .error-message {
+    /* Styles for the error message */
+    color: red;
+    margin-top: 8px;
+  }
   

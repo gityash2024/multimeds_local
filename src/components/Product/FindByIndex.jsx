@@ -196,7 +196,7 @@ const FindByIndex = () => {
            <div></div>
          )
        }
-       {!filteredProducts.length && <div className="w-full mb-4 flex justify-center items-center gap-2 font-HelveticaNeueMedium text-[#94A3B8] text-[0.875rem]">No products found</div>}
+       {!filteredProducts?.length && <div className="w-full mb-4 flex justify-center items-center gap-2 font-HelveticaNeueMedium text-[#94A3B8] text-[0.875rem]">No products found</div>}
      </div>
   );
 };

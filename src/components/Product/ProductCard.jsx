@@ -231,16 +231,16 @@ export default function ProductCard(props) {
               <div className="flex flex-col gap-1 w-full">
                   <h1 className="text-[0.875rem] font-HelveticaNeueMedium">{toCapitalize(product.productName)}</h1>
                   <h2 className="text-[0.775rem]">
-                    {/* {product?.stocks[0].noOfUnits} Unit */}
-                    {product?.stocks[0]?.stockType==='Boxes' ? `${product?.stocks[0]?.sheets} Sheets ${product?.stocks[0]?.noOfTabletsPerSheet} Units per sheet`: product?.stocks[0]?.stockType==='Units'? `${product?.stocks[0]?.noOfUnits} Units`:product?.stocks[0]?.stockType==='Grams'? `${product?.stocks[0]?.noOfGrams} Grams`: product?.stocks[0]?.stockType==='Kilograms'? `${product?.stocks[0]?.noOfKgs} Kilograms`: null}
+                    {/* {product?.stocks?.[0].noOfUnits} Unit */}
+                    {product?.stocks?.[0]?.stockType==='Boxes' ? `${product?.stocks?.[0]?.sheets} Sheets ${product?.stocks?.[0]?.noOfTabletsPerSheet} Units per sheet`: product?.stocks?.[0]?.stockType==='Units'? `${product?.stocks?.[0]?.noOfUnits} Units`:product?.stocks?.[0]?.stockType==='Grams'? `${product?.stocks?.[0]?.noOfGrams} Grams`: product?.stocks?.[0]?.stockType==='Kilograms'? `${product?.stocks?.[0]?.noOfKgs} Kilograms`: null}
                     </h2>
               </div>
           </div>
 
           <div className="flex flex-col gap-1 min-w-[6.8rem]">
               <div className="flex items-center gap-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">Rs {product.stocks[0].mrpPerSheet-(product.stocks[0].mrpPerSheet*product.coupon?.percentage/100)}</h1>
-                  <h2 className="text-[0.75rem] line-through text-[#94A3B8]">Rs {product.stocks[0].mrpPerSheet}</h2>
+                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">Rs {product.stocks?.[0].mrpPerSheet-(product.stocks?.[0].mrpPerSheet*product.coupon?.percentage/100)}</h1>
+                  <h2 className="text-[0.75rem] line-through text-[#94A3B8]">Rs {product.stocks?.[0].mrpPerSheet}</h2>
               </div>
               <h1 className="text-[0.75rem] font-HelveticaNeueMedium text-[#65A30D]">{product.coupon?.percentage}% OFF</h1>
           </div>

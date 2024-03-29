@@ -153,20 +153,20 @@ const SubscriptionCard = (pincode) => {
   const [subscriptionOptions] = useState([
     {
       description: 'Monthly - every 30 days',
-      originalPrice: selectedProduct?.stocks[0]?.mrpPerSheet,
+      originalPrice: selectedProduct?.stocks?.[0]?.mrpPerSheet,
       discountedPrice:
-        selectedProduct?.stocks[0]?.mrpPerSheet -
-        (Number(selectedProduct?.stocks[0]?.mrpPerSheet) *
+        selectedProduct?.stocks?.[0]?.mrpPerSheet -
+        (Number(selectedProduct?.stocks?.[0]?.mrpPerSheet) *
           Number(selectedProduct?.coupon?.percentage)) /
           100,
       discountPercentage: selectedProduct?.coupon?.percentage,
     },
     {
       description: 'Quarterly - every 90 days',
-      originalPrice: selectedProduct?.stocks[0]?.mrpPerSheet,
+      originalPrice: selectedProduct?.stocks?.[0]?.mrpPerSheet,
       discountedPrice:
-        selectedProduct?.stocks[0]?.mrpPerSheet -
-        (selectedProduct?.stocks[0]?.mrpPerSheet * selectedProduct?.coupon?.percentage) / 100,
+        selectedProduct?.stocks?.[0]?.mrpPerSheet -
+        (selectedProduct?.stocks?.[0]?.mrpPerSheet * selectedProduct?.coupon?.percentage) / 100,
       discountPercentage: selectedProduct?.coupon?.percentage,
     },
   ]);

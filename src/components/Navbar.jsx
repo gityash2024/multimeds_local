@@ -19,12 +19,19 @@ import CouponModal from "./Cart/CouponModal";
 
 
 
-const Navbar = ({ isDiscountBanner  }) => {
-  const {handleRefetchCart,cartListFromContext } = useContext(Context);
+const Navbar = ({   }) => {
+  const [isDiscountBanner, setIsDiscountBanner] = useState(false);
+  const {handleRefetchCart,cartListFromContext ,setUserLoggedIn} = useContext(Context);
   const [items, setItems] = useState(cartListFromContext||[]);
 
   const navigate = useNavigate();
   const[isOpen,setIsopne]=useState(false)
+  useEffect(() => {
+    // Check if the banner should be shown (e.g., first-time login)
+    const shouldShowBanner = localStorage.getItem('shouldShowBanner') === 'true';
+    setIsDiscountBanner(shouldShowBanner);
+  }, []);
+ 
   const handleClose=()=>{
     setIsopne(false);
   }
@@ -73,7 +80,11 @@ const Navbar = ({ isDiscountBanner  }) => {
   const handleCartMouseEnter = () => {
     setIsCartModal(true);
   };
-
+  const handleCloseBanner = () => {
+    // Update the state and the localStorage when the banner is closed
+    setIsDiscountBanner(false);
+    localStorage.setItem('shouldShowBanner', 'false');
+  };
   return (
     <div className="lg:static w-full fixed top-0 z-50 flex flex-col justify-center ">
   
@@ -165,8 +176,9 @@ const Navbar = ({ isDiscountBanner  }) => {
   showConfirmModal && (
     <ConfirmationModal
       onConfirm={() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userInfo');
+        localStorage.clear();
+        setUserLoggedIn(false);
+
         navigate('/', { state: { openLoginModal: true } });
         setShowConfirmModal(false);
         setUserDetails(localStorage.getItem('token'));
@@ -176,7 +188,7 @@ const Navbar = ({ isDiscountBanner  }) => {
   )
 }
 
-      {isDiscountBanner ? <DiscountBanner /> : null}
+      {isDiscountBanner ? <DiscountBanner handleClose={handleCloseBanner}/> : null}
     </div>
   );
 };

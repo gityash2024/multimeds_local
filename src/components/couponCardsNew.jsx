@@ -11,7 +11,7 @@ const CouponCardNew = ({ coupon, applyCoupon }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col gap-2 bg-white border-b border-[#CBD5E1] py-6 px-3 text-[#0F172A]">
+    <div className="flex w-[400px] flex-col gap-2 bg-white border-b border-[#CBD5E1] py-6 px-3 text-[#0F172A]">
       <img src={CouponCardLogo} alt="coupon card icon" className="w-8 h-8" />
 
       <div className="flex justify-between items-center">
@@ -33,7 +33,7 @@ const CouponCardNew = ({ coupon, applyCoupon }) => {
         </div>
       </div>
 
-      <div className="flex items-center border-b border-[#94A3B8] w-fit">
+      {/* <div className="flex items-center border-b border-[#94A3B8] w-fit">
         <h1 className="text-[0.75rem] text-[#94A3B8]">Terms and Conditions</h1>
         <button onClick={() => setIsDropdown(!isDropdown)}>
           {isDropdown ? (
@@ -42,15 +42,15 @@ const CouponCardNew = ({ coupon, applyCoupon }) => {
             <img src={DropDownIcon} alt="cross" className="w-4 h-4" />
           )}
         </button>
-      </div>
+      </div> */}
 
-      {isDropdown && (
+      {/* {isDropdown && (
         <ul className="flex flex-col list-disc text-[#475569] leading-[0.781rem] text-[0.625rem] font-HelveticaNeueLight">
           {coupon.terms.map((term, index) => (
             <li key={index}>{term}</li>
           ))}
         </ul>
-      )}
+      )} */}
     </div>
   );
 };

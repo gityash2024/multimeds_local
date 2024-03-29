@@ -86,6 +86,61 @@ const CartItemCard = ({ cartData, refetch,updateQuantity }) => {
   if (removeError || updateError) {
     return <div>Error occurred</div>; // Replace with your error display component
   }
+  function calculateTotalStock(stocks) {
+    if (!Array.isArray(stocks) || stocks.length === 0) return "N/A";
+  
+    const sumQuantities = (acc, stockItem) => {
+      switch (stockItem.stockType) {
+        case 'Boxes':
+          return acc + (stockItem.sheets * stockItem.noOfTabletsPerSheet);
+        case 'Units':
+          return acc + stockItem.noOfUnits;
+        case 'Grams':
+          return acc + stockItem.noOfGrams;
+        case 'Kilograms':
+          return acc + (stockItem.noOfKgs * 1000); 
+        default:
+          return acc;
+      }
+    };
+  
+    const totalStock = stocks.reduce(sumQuantities, 0);
+  
+    const stockType = stocks[0].stockType;
+  
+    switch (stockType) {
+      case 'Boxes':
+      case 'Units':
+        return `${totalStock} ${stockType} left in stock`;
+      case 'Grams':
+        return `${totalStock} Grams left in stock`;
+      case 'Kilograms':
+        const totalKilograms = totalStock / 1000; // Convert grams back to kilograms for display
+        return `${totalKilograms.toFixed(2)} Kilograms left in stock`;
+      default:
+        return "N/A";
+    }
+  }
+  const maxRetailPrice = cartData?.product?.stocks?.[0]?.mrpPerSheet ?? 0;
+  const discount = cartData?.product?.coupon?.percentage ?? 0;
+  const sellingPricePerUnit = maxRetailPrice - (maxRetailPrice * discount / 100);
+  const totalSellingPrice = sellingPricePerUnit * (productCount ?? 0);
+  function getFormattedQuantity(stockData) {
+    if (!stockData) return "N/A";
+  
+    switch (stockData.stockType) {
+      case 'Boxes':
+        return `${stockData.sheets} Sheets per Box, ${stockData.noOfTabletsPerSheet} Units per Sheet`;
+      case 'Units':
+        return `${stockData.noOfUnits} Units`;
+      case 'Grams':
+        return `${stockData.noOfGrams} Grams`;
+      case 'Kilograms':
+        return `${stockData.noOfKgs} Kilograms`;
+      default:
+        return "N/A";
+    }
+  }
 
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity < 0) {
@@ -96,6 +151,15 @@ const CartItemCard = ({ cartData, refetch,updateQuantity }) => {
 
   };
 
+  const toUpperCase = (str) => {
+    if(str){
+
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }else{
+      return 'N/A'
+    }
+
+  }
 console.log(cartData)
   return (
     <div className={isHidden ? "hidden" : "flex flex-col rounded-2 gap-4 border border-[#E2E8F0] bg-white py-4 px-6 shadow-cartItem"}>
@@ -111,13 +175,13 @@ console.log(cartData)
 
           <div className="flex flex-col gap-1">
             <h1 className="w-[14rem] text-[0.875rem] font-HelveticaNeueMedium">
-             {cartData?.product?.productName}
+             {toUpperCase(cartData?.product?.productName)}
             </h1>
             <h2 className="text-[0.875rem] text-[#475569]">
-              1 strip : {cartData?.product?.unitsInPack} capsules
+              {getFormattedQuantity(cartData?.product?.stocks?.[0])}
             </h2>
             <h2 className="text-[0.75rem] font-HelveticaNeueItalic text-[#DC2626]">
-              only 3 left in stock
+             {calculateTotalStock(cartData?.product?.stocks)  }
             </h2>
           </div>
         </div>
@@ -132,7 +196,7 @@ console.log(cartData)
             <div>
               <div className="w-fit border-b border-[#0F172A]">
                 <h2 className="text-[0.875rem] font-HelveticaNeueMedium text-[#0F172A]">
-{cartData?.product?.manufacturer}                </h2>
+{toUpperCase(cartData?.product?.stocks?.[0]?.manufacturer)}                </h2>
               </div>
             </div>
           </div>
@@ -144,7 +208,7 @@ console.log(cartData)
             <div>
               <div className="w-fit border-b border-[#0F172A]">
                 <h2 className="text-[0.875rem] font-HelveticaNeueMedium text-[#0F172A]">
-{cartData?.product?.composition}                </h2>
+{toUpperCase(cartData?.product?.composition)}                </h2>
               </div>
             </div>
           </div>
@@ -185,14 +249,17 @@ console.log(cartData)
         <div className="flex justify-between">
           <div className="flex gap-1 items-center">
             <p className="text-[0.75rem] text-[#94A3B8]">
-              Rs <span className="line-through">{cartData?.product?.maxRetailPrice}</span>
+            Rs <span className="line-through">{maxRetailPrice?.toFixed(2)}</span>
             </p>
             <h2 className="font-HelveticaNeueMedium text-[#031B89] text-[0.875rem]">
-              Rs {cartData?.product?.sp}
+            Rs {totalSellingPrice?.toFixed(2)}
             </h2>
             <h3 className="text-[0.625rem] font-HelveticaNeueMedium p-1 bg-[#C2F5E9] rounded-[0.125rem]">
-              {cartData?.product?.discount}% OFF
+            {discount > 0 && (
+            <h3 className="text-[0.625rem] font-HelveticaNeueMedium p-1 bg-[#C2F5E9] rounded-[0.125rem]">
+              {discount}% OFF
             </h3>
+          )}            </h3>
           </div>
 
           <button

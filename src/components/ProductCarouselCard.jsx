@@ -79,9 +79,9 @@ const ProductCarouselCard = ({
 
         <div className="quantity-section flex justify-end">
           <p className="text-[0.875rem] text-[#64748B] truncate" data-tooltip-id={`quantityTooltip-${id}`}>
-            {getFormattedQuantity(product?.stocks[0])}
+            {getFormattedQuantity(product?.stocks?.[0])}
           </p>
-          <ReactTooltip id={`quantityTooltip-${id}`} place="bottom" content={getFormattedQuantity(product?.stocks[0])} />
+          <ReactTooltip id={`quantityTooltip-${id}`} place="bottom" content={getFormattedQuantity(product?.stocks?.[0])} />
         </div>
 
         <div className="marketer-section">

@@ -144,9 +144,9 @@ const ProductCarousel = ({ title, subtitle, description, isViewProducts }) => {
     title={item.productName}
     discount={item.coupon?.percentage }
     product={item}
-    sp={item?.stocks[0]?.mrpPerSheet-((item.stocks[0]?.mrpPerSheet*item?.coupon?.percentage)/100)}
-    maxRetailPrice={item.stocks[0]?.mrpPerSheet}
-    marketer={item.stocks[0]?.manufacturer}
+    sp={item?.stocks?.[0]?.mrpPerSheet-((item.stocks?.[0]?.mrpPerSheet*item?.coupon?.percentage)/100)}
+    maxRetailPrice={item.stocks?.[0]?.mrpPerSheet}
+    marketer={item.stocks?.[0]?.manufacturer}
     image={item.productImages[0]}
     openProduct={() => {
       addToCartFunc(item)
