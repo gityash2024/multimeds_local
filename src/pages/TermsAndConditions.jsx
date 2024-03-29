@@ -14,7 +14,7 @@ const TermsAndConditions = () => {
             Terms and Conditions
             </h1>
             <h2 className="text-[1.125rem] font-HelveticaNeueItalic">
-              last updated : 23rd March 2023
+              last updated : 23rd March 2024
             </h2>
           </div>
 

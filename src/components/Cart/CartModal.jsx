@@ -3,13 +3,15 @@ import React from "react";
 import GoToButton from "./GoToButton";
 import { Link } from "react-router-dom";
 import CartProductCard from "./CartProductCard";
+import Character from "../../assets/cart/character.svg";
 
 const CartModal = ({ cartData ,refetch}) => {
   console.log(cartData)
   const calculateTotal = () => {
     let amount=0
     cartData.forEach(element => {
-     amount+= element?.product?.sp * element?.quantity
+      console.log(element)
+     amount+= element?.product?.stocks[0]?.mrpPerSheet-(element?.product?.coupons[0]?.percentage / 100) * element?.quantity
     });
     return amount;
 
@@ -40,8 +42,11 @@ const CartModal = ({ cartData ,refetch}) => {
       {cartData.length === 0 ? (
         <div className="flex justify-center items-center p-1 h-[10.125rem] bg-white rounded">
           <p className="text-[0.875rem] text-[#64748B] font-HelveticaNeueMedium">
-            Your cart is empty!
+                      <img src={Character} alt="character" className="w-[8rem] h-auto" />
+
+            
           </p>
+            Your cart is empty!
         </div>
       ) : (
         <>

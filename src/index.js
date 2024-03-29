@@ -5,6 +5,7 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { AppContext } from "./context/AppContext";
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink, ApolloLink } from "@apollo/client";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 export const httpLink = createHttpLink({
   uri: 'https://api.mymultimeds.com/graphql', // Your production GraphQL endpoint URI
@@ -32,6 +33,8 @@ const client = new ApolloClient({
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
+  <GoogleOAuthProvider clientId="328905782048-g8nsa49t5mc9qbun6c1n3uvi7ndd4dn3.apps.googleusercontent.com">
+
   <ApolloProvider client={client}>
     <BrowserRouter>
       <AppContext>
@@ -40,4 +43,5 @@ root.render(
       </AppContext>
     </BrowserRouter>
   </ApolloProvider>
+  </GoogleOAuthProvider>
 );

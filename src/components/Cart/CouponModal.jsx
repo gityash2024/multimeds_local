@@ -1,20 +1,58 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 
 import Cross from "../../assets/crossIcon.svg";
 import CouponCard from "./CouponCard";
 import Warning from "../../assets/cart/warning.svg";
 import Login from "../Login";
+import { gql,useQuery } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
+import Loader from "../loader";
+const GET_COUPONS = gql`
+query{getActiveCoupons{
+  status
+  message
+  coupons{
+    id
+    code
+    type
+    percentage
+    fixedAmount
+    description
+    expiryDate
+    createdAt
+    updatedAt
+    associatedCategories{
+      id
+      categoryName
+      segmentId
+      categoryDescription
+      segment{
+        id
+        segmentName
+        
+      }
+    }
+  }
+}}
+`;
 
 const CouponModal = ({ isSelected, handleClose, isLogin }) => {
   const [isInvalid, setIsInvalid] = useState(false);
+  const [loading,setLoading]=useState(true)
+  const { data } = useQuery(GET_COUPONS);
+  useEffect(() => {
+    if(data){
+      setLoading(false)
+      console.log(data?.getActiveCoupons?.coupons,'+==========+++++===++++====+++===+++===++===++++===++==')
+    }
+  },[data])
 const navigate=useNavigate()
   return (
     <div className="w-screen h-screen fixed top-0 left-0 z-50 flex justify-center items-center bg-black bg-opacity-40">
       <div className="flex flex-col gap-3 border border-[#CBD5E1] w-[45.25rem] py-4 bg-white rounded-xl shadow-login">
         <div className="flex justify-between py-2 px-4">
           <div className="flex flex-col gap-1">
-            <h1 className=" font-HelveticaNeueMedium">Coupons and Offers</h1>
+            <h1 className=" font-HelveticaNeueMedium text-[1.5rem] text-[#031B89]">Coupons and Offers</h1>
           
           </div>
           <button onClick={handleClose}>
@@ -55,13 +93,18 @@ const navigate=useNavigate()
           </div>
 
           <div className="flex flex-col gap2">
+            {data?.getActiveCoupons?.coupons?.map((item)=>{
+              return(
+                <CouponCard couponData={item} handleClose={handleClose}/>
+              )
+            })}
+            {/* <CouponCard handleClose={handleClose} />
             <CouponCard handleClose={handleClose} />
-            <CouponCard handleClose={handleClose} />
-            <CouponCard handleClose={handleClose} isDisabled />
+            <CouponCard handleClose={handleClose} isDisabled /> */}
           </div>
         </div>
       </div>
-
+{loading&&<Loader/>}
       {/* {isLoginModal ? <Login /> : null} */}
     </div>
   );

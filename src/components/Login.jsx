@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { googleLogout } from "@react-oauth/google";
 
 import { Link } from "react-router-dom";
 import OtpInput from "react-otp-input";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import "react-toastify/dist/ReactToastify.css";
 import LoginCarousel from "./LoginCarousel";
 import PrimaryButton from "./PrimaryButton";
@@ -12,7 +13,13 @@ import Edit from "../assets/login/editIcon.svg";
 import Check from "../assets/login/checkIcon.svg";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Cancel, ContentCopy } from "@mui/icons-material";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 import Loader from "./loader";
+
 const SENDOTP = gql`
   mutation sendOTP($input: OTPInput!) {
     sendOTP(input: $input) {
@@ -90,21 +97,109 @@ const VERIFYOTP = gql`
   }
 `;
 
+const GOOGLE_SIGN_IN = gql`
+  mutation googleSignIn($input: GoogleSignInInput!) {
+    googleSignIn(input: $input) {
+      status
+      message
+      token
+      isNewUser
+      user {
+        id
+        fullName
+        contactNumber
+        email
+        profilePicture
+        walletBalance
+        role
+        successfulReferrals
+        referralDiscountPercentage
+        remainingReferralDiscounts
+        currentAddress {
+          id
+          houseNumber
+          aptOrBuildingName
+          streetOrAreaName
+          city
+          pincode
+          state
+          label
+        }
+        department {
+          id
+          name
+          description
+          permissions
+        }
+        addresses {
+          id
+          houseNumber
+          aptOrBuildingName
+          streetOrAreaName
+          city
+          pincode
+          state
+          label
+        }
+        prescriptions {
+          id
+          url
+          userId
+          isApproved
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
 
+const CHECK_USER = gql`
+  query CheckUser($input: CheckUserInput!) {
+    checkUser(input: $input) {
+      status
+      message
+      isUserPresent
+    }
+  }
+`;
 const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
   const loginRef = useRef();
   const navigate = useNavigate();
   const [errorMessage, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isReferralWindow, setIsReferralWindow] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
   const [inputValue, setInputValue] = useState("");
+  const [countryCode, setCountryCode] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isOtpWindow, setIsOtpWindow] = useState(false);
   const [loginMethod, setLoginMethod] = useState("phone number");
   const [loginId, setLoginId] = useState("");
   const [otp, setOtp] = useState("");
-
+  const [googleLogin, setGoogleLogin] = useState(false);
+  const [googleResponse, saveGoogleResponse] = useState({});
+  const backdropRef = useRef(); // Reference to the backdrop
   const [sendOTP, { loading: otpLoading }] = useMutation(SENDOTP);
   const [sendEmailOTP, { loading: emailLoading }] = useMutation(SENDEMAILOTP);
   const [verifyOTP, { loading: verifyLoading }] = useMutation(VERIFYOTP);
+  const [checkUser] = useLazyQuery(CHECK_USER);
+  const [googleSignIn, { data, loading: googleSignInLoading, error }] =
+    useMutation(GOOGLE_SIGN_IN);
+
+  const handleBackdropClick = (e) => {
+    if (e.target === backdropRef.current) {
+      e.stopPropagation();
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("click", handleBackdropClick);
+    return () => {
+      document.removeEventListener("click", handleBackdropClick);
+    };
+  }, []);
 
   useEffect(() => {
     const handler = (e) => {
@@ -119,12 +214,25 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
     };
   }, []);
 
+  const openReferralWindow = () => {
+    setReferralCode("");
+    setOtp("");
+    setIsReferralWindow(true);
+  };
+
+  const closeReferralWindow = () => {
+    setIsReferralWindow(false);
+    openOtpWindow(); // Open OTP window after closing referral window
+  };
+
   const openOtpWindow = async (e) => {
-    e.preventDefault();
-    // setInputValue('');
+    // setIsReferralWindow(false);
+
+    if (e) {
+      e.preventDefault();
+    }
     setError("");
 
-    toast.success("Otp Sent Succesfully");
     setLoading(true);
 
     try {
@@ -139,14 +247,15 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
 
       const input =
         loginMethod !== "email"
-          ? { countryCode: "+91", phoneNumber: inputValue }
-          : { email: inputValue };
+          ? { countryCode: countryCode, phoneNumber: phoneNumber } // Include referralCode
+          : { email: inputValue }; // Include referralCode
 
       const { data } = await mutation({ variables: { input } });
 
       setLoading(false);
 
       if (data[method].status === "SUCCESS") {
+        toast.success("OTP Sent Successfully");
         setIsOtpWindow(true);
       } else {
         toast.error(`Error: ${data[method].message}`);
@@ -154,31 +263,29 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
     } catch (error) {
       console.error("Error in sending OTP:", error);
       setLoading(false);
-      toast.error(`Otp not sent, server error.`);
+      toast.error(`OTP not sent, server error.`);
     }
   };
 
   const closeOtpWindow = () => {
+    setIsReferralWindow(false);
     setIsOtpWindow(false);
   };
 
   const handleSubmit = async () => {
     setError("");
-    toast.info(`Verifying OTP`);
     const variObj = {
-      countryCode: "+91",
-      phoneNumber: inputValue,
+      countryCode: countryCode,
+      phoneNumber: phoneNumber,
       otp: otp,
+      referralCode, // Include referralCode
     };
 
-    // Set loading to true here to show the loader during verification
     setLoading(true);
 
     try {
       const res = await verifyOTP({ variables: { input: variObj } });
 
-      // Process the response
-      console.log("verify otp res is", res);
       if (res.data.verifyOTP.status === "SUCCESS") {
         localStorage.setItem("token", res.data.verifyOTP.token);
         setUserDetails(res.data.verifyOTP.token);
@@ -186,15 +293,14 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
           "userInfo",
           JSON.stringify(res.data.verifyOTP.user)
         );
-        navigate("/refferal-login");
+        localStorage.setItem("isLoggedInNow", true);
+        navigate("/");
       } else {
-        toast.error(`Otp not verified!`);
+        toast.error(`OTP not verified!`);
       }
     } catch (err) {
-      console.error("Error in verifying OTP:", err);
-      toast.error(`Otp not verified!!`);
+      toast.error(`OTP not verified!`);
     } finally {
-      // Ensure loading is set to false after the operation is complete
       setLoading(false);
     }
 
@@ -202,7 +308,6 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
   };
 
   const handleClick = () => {
-    // setInputValue('');
     setError("");
     setLoginMethod(loginMethod === "phone number" ? "email" : "phone number");
   };
@@ -215,25 +320,125 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
         return false;
       }
     } else {
-      const numberRegex = /^\d{10}$/;
-      if (!numberRegex.test(value)) {
-        setError("Please enter a valid 10-digit number");
-        return false;
-      }
+      // No need for additional validation as the PhoneInput component handles it
     }
     setError("");
     return true;
   };
 
-  const handleChange = (e) => {
-    const value = e.target.value;
+  const handleChange = (value) => {
     setInputValue(value);
-    validateInput(value);
-    setLoginId(
+    if (loginMethod === "email") {
+      validateInput(value);
+      setLoginId(`${value?.slice(0, 4)}xxxxxx.${value?.slice(-4)}`);
+    } else {
+      setLoginId(`XXXXX${value?.slice(-4)}x`);
+    }
+
+    // Split the value to extract country code and phone number
+    const phoneNumberWithoutCode = value?.slice(-10);
+    const countryCodeWithoutPhoneNumber = value?.slice(0, -phoneNumber?.length);
+    setCountryCode(countryCodeWithoutPhoneNumber);
+    setPhoneNumber(phoneNumberWithoutCode);
+  };
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      console.log(codeResponse.access_token);
+      if (codeResponse && codeResponse.access_token) {
+        axios
+          .get(
+            `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${codeResponse.access_token}`,
+            {
+              headers: {
+                Authorization: `Bearer ${codeResponse.access_token}`,
+                Accept: "application/json",
+              },
+            }
+          )
+          .then((res) => {
+            console.log(res.data);
+            saveGoogleResponse(res.data);
+            setGoogleLogin(true);
+            CheckUser();
+          })
+          .catch((err) => console.log(err));
+      }
+    },
+    onError: (error) => console.log("Login Failed:", error),
+  });
+
+  const CheckUser = async (e) => {
+ 
+    e.preventDefault();
+    const userCheckInput =
       loginMethod === "email"
-        ? `${value.slice(0, 4)}xxxxxx.${value.slice(-4)}`
-        : `XXXXX${value.slice(-4)}x`
-    );
+        ? { email: inputValue }
+        : { phoneNumber: phoneNumber };
+
+    checkUser({
+      variables: { input: userCheckInput },
+      onCompleted: (data) => {
+        // Assuming 'isUserPresent' field indicates if the user exists
+        if (data.checkUser.isUserPresent) {
+          if (!googleLogin) {
+            openOtpWindow();
+          } else {
+            signInViaGoogle();
+          }
+        } else {
+          if (!googleLogin) {
+            openReferralWindow();
+          } else {
+            signInViaGoogle();
+          }
+        }
+      },
+      onError: (error) => {
+        // Handle error scenario (e.g., network error)
+        console.error("Error checking user:", error);
+        toast.error("Failed to check user. Please try again.");
+      },
+    });
+  };
+
+  const handlePaste = () => {
+    navigator.clipboard
+      .readText()
+      .then((text) => {
+        setReferralCode(text);
+      })
+      .catch((err) => {
+        console.error("Failed to read clipboard:", err);
+      });
+  };
+
+  const signInViaGoogle = async () => {
+    try {
+      const response = await googleSignIn({
+        variables: {
+          input: {
+            gmail: googleResponse?.email, // The email address obtained from Google
+            referralCode: referralCode || "", // Optional: A referral code if you have one, else an empty string
+          },
+        },
+      });
+
+      if (response.data.googleSignIn.status === "SUCCESS") {
+        localStorage.setItem("token", response.data.googleSignIn.token);
+        setUserDetails(response.data.googleSignIn.token);
+        localStorage.setItem(
+          "userInfo",
+          JSON.stringify(response.data.googleSignIn.user)
+        );
+        localStorage.setItem("isLoggedInNow", true);
+        navigate("/");
+      } else {
+        toast.error(response.data.googleSignIn.message);
+      }
+    } catch (err) {
+      toast.error("Google sign-in failed.");
+    }
   };
 
   return (
@@ -244,12 +449,16 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
       >
         <div
           ref={loginRef}
-          className="w-[54.5rem] flex justify-center items-center max-w-[54.5rem] rounded-xl p-6 gap-6 bg-white shadow-login"
+          className="w-[54.5rem] flex justify-center items-center max-w-[54.5rem] rounded-xl p-6 gap-6 bg-white shadow-login relative"
         >
           <LoginCarousel />
-          {loading && <Loader />}
-          {!isOtpWindow ? (
-            <div className="w-full flex flex-col gap-8 ">
+          {(loading ||googleSignInLoading||verifyLoading||otpLoading) &&  <Loader />}
+          <Cancel
+            className="absolute top-4 right-4 cursor-pointer"
+            onClick={() => setIsLogin(false)}
+          />
+          {!isOtpWindow && !isReferralWindow ? (
+            <div className="w-full flex flex-col gap-8">
               <div className="flex gap-4 flex-col">
                 <div className="flex gap-1 flex-col">
                   <h1 className="text-[1.5rem] font-HelveticaNeueMedium text-[#0F172A]">
@@ -260,33 +469,37 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
                   </h2>
                 </div>
                 <form className="flex flex-col gap-2">
-                  <input
+                  <PhoneInput
+                    international
+                    defaultCountry="IN"
                     value={inputValue}
                     onChange={handleChange}
-                    placeholder={
-                      loginMethod === "email"
-                        ? "Enter email"
-                        : "Enter mobile number"
-                    }
-                    className="min-h-10 rounded border border-[#CBD5E1] focus:outline-none text-[0.875rem] py-[0.813rem] px-4 placeholder:text-[#E2E8F0] font-medium placeholder:text-[0.875rem] placeholder:font-medium"
+                    placeholder="Enter mobile number"
+                    className="min-h-10 p-4 rounded border border-[#CBD5E1] focus:outline-none text-[0.875rem] py-[0.813rem] px-4 placeholder:text-[#E2E8F0] font-medium placeholder:text-[0.875rem] placeholder:font-medium"
                   />
                   {errorMessage && (
                     <p className="text-red-500">{errorMessage}</p>
                   )}
                   <PrimaryButton
                     disable={errorMessage || !inputValue ? true : false}
-                    handleClick={openOtpWindow}
+                    handleClick={CheckUser} // Open referral window first
                     title="LOGIN"
                   />
                   <p className="text-[0.75rem] text-[#475569]">
                     By logging in, you have agreed to our{" "}
-                    <Link to="/legal" className="text-[#FBA79B]" href="">
+                    <Link
+                      to="/terms-and-conditions"
+                      onClick={() => setIsLogin(false)}
+                      className="text-[#FBA79B]"
+                      href=""
+                    >
                       terms and conditions
                     </Link>{" "}
                     and{" "}
                     <Link
                       to="/privacypolicy"
                       className="text-[#FBA79B]"
+                      onClick={() => setIsLogin(false)}
                       href=""
                     >
                       privacy policy
@@ -299,29 +512,27 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
                   or login with
                 </h1>
                 <div className="flex items-center gap-2">
-                  <button className="w-full flex justify-center rounded p-4 gap-2 border border-[#CBD5E1]">
-                    <img src={Google} />
-                  </button>
                   <button
-                    onClick={handleClick}
-                    className="w-full h-full  rounded p-4 gap-2 border border-[#CBD5E1]"
+                    onClick={handleGoogleLogin}
+                    className="w-full flex justify-center rounded p-4 gap-2 border border-[#CBD5E1]"
                   >
-                    <h1 className=" uppercase h-full flex justify-center items-center min-h-[1.563rem] font-HelveticaNeueMedium text-[#031B89]">
-                      {loginMethod === "phone number"
-                        ? "email"
-                        : "phone number"}
-                    </h1>
+                    <img src={Google} />
                   </button>
                 </div>
               </div>
               <p className="text-[#0F172A]  text-[0.75rem] font-HelveticaNeueMedium">
                 Need help?{" "}
-                <Link className="text-[#7487FF]" href="">
+                <Link
+                  to={"/contact-us"}
+                  onClick={() => setIsLogin(false)}
+                  className="text-[#7487FF]"
+                  href=""
+                >
                   Contact Us
                 </Link>
               </p>
             </div>
-          ) : (
+          ) : isOtpWindow ? (
             <div className="w-full flex flex-col gap-6">
               <div className="flex gap-1 flex-col">
                 <h1 className="text-[1.5rem] font-HelveticaNeueMedium text-[#0F172A]">
@@ -353,7 +564,7 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
               </div>
               <div className="flex flex-col gap-2">
                 <p className="text-[#0F172A] text-[0.75rem]">
-                  Didn’t get an OTP?{" "}
+                  Didn't get an OTP?{" "}
                   <button
                     onClick={openOtpWindow}
                     className="text-[#7487FF]  font-HelveticaNeueMedium"
@@ -374,16 +585,83 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
               </div>
               <p className="text-[#0F172A]  text-[0.75rem] font-HelveticaNeueMedium">
                 Need help?{" "}
-                <Link className="text-[#7487FF]" href="">
+                <Link
+                  to={"/contact-us"}
+                  onClick={() => setIsLogin(false)}
+                  className="text-[#7487FF]"
+                  href=""
+                >
+                  {" "}
                   Contact Us
                 </Link>
               </p>
             </div>
+          ) : (
+            isReferralWindow && (
+              <div
+                className="w-full flex flex-col
+            gap-6"
+              >
+                <div className="flex gap-1 flex-col">
+                  <h1 className="text-[1.5rem] font-HelveticaNeueMedium text-[#0F172A]">
+                    Enter your Referral Code
+                  </h1>
+                  <div className="flex gap-2">
+                    <h2 className="font-HelveticaNeueLight text-[#475569]">
+                      This step is optional.
+                    </h2>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="text"
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value)}
+                      placeholder="Enter Referral Code"
+                      className="min-w-[2.25rem] h-[2.5rem] py-[0.813rem] px-3 border border-[#CBD5E1] rounded"
+                    />
+                    {/* Render the paste icon */}
+                    <button onClick={handlePaste} title="Paste Referral Code">
+                      <ContentCopy />
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-row gap-2">
+                  <PrimaryButton
+                    className="w-50"
+                    disable={!referralCode ? true : false}
+                    handleClick={() => {
+                      setLoading(true);
+                      openOtpWindow();
+                    }}
+                    title="SUBMIT"
+                  />
+                  <PrimaryButton
+                    handleClick={() => {
+                      openOtpWindow();
+                    }}
+                    title="SKIP"
+                  />
+                </div>
+                <p className="text-[#0F172A]  text-[0.75rem] font-HelveticaNeueMedium">
+                  Need help?{" "}
+                  <Link
+                    to={"/contact-us"}
+                    onClick={() => setIsLogin(false)}
+                    className="text-[#7487FF]"
+                    href=""
+                  >
+                    {" "}
+                    Contact Us
+                  </Link>
+                </p>
+              </div>
+            )
           )}
         </div>
       </div>
     </div>
   );
 };
-
 export default Login;

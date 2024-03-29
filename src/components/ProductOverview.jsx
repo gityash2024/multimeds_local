@@ -24,10 +24,11 @@ const ProductOverview = () => {
     variables: { id: selectedProduct.id },
     skip: !selectedProduct.id 
   });
-  const productInfoData = data?.getProductBulletPoints.points.map((point, index) => ({
+  const productInfoData = selectedProduct?.bulletPoints.map((point, index) => ({
     id: index + 1,
-    Heading: "PRODUCT INTRODUCTION",
-    content: point.point.split("\n"),
+    Heading: point.point,
+    content: point.description,
+    author: point.author
   })) || [];
 
   // Filter for active content
@@ -48,7 +49,7 @@ const ProductOverview = () => {
         return (
           <div className="flex flex-col w-[41.188rem] bg-white p-6 gap-2 rounded">
             <h1 className="font-HelveticaNeueMedium">{item.Heading}</h1>
-            {item.content.map(i => <p className="text-justify text-[0.875rem]">{i}<br/><br/></p>)}
+            {item.content}
           </div>
         );
       })}

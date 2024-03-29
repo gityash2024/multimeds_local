@@ -36,7 +36,7 @@ const OrderStatus = (props) => {
                   <span>Date of order</span>
                 </span>
                 <span className="order-status-text006 12Medium">
-                  <span>11th September 2023</span>
+                  <span>11th March 2024</span>
                 </span>
               </div>
               <div className="order-status-frame2781">

@@ -138,7 +138,7 @@ const Footer = () => {
       </div>
 
       <h1 className="w-full text-center text-[0.75rem]">
-        2023 Multimeds Healthcare OPC. All rights reserved. All medicines are
+        2024 Multimeds Healthcare OPC. All rights reserved. All medicines are
         dispensed in compliance with the Drugs and Cosmetics Act, 1940 and Drugs
         and Cosmetics Rules, 1945. We do not process requests for Schedule X and
         habit forming drugs.

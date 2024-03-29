@@ -5,6 +5,13 @@ import Context from "../context/AppContext";
 const SearchBarDropdown = ({ isHero,data , setFilteredProducts ,clickSearch}) => {
   console.log(data);
   const navigate = useNavigate();
+  const toCapitaize = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
   return (
     <div
       className={`${
@@ -18,21 +25,26 @@ const SearchBarDropdown = ({ isHero,data , setFilteredProducts ,clickSearch}) =>
               
             <div onClick={() => {clickSearch(item)}} style={{cursor:'pointer'}} className="py-2 px-1 rounded bg-[#F8FAFC]" key={item.id} >
               <h1 className=" text-[0.875rem] font-HelveticaNeueLight">
-              {item?.productName}
+              {toCapitaize(item?.productName)}
               </h1>
             </div>
             ))
           }
+          {!data?.length && <div className="py-2 px-1 rounded bg-[#F8FAFC]">
+            <h1 className=" text-[0.875rem] font-HelveticaNeueLight">
+              No products found
+            </h1>
+          </div>}
 
           <ProductCard isDropdown={true} isSelected={false} />
           <ProductCard isDropdown={true} isSelected={false} />
         </div>
 
-        <div className="py-2 flex justify-center items-center">
+        {/* <div className="py-2 flex justify-center items-center">
           <Link className=" text-[0.75rem] text-[#031B89]">
-            View all search results
+            All search results
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );

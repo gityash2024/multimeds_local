@@ -1,8 +1,7 @@
 import React from "react";
 
 const PrimaryButton = ({ title, handleClick ,disable}) => {
-  console.log(handleClick);
-  console.log(disable);
+
   return (
     <button
       disabled={disable}

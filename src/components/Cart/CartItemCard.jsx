@@ -96,7 +96,7 @@ const CartItemCard = ({ cartData, refetch,updateQuantity }) => {
 
   };
 
-
+console.log(cartData)
   return (
     <div className={isHidden ? "hidden" : "flex flex-col rounded-2 gap-4 border border-[#E2E8F0] bg-white py-4 px-6 shadow-cartItem"}>
       {cartData?.product?.prescriptionRequired && <PrimaryHighlight />}

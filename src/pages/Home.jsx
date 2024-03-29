@@ -15,11 +15,11 @@ const Home = () => {
       <HealthConcerns />
       <TopBrands title="Our Top brands" />
       <ProductCarousel
-        title="Sample Product Carousel"
-        subtitle="Product Carousel Subtitle goes here"
-        description="This mostly describes the category"
-        isViewProducts
-      />
+          title="Featured Health Products"
+          subtitle="Carefully Selected for Your Wellness"
+          description="Browse our selection of top-rated medical essentials and wellness products."
+          isViewProducts
+        />
       <DevicePartners title="Our Device Partners" />
       <WhyChooseUs columns={5} />
     </div>

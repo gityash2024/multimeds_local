@@ -1,5 +1,6 @@
 import React from "react";
-
+import { toast } from 'react-toastify';
+import Tooltip from '@material-ui/core/Tooltip';
 import Quality from "../assets/whyChooseUs/quality.svg";
 import Security from "../assets/whyChooseUs/secure.svg";
 import CustomerCare from "../assets/whyChooseUs/customerCare.svg";
@@ -9,6 +10,17 @@ import Health from "../assets/whyChooseUs/health.svg";
 import WhyChooseUsCard from "./WhyChooseUsCard";
 
 const WhyChooseUs = ({ columns3, isContent }) => {
+	const handleCopyLink = (code) => {
+		if (code) {
+		  navigator.clipboard.writeText(code).then(
+			() => toast.success('Copied!'),
+			() => toast.error('Failed to copy!')
+		  );
+		}
+	  };
+	  const openEmail = (email) => {
+		window.location.href = `mailto:${email}`;
+	  };
 	return (
 		<div className="flex flex-col gap-6 w-full p-4 sm:py-14 sm:px-[6.25rem] bg-white">
 			<div className="flex-col py-8 px-4 sm:px-[4.5rem]">
@@ -78,7 +90,7 @@ const WhyChooseUs = ({ columns3, isContent }) => {
 			<div>
 				<h1 className="text-center mt-6 font-HelveticaNeueMedium">
 					For enquiries, feel free to reach out to us at{" "}
-					<a href="" className="text-[#7487FF]">
+					<a style={{cursor:"pointer"}} onClick={()=>{openEmail("contact@mymultimeds.com")}} className="text-[#7487FF]">
 						contact@mymultimeds.com
 					</a>
 				</h1>

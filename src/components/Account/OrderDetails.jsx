@@ -84,7 +84,6 @@ const OrderDetails = ({
                 Date of order
               </h1>
               <h2 className="text-[0.75rem] font-medium">
-                {/* 11th September 2023 */}
                 {moment().format("Do MMM YYYY")}
               </h2>
             </div>

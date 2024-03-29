@@ -8,50 +8,8 @@ import PincodeModal from "./PincodeModal";
 import SearchBarDropdown from "./SearchBarDropdown";
 import { gql,useQuery,useLazyQuery } from "@apollo/client";
 import Context from "../context/AppContext";
-const PRODUCT_LIST= gql`
-query {
-  getAllProducts {
-    status
-    message
-    products {
-      id
-  productName
-  productImages
-  manufacturer
-  composition
-  price
-  prescriptionRequired
-  type
-  tags
-  concerns
-  sku
-  manufacturerAddress
-  marketer
-  marketerAddress
-  description
-  directionToUse
-  safetyInformation
-  ingredients
-  productForm
-  consumeType
-  unitsInPack
-  boxContent
-  size
-  scentOrFlavour
-  stockQuantity
-  packForm
-  productWeightInGrams
-  lengthInCentimeters
-  widthInCentimeters
-  heightInCentimeters
-  hsn
-  gstPercentage
-  maxRetailPrice
-  sp
-  discount
-    }
-  }
-}`;
+import { GET_ALL_PRODUCTS } from "../context/mutation";
+
 
 const GET_MY_ADDRESSES = gql`
   query getMyAddresses {
@@ -88,15 +46,15 @@ const SearchBar = ({
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const {setSelectedProduct} = useContext(Context);
-  const { loading, error, data: dataList } = useQuery(PRODUCT_LIST);
+  const {  error, data: dataList } = useQuery(GET_ALL_PRODUCTS);
 const navigate=useNavigate()
   useEffect(() => {
     if (input) {
       const filtered = dataList?.getAllProducts?.products?.filter((product) => {
-        const inputLower = input.toLowerCase().trim().replace(/\s+/g, ' ');
+        const inputLower = input?.toLowerCase().trim().replace(/\s+/g, ' ');
         return (
-          product.manufacturer.toLowerCase().includes(inputLower) ||
-          product.productName.toLowerCase().includes(inputLower)
+          product.manufacturer?.toLowerCase().includes(inputLower) ||
+          product.productName?.toLowerCase().includes(inputLower)
         );
       });
       setFilteredProducts(filtered);

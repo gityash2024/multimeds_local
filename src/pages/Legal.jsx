@@ -12,7 +12,7 @@ const Legal = () => {
       <div className="flex flex-col justify-between gap-2 border-b border-[#CBD5E1] py-4 text-[#0F172A]">
             <h1 className="text-[1.5rem] font-HelveticaNeueMedium">Legal</h1>
             <h2 className="text-[1.125rem] font-HelveticaNeueItalic">
-              last updated : 23rd March 2023
+              last updated : 23rd March 2024
             </h2>
           </div>
 

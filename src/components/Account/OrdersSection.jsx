@@ -75,7 +75,7 @@ const OrdersSection = () => {
               Date of order
             </h1>
             <h2 className="text-[0.75rem] font-HelveticaNeueMedium">
-              11th September 2023
+              11th March 2024
             </h2>
           </div>
 

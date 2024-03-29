@@ -6,83 +6,104 @@ import Loader from "../components/loader";
 const Context = createContext({});
 export default Context;
 const CART_LIST= gql`
-query{cartProductsListing {status,message,  carts {
-  id
-  product {
-    id
-    productName
-    productImages
-    manufacturer
-    composition
-    price
-    prescriptionRequired
-    type
-    tags
-    concerns
-    sku
-    manufacturerAddress
-    marketer
-    marketerAddress
-    description
-    directionToUse
-    safetyInformation
-    ingredients
-    productForm
-    consumeType
-    unitsInPack
-    boxContent
-    size
-    scentOrFlavour
-    stockQuantity
-    packForm
-    productWeightInGrams
-    lengthInCentimeters
-    widthInCentimeters
-    heightInCentimeters
-    hsn
-    gstPercentage
-    maxRetailPrice
-    sp
-    discount
-  }
-  quantity
-  prescription
-  user {
-    id
-    fullName
-    contactNumber
-    email
-    profilePicture
-    walletBalance
-    role
-    currentAddress {
+query{
+  cartProductsListing{
+    status
+    message
+    carts{
       id
-      houseNumber
-      aptOrBuildingName
-      streetOrAreaName
-      city
-      pincode
-      state
-      label
+      product{
+        id
+        productName
+        productImages
+        manufacturer
+        composition
+        price
+        prescriptionRequired
+        type
+        tags
+        concerns
+        sku
+        manufacturerAddress
+        marketer
+        marketerAddress
+        description
+        unitsInPack
+        boxContent
+        stockQuantity
+        sp
+        discount
+        archived
+        published
+        storage
+        origin
+        healthConcern
+        subCategory
+        createdAt
+        updatedAt
+        stocks{
+          id
+          productId
+          manufacturer
+          groupNumber
+          stockType
+          boxes
+          sheets
+          noOfTabletsPerSheet
+          noOfUnits
+          weightPerUnit
+          noOfKgs
+          noOfGrams
+          noOfUnits
+          noOfTabletsPerSheet
+          mrpPerSheet
+          boxMrp
+          batchNumber
+          expiryDate
+          createdAt
+        }
+        bulletPoints{
+          id
+          point
+          description
+          author
+          
+        }
+        category{
+          id
+          categoryName
+          segmentId
+          createdAt
+        }
+        coupon{
+          id
+          code
+          type
+          percentage
+          fixedAmount
+          description
+          status
+          expiryDate
+          createdAt
+        }
+      }
+      quantity
+      prescription
+      user{
+        id
+        fullName
+        contactNumber
+        email
+        walletBalance
+        role
+        profilePicture
+      }
+      status
+      createdAt
     }
-    department {
-      name
-      description
-      permissions
-      creator {
-id
-    fullName
-    contactNumber
-    email
-    profilePicture
-    walletBalance
-    role        }
-    }
+    
   }
-  status
-  createdAt
-  updatedAt
-}}}
+}
 `;
 export function AppContext({children}) {
 

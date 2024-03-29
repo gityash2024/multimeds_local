@@ -37,11 +37,11 @@ const ProfileInput = ({ title, big, isError, value, setValue,disabled }) => {
           disabled={disabled}
           className="w-full outline-none text-[0.875rem] font-HelveticaNeueLight bg-[#FAFAFA] placeholder:text-[#64748B] capitalize"
         />
-        <img
+        {/* <img
           src={value === "" ? InactiveDownArrow : DownArrow}
           alt="drop down arrow"
           className="w-6 h-6"
-        />
+        /> */}
       </div>
     </div>
   );

@@ -1,66 +1,24 @@
-import React, { useContext, useRef,usena, useState,useEffect } from "react";
+import React, { useContext, useState,useEffect } from "react";
 import ProductCard from "../Product/ProductCard";
-import IndexSortBy from "./IndexSortBy";
-import data from "../../data";
-import { useQuery, gql,useMutation } from "@apollo/client";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useQuery } from "@apollo/client";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "../loader";
 import Context from "../../context/AppContext";
-const PRODUCT_LIST= gql`
-query {
-  getAllProducts {
-    status
-    message
-    products {
-      id
-  productName
-  productImages
-  manufacturer
-  composition
-  price
-  prescriptionRequired
-  type
-  tags
-  concerns
-  sku
-  manufacturerAddress
-  marketer
-  marketerAddress
-  description
-  directionToUse
-  safetyInformation
-  ingredients
-  productForm
-  consumeType
-  unitsInPack
-  boxContent
-  size
-  scentOrFlavour
-  stockQuantity
-  packForm
-  productWeightInGrams
-  lengthInCentimeters
-  widthInCentimeters
-  heightInCentimeters
-  hsn
-  gstPercentage
-  maxRetailPrice
-  sp
-  discount
-    }
-  }
-}`;
+import { GET_ALL_PRODUCTS } from "../../context/mutation";
 
 
 
 const FindByIndex = () => {
+  const location = useLocation();
+
   let isIllness=false;
   const { type } = useParams();
   if(type){
     isIllness=true
   }
+  const healthConcern= location?.state?.healthConcern;
+  const subCategory= location?.state?.subCategory;
   const {setSelectedProduct}=useContext(Context)
   console.log(type)
   const navigate=useNavigate()
@@ -70,11 +28,9 @@ const FindByIndex = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [activeLetter, setActiveLetter] = useState('All');
   const [isPrescriptionRequired, setIsPrescriptionRequired] = useState(null);
-  const { loadingProduct, errorproduct, data:dataListProduct } = useQuery(PRODUCT_LIST,{
+  const {   data:dataListProduct } = useQuery(GET_ALL_PRODUCTS,{
     onCompleted: (data) => {
-   
-        setProductList(data?.getAllProducts?.products);
-        setFilteredProducts(data?.getAllProducts?.products); 
+       
       
         setIsFetched(true);
         setIsLoading(false)
@@ -84,6 +40,27 @@ const FindByIndex = () => {
 
     }
   });   
+
+  useEffect(() => {
+    let data = dataListProduct;
+    if (healthConcern || subCategory) {
+      console.log(healthConcern, "+++++healthConcern+++++++++");
+      console.log(subCategory, "+++++subCategory+++++++++");
+      if (healthConcern) {
+        console.log(data?.getAllProducts?.products.filter((product) => product?.healthConcern === healthConcern), "+++++data+++++++++");
+        console.log(data?.getAllProducts?.products, "+++++data+++++++++");
+        setProductList(data?.getAllProducts?.products.filter((product) => product?.healthConcern === healthConcern));
+        setFilteredProducts(data?.getAllProducts?.products.filter((product) => product?.healthConcern === healthConcern));
+      } else {
+        setProductList(data?.getAllProducts?.products.filter((product) => product?.subCategory === subCategory));
+        setFilteredProducts(data?.getAllProducts?.products.filter((product) => product?.subCategory === subCategory));
+      }
+    } else {
+      setProductList(data?.getAllProducts?.products);
+      setFilteredProducts(data?.getAllProducts?.products); 
+    }
+  }, [dataListProduct, healthConcern, subCategory]); // Adding dependencies to the dependency array
+  
 
   const handleAlphabetFilter = (letter) => {
     setActiveLetter(letter);
@@ -95,7 +72,9 @@ const FindByIndex = () => {
     applyFilters(activeLetter, required);
   };
 
-
+  const toCapitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
   const applyFilters = (letter, prescription) => {
     let filtered = productList;
 
@@ -205,7 +184,7 @@ const FindByIndex = () => {
                   className={isIllness ? "w-16 h-16 mr-2" : "w-24 h-24 mr-4"}
                 />
                 <h2 className={isIllness ? "text-[0.875rem] " : "text-[0.875rem] font-HelveticaNeueMedium"}>
-                  {isIllness ? product?.productName : product?.manufacturer}
+                  {isIllness ? toCapitalize(product?.productName ): toCapitalize(product?.manufacturer)}
                 </h2>
               </div>
             ))}

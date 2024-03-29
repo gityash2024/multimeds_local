@@ -33,7 +33,6 @@ import ContactUs from "./pages/ContactUs";
 import Blog from "./pages/Blog";
 import BlogDetails from "./components/blogdetails";
 import Referrals from "./components/Account/Refferal/Refferal";
-import RefferaLogin from "./components/LoginRefferal/RefferalLogin";
 import Wallet from "./components/Account/Wallet/wallet";
 import TxnSuccess from "./components/Transactions/TxnSuccess";
 import TxnFail from "./components/Transactions/TxnFail";
@@ -80,9 +79,7 @@ function App() {
         <Route
           path="contact-us"
           element={
-            <ProtectedRoute>
               <ContactUs />
-            </ProtectedRoute>
           }
         />
         <Route
@@ -185,9 +182,7 @@ function App() {
         <Route
           path="privacypolicy"
           element={
-            <ProtectedRoute>
               <PrivacyPolicy />
-            </ProtectedRoute>
           }
         />
         <Route
@@ -217,9 +212,7 @@ function App() {
         <Route
           path="terms-and-conditions"
           element={
-            <ProtectedRoute>
               <TermsAndConditions />
-            </ProtectedRoute>
           }
         />
         <Route
@@ -294,12 +287,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="refferal-login"
-          element={
-              <RefferaLogin />
-          }
-        />
+ 
      
         <Route
           path="prescription-analyzed"

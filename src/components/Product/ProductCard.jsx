@@ -16,85 +16,107 @@ const UPDATE_CART_QUANTITY = gql`
     }
   }
 `;
-const CART_LIST= gql`
-query{cartProductsListing {status,message,  carts {
-  id
-  product {
-    id
-    productName
-    productImages
-    manufacturer
-    composition
-    price
-    prescriptionRequired
-    type
-    tags
-    concerns
-    sku
-    manufacturerAddress
-    marketer
-    marketerAddress
-    description
-    directionToUse
-    safetyInformation
-    ingredients
-    productForm
-    consumeType
-    unitsInPack
-    boxContent
-    size
-    scentOrFlavour
-    stockQuantity
-    packForm
-    productWeightInGrams
-    lengthInCentimeters
-    widthInCentimeters
-    heightInCentimeters
-    hsn
-    gstPercentage
-    maxRetailPrice
-    sp
-    discount
-  }
-  quantity
-  prescription
-  user {
-    id
-    fullName
-    contactNumber
-    email
-    profilePicture
-    walletBalance
-    role
-    currentAddress {
+const CART_LIST = gql`
+query{
+  cartProductsListing{
+    status
+    message
+    carts{
       id
-      houseNumber
-      aptOrBuildingName
-      streetOrAreaName
-      city
-      pincode
-      state
-      label
+      product{
+        id
+        productName
+        productImages
+        manufacturer
+        composition
+        price
+        prescriptionRequired
+        type
+        tags
+        concerns
+        sku
+        manufacturerAddress
+        marketer
+        marketerAddress
+        description
+        unitsInPack
+        boxContent
+        stockQuantity
+        sp
+        discount
+        archived
+        published
+        storage
+        origin
+        healthConcern
+        subCategory
+        createdAt
+        updatedAt
+        stocks{
+          id
+          productId
+          manufacturer
+          groupNumber
+          stockType
+          boxes
+          sheets
+          noOfTabletsPerSheet
+          noOfUnits
+          weightPerUnit
+          noOfKgs
+          noOfGrams
+          noOfUnits
+          noOfTabletsPerSheet
+          mrpPerSheet
+          boxMrp
+          batchNumber
+          expiryDate
+          createdAt
+        }
+        bulletPoints{
+          id
+          point
+          description
+          author
+          
+        }
+        category{
+          id
+          categoryName
+          segmentId
+          createdAt
+        }
+        coupon{
+          id
+          code
+          type
+          percentage
+          fixedAmount
+          description
+          status
+          expiryDate
+          createdAt
+        }
+      }
+      quantity
+      prescription
+      user{
+        id
+        fullName
+        contactNumber
+        email
+        walletBalance
+        role
+        profilePicture
+      }
+      status
+      createdAt
     }
-    department {
-      name
-      description
-      permissions
-      creator {
-id
-    fullName
-    contactNumber
-    email
-    profilePicture
-    walletBalance
-    role        }
-    }
+    
   }
-  status
-  createdAt
-  updatedAt
-}}}
+}
 `;
+
 const ADD_TO_CART = gql`
   mutation addToCart($productId: ID!, $productCount: Int!) {
     addToCart(input: { productId: $productId, quantity: $productCount }) {
@@ -116,6 +138,8 @@ export default function ProductCard(props) {
     const { setSelectedProduct } = useContext(Context);
     const navigate = useNavigate();
     const { product, isDropdown, isPrescriptionNeeded, isCartModal } = props;
+    console.log(product, "product")
+    console.log(isPrescriptionNeeded, "isPrescriptionNeeded")
     const [isSelected, setIsSelected] = useState(false);
     const [productCount, setProductCount] = useState(0);
     const [cartList, setCartList] = useState([]);
@@ -126,7 +150,7 @@ export default function ProductCard(props) {
     const [updateCartQuantity] = useMutation(UPDATE_CART_QUANTITY);
     const [addToCart] = useMutation(ADD_TO_CART);
     const [removeFromCart] = useMutation(REMOVE_FROM_CART);
-    const { loading: loadingCartData, data: cartData, refetch: refetchCart } = useQuery(CART_LIST, { fetchPolicy: "network-only" });
+    const {  data: cartData, refetch: refetchCart } = useQuery(CART_LIST, { fetchPolicy: "network-only" });
 
     useEffect(() => {
         if (cartData?.cartProductsListing?.carts) {
@@ -180,6 +204,9 @@ export default function ProductCard(props) {
     };
 
     if (!product) return <></>;
+    const toCapitalize = (str) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
   return (
     <div
       onClick={() => {
@@ -202,17 +229,20 @@ export default function ProductCard(props) {
                   <img src={product.productImages[0]} alt={product.productName} className="w-14 h-14" />
               )}
               <div className="flex flex-col gap-1 w-full">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">{product.productName}</h1>
-                  <h2 className="text-[0.875rem]">{product.unitsInPack} Unit</h2>
+                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">{toCapitalize(product.productName)}</h1>
+                  <h2 className="text-[0.775rem]">
+                    {/* {product?.stocks[0].noOfUnits} Unit */}
+                    {product?.stocks[0]?.stockType==='Boxes' ? `${product?.stocks[0]?.sheets} Sheets ${product?.stocks[0]?.noOfTabletsPerSheet} Units per sheet`: product?.stocks[0]?.stockType==='Units'? `${product?.stocks[0]?.noOfUnits} Units`:product?.stocks[0]?.stockType==='Grams'? `${product?.stocks[0]?.noOfGrams} Grams`: product?.stocks[0]?.stockType==='Kilograms'? `${product?.stocks[0]?.noOfKgs} Kilograms`: null}
+                    </h2>
               </div>
           </div>
 
           <div className="flex flex-col gap-1 min-w-[6.8rem]">
               <div className="flex items-center gap-2">
-                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">Rs {product.sp}</h1>
-                  <h2 className="text-[0.75rem] line-through text-[#94A3B8]">Rs {product.maxRetailPrice}</h2>
+                  <h1 className="text-[0.875rem] font-HelveticaNeueMedium">Rs {product.stocks[0].mrpPerSheet-(product.stocks[0].mrpPerSheet*product.coupon?.percentage/100)}</h1>
+                  <h2 className="text-[0.75rem] line-through text-[#94A3B8]">Rs {product.stocks[0].mrpPerSheet}</h2>
               </div>
-              <h1 className="text-[0.75rem] font-HelveticaNeueMedium text-[#65A30D]">{product?.discount?.toFixed(2)}% OFF</h1>
+              <h1 className="text-[0.75rem] font-HelveticaNeueMedium text-[#65A30D]">{product.coupon?.percentage}% OFF</h1>
           </div>
 
 

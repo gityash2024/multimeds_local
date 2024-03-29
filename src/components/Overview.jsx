@@ -6,6 +6,11 @@ import AuthorCard from "./AuthorCard";
 import AuthorImage from "../assets/product/authorImage.png";
 
 const Overview = ({ productInfoData, isActive, setIsActive }) => {
+  const selectedPointAuthor= productInfoData.filter((item, index) => {
+    return item?.id === isActive;
+  });
+  console.log(selectedPointAuthor,'selectedPointAuthor')
+  
   console.log(productInfoData)
   return (
     <div className="flex flex-col justify-between py-6 w-[14.188rem] h-[36.188rem] rounded bg-white">
@@ -31,11 +36,11 @@ const Overview = ({ productInfoData, isActive, setIsActive }) => {
       </div>
 
       {/* Author */}
-      <AuthorCard
-        name="Dr. Sakshi L"
-        occupation="MD. Pharmacology"
+     { <AuthorCard
+        name={selectedPointAuthor[0]?.author}
+        // occupation="MD. Pharmacology"
         image={AuthorImage}
-      />
+      />}
     </div>
   );
 };

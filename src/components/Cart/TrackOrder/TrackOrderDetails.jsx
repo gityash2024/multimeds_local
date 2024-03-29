@@ -45,7 +45,7 @@ const TrackOrderDetail = (props) => {
                     <span>Date of order</span>
                   </span>
                   <span className="track-detail-text06 12Medium">
-                    <span>11th September 2023</span>
+                    <span>11th March 2024</span>
                   </span>
                 </div>
                 <div className="track-detail-frame2781">
@@ -105,7 +105,7 @@ const TrackOrderDetail = (props) => {
                   <span>Order Placed</span>
                 </span>
                 <span className="track-detail-text23 14RegularItalic">
-                  <span>at 3:40 pm on 13th September 2023</span>
+                  <span>at 3:40 pm on 13th March 2024</span>
                 </span>
               </div>
             </div>
@@ -217,7 +217,7 @@ const TrackOrderDetail = (props) => {
                   <span>Order Delivered!</span>
                 </span>
                 <span className="track-detail-text39 14RegularItalic">
-                  <span>at 3:40 pm on 13th September 2023</span>
+                  <span>at 3:40 pm on 13th March 2024</span>
                 </span>
               </div>
             </div>

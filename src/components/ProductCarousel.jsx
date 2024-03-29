@@ -1,60 +1,18 @@
 import React, { useContext, useRef, useState,useEffect } from "react";
-
+import { useParams } from "react-router-dom";
 import ProductCarouselCard from "./ProductCarouselCard";
-import SampleProductImage from "../assets/sampleProduct.png";
 import LeftArrowActive from "../assets/leftArrowActive.svg";
 import RightArrowActive from "../assets/rightArrowActive.svg";
 import RightArrowInactive from "../assets/rightArrowInactive.svg";
 import LeftArrowInactive from "../assets/leftArrowInactive.svg";
 import { Link, useNavigate } from "react-router-dom";
-import data from "../data";
 import Context from "../context/AppContext";
-import { useQuery, gql,useMutation } from "@apollo/client";
-const PRODUCT_LIST= gql`
-query {
-  getAllProducts {
-    status
-    message
-    products {
-      id
-  productName
-  productImages
-  manufacturer
-  composition
-  price
-  prescriptionRequired
-  type
-  tags
-  concerns
-  sku
-  manufacturerAddress
-  marketer
-  marketerAddress
-  description
-  directionToUse
-  safetyInformation
-  ingredients
-  productForm
-  consumeType
-  unitsInPack
-  boxContent
-  size
-  scentOrFlavour
-  stockQuantity
-  packForm
-  productWeightInGrams
-  lengthInCentimeters
-  widthInCentimeters
-  heightInCentimeters
-  hsn
-  gstPercentage
-  maxRetailPrice
-  sp
-  discount
-    }
-  }
-}`;
-// const ADD_TO_CART= gql`mutation{addToCart(input:{productId:"3a92f6bd-c09a-42d5-aae8-dde29f2b5230",quantity:1}){status,message}}`;
+import { useQuery, gql } from "@apollo/client";
+import Loader from "./loader";
+import { GET_ALL_PRODUCTS } from "../context/mutation";
+
+
+
 
 const ADD_TO_CART = gql`
   mutation addToCart(
@@ -74,16 +32,45 @@ const ADD_TO_CART = gql`
   }
 `;
 
-const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) => {
+const ProductCarousel = ({ title, subtitle, description, isViewProducts }) => {
   const [productId,setProductId]=useState("")
+  const { id } = useParams(); // Get the `id` parameter from the URL
+
   const [quantity,setProductQuantity]=useState(1)
-  const { loading, error, data:dataList } = useQuery(PRODUCT_LIST,{
+  const { loading, error, data: dataList, refetch } = useQuery(GET_ALL_PRODUCTS, {
     onCompleted: (data) => {
-      // setLoading(false);
-      // console.log(data?.getAllProducts?.products,'++++++++++++=====+++====+++===+++====++====++=')
-      // console.log(transformedData)
-      setProductList(data?.getAllProducts?.products);
-      // console.log(transformedData,'========---------------------------------productb list')
+      const mergedProductList = data?.getAllProducts?.products?.map((product) => {
+        const mergedStocks = product?.stocks?.reduce((acc, stock) => {
+          return {
+            ...acc,
+            noOfUnits: (acc.noOfUnits ?? 0) + stock.noOfUnits,
+            weightPerUnit: stock.weightPerUnit,
+            boxMrp: stock.boxMrp,
+            noOfGrams: stock.noOfGrams,
+            noOfKgs: stock.noOfKgs,
+            boxes: stock.boxes,
+            batchNumber: stock.batchNumber,
+            manufacturer: stock.manufacturer,
+            manufacturingDate: stock.manufacturingDate,
+            expiryDate: stock.expiryDate,
+            mrpPerSheet: stock.mrpPerSheet,
+            noOfUnits: stock.noOfUnits,
+            noOfTabletsPerSheet: stock.noOfTabletsPerSheet,
+            sheets: stock.sheets,
+            stockType: stock?.stockType
+          };
+        }, {});
+      
+        
+        
+  
+        return {
+          ...product,
+          stocks: [mergedStocks]
+        };
+      });
+  console.log(mergedProductList)
+      setProductList(mergedProductList);
       setIsFetched(true);
     },
     onError: (err) => {
@@ -91,34 +78,12 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
     }
   });
 
-  const [addToCart, { loading: addToCartLoading }] = useMutation(
-    ADD_TO_CART,
-    {
-      variables: {
-     
-        productId: productId,
-        quantity: quantity,
-     
-      },
-      onCompleted: (data) => {
-        if (data.addToCart.status === "SUCCESS") {
-          // setProductId("")
-        } else {
-          // setLoading(false);
+  useEffect(() => {
+    // Refetch data when the component mounts or when the `id` parameter changes
+    refetch();
+  }, [id, refetch]);
 
-          // toast.error("Error : Add Address ");
-        }
-      },
-      onError: (err) => {
-        // setLoading(false);
 
-        // toast.error("Error : " + err?.message);
-
-        // setBtnDisable(false)
-        // setLoading(false)
-      },
-    }
-  );
     const navigate = useNavigate();
   const {setSelectedProduct} = useContext(Context)
   const [slide, setSlide] = useState(0);
@@ -127,28 +92,7 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
   const [currentIndex, setCurrentIndex] = useState(0);
   const maxVisibleItems = 5;
 
-
  
-  // useEffect(()=>{
-  //   try{
-  //   console.log('data is 123');
-  //   console.log(dataList);
-  //   console.log(dataList.getCarouselProducts.products);
-  //   setProductList(dataList.getCarouselProducts.products);
-  //   setIsFetched(true);
-  //   }catch(err){
-  //     console.log(err);
-  //   }
-    
-  // },[dataList])
-  const res = data.filter((item, index) => {
-    if (slide === 0) {
-      return index < 5;
-    } else {
-      return index > 4;
-    }
-  });
-
   const handleRightArrow = () => {
     setCurrentIndex(prevIndex => Math.min(prevIndex + maxVisibleItems, productList.length - maxVisibleItems));
   };
@@ -160,7 +104,6 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
   const addToCartFunc=(item)=>{
     setProductId(item.id);
     setSelectedProduct(item);
-    // addToCart()
     navigate(`/product/${item.id}`);
   }
 
@@ -194,39 +137,46 @@ const ProductCarousel = ({id, title, subtitle, description, isViewProducts }) =>
       {/* Carousel */}
       <div className="w-full flex justify-between items-end gap-6">
       
-            {productList.length && productList.slice(currentIndex, currentIndex + maxVisibleItems).map((item) => (
-              <ProductCarouselCard
-                key={item.id}
-                id={item.id}
-                title={item.productName}
-                discount={item.discount ? item.discount.toString().slice(0, 4) : '0'}
-                sp={item.sp}
-                units={item.unitsInPack}
-                maxRetailPrice={item.maxRetailPrice}
-                marketer={item.marketer}
-                image={item.productImages[0]}
-                openProduct={() => {
-                  
-                 addToCartFunc(item)
-                }}
-              />
-            ))}
+      {productList?.filter(item => item?.published).length? productList?.filter(item => item?.published).slice(currentIndex, currentIndex + maxVisibleItems).map((item) => (
+  <ProductCarouselCard
+    key={item.id}
+    id={item.id}
+    title={item.productName}
+    discount={item.coupon?.percentage }
+    product={item}
+    sp={item?.stocks[0]?.mrpPerSheet-((item.stocks[0]?.mrpPerSheet*item?.coupon?.percentage)/100)}
+    maxRetailPrice={item.stocks[0]?.mrpPerSheet}
+    marketer={item.stocks[0]?.manufacturer}
+    image={item.productImages[0]}
+    openProduct={() => {
+      addToCartFunc(item)
+    }}
+  />
+)): <>
+  <div className="w-full " style={{display:'flex',justifyContent:'center'}}>
+    <p  className="text-[#475569] font-HelveticaNeueMedium text-[1.25rem] text-center" >No Products Available</p>
+  </div>
+</>}
           </div>
 
      
 
       {/* Navigation Arrows */}
-      <div className="w-full flex gap-1">
+    {productList?.length > maxVisibleItems &&  <div className="w-full flex gap-1">
             <button onClick={handleLeftArrow} className="cursor-pointer">
               <img src={currentIndex === 0 ? LeftArrowInactive : LeftArrowActive} alt="Left Arrow" />
             </button>
             <button onClick={handleRightArrow} className="cursor-pointer">
               <img src={currentIndex >= productList.length - maxVisibleItems ? RightArrowInactive : RightArrowActive} alt="Right Arrow" />
             </button>
-          </div>
+          </div>}
         </div>
       ) : (
+        <>
         <div>Loading...</div>
+        <Loader />
+        </>
+
       )}
     </div>
   );

@@ -17,6 +17,8 @@ import SubscriptionCard from "./Subscription";
 import { toast } from "react-toastify";
 import Loader from "./loader";
 import CouponModal from "./Cart/CouponModal";
+import { BookmarkAdd, BookmarkAddSharp } from "@mui/icons-material";
+import { ShareOutlined } from "@material-ui/icons";
 
 const ADD_TO_FAVORITE = gql`
   mutation setAsFavorite($productId: String!) {
@@ -34,6 +36,68 @@ const UPDATE_CART_QUANTITY = gql`
     }
   }
 `;
+
+const GET_FAVORITE_PRODUCT = gql`
+query
+{
+  getMyFavorites{
+    status
+    message
+    favorites{
+      id
+      userId
+      productId
+      user{
+        id
+        fullName
+        contactNumber
+        email
+        gmail
+        profilePicture
+        walletBalance
+        role
+        successfulReferrals
+        referralDiscountPercentage
+        remainingReferralDiscounts
+        createdAt
+        updatedAt
+      }
+      product{
+        id
+        productName
+        productImages
+        manufacturer
+        composition
+        price
+        prescriptionRequired
+        type
+        tags
+        concerns
+        sku
+        manufacturerAddress
+        marketer
+        marketerAddress
+        description
+        unitsInPack
+        boxContent
+        stockQuantity
+        sp
+        discount
+      
+        category{
+          id
+          categoryName
+          segmentId
+          createdAt
+        }
+   
+      }
+      createdAt
+      updatedAt
+    }
+  }
+}
+`
 
 const ADD_TO_CART = gql`
   mutation addToCart($productId: ID!, $quantity: Int!) {
@@ -77,7 +141,21 @@ console.log(selectedProduct,'selectedProduct')
   const [quantity, setQuantity] = useState(Number(0));
   const [isLogin, setIsLogin] = useState(true);
   const [productInCart, setProductAlreadyInCart] = useState(false);
-const[selectedAddress,setSelectedAddress]=useState({})
+  const[productInFavList,setProductInFavList]=useState(false);
+
+const[selectedAddress,setSelectedAddress]=useState({});
+const { data: favoriteProductData, refetch: refetchFavoriteProduct } = useQuery(GET_FAVORITE_PRODUCT);
+
+useEffect(() => {
+  refetchFavoriteProduct();
+},[])
+useEffect(() => {
+  console.log(favoriteProductData?.getMyFavorites?.favorites,'favoriteProductData')
+  if(favoriteProductData?.getMyFavorites?.favorites?.length){
+    setProductInFavList(true)
+  }
+
+},[favoriteProductData])
   const [setAsFavorite] = useMutation(
     ADD_TO_FAVORITE,
     {
@@ -86,9 +164,11 @@ const[selectedAddress,setSelectedAddress]=useState({})
       },
       onCompleted: (data) => {
         if (data.setAsFavorite.status === "SUCCESS") {
+          toast.success("Product Added to favorites successfully.");
           handleRefetchCart();
-
+          refetchFavoriteProduct();
         } else {
+          toast.error(data?.setAsFavorite?.message || "Error : Add to Favorite ");
         }
       },
       onError: (err) => {
@@ -157,6 +237,7 @@ const handleAddressSelect=(data)=>{
   }, [shareModal, isLogin]);
 
   const handleSaveProduct = () => {
+
     setAsFavorite();
   };
 
@@ -170,6 +251,7 @@ const handleAddressSelect=(data)=>{
 
 
   const handleCopyLink = () => {
+    toast.success("Copy to clipboard")
     navigator.clipboard
       .writeText(window.location.href)
       .then(() => {
@@ -262,23 +344,22 @@ const handleAddressSelect=(data)=>{
                   {selectedProduct["productName"]}
                 </h1>
                 <div className="flex relative gap-1">
-                  <button
+                {productInFavList?<span title="Added to favorites" style={{cursor:'pointer'}} onClick={()=>{toast.info("Already added to favorites")}}><BookmarkAddSharp/></span>: <button
                     onClick={() => {
                       handleSaveProduct(selectedProduct);
                     }}
+                    title="Add to favorites"
                   >
-                    <img
-                      className="w-[35px]"
-                      src={Bookmark}
-                      alt="bookmark icon"
-                    />
-                  </button>
+                    <img className="w-[35px]" src={Bookmark} alt="icon" />
+                  </button>}
                   <button
                     onClick={() => {
                       setShareModal((prev) => !prev);
                     }}
+                    title="Share product"
                   >
-                    <img className="w-[35px]" src={Share} alt="share icon" />
+                    {/* <img className="w-[35px]" src={Share} alt="share icon" /> */}
+                    <ShareOutlined/>
                   </button>
                   {shareModal && (
                     <div
@@ -338,33 +419,35 @@ const handleAddressSelect=(data)=>{
               </div>
 
               <p className="text-[0.75rem] font-HelveticaNeueMedium">
-              {selectedProduct.unitsInPack} unit in one sheet.{" "}
-                <Link className="text-[#7487FF]">See other variants</Link>
+              {selectedProduct?.description}
+               
               </p>
             </div>
           </div>
 
           {/* Details */}
           <div className="flex justify-between py-2 px-4">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               <div className="flex gap-4">
                 {/* Manufacturer */}
-                <div className="w-[7.188rem]">
+                <div className="w-[11rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
                     {selectedProduct["marketer"]}
                   </h1>
                   <div>
-                    <div className="w-fit border-b border-[#0F172A]">
-                      <h2 className="cursor-pointer text-[0.875rem] font-HelveticaNeueMedium text-[#0F172A]">
-                        {selectedProduct.Manufacturer}
+                    <div className="w-fit ">
+                      <h2 className="cursor-pointer text-[0.75rem] font-HelveticaNeueMedium text-[#0F172A]">
+                      <span style={{fontWeight:'bold'}}>Manufacturer</span>  <br />
+
+                        {selectedProduct?.stocks[0].manufacturer}
                       </h2>
                     </div>
                   </div>
                 </div>
                 {/* Composition*/}
-                <div className="w-[7.188rem]">
-                  <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                    Composition <br />
+                <div className="w-[11rem]">
+                  <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B] " >
+                  <span style={{fontWeight:'bold'}}>Composition</span>  <br />
                     {selectedProduct?.composition||'--'}
                   </h1>
                   <div>
@@ -377,10 +460,10 @@ const handleAddressSelect=(data)=>{
               </div>
               <div className="flex gap-4">
                 {/* Storage */}
-                <div className="w-[7.188rem]">
+                <div className="w-[11rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                    Storage <br />
-                    {selectedProduct?.safetyInformation}
+                  <span style={{fontWeight:'bold'}}> Storage </span><br />
+                    {selectedProduct?.storage}
 
                   </h1>
                   <div>
@@ -392,9 +475,9 @@ const handleAddressSelect=(data)=>{
                   </div>
                 </div>
                 {/* Country of Origin*/}
-                <div className="w-[7.188rem]">
+                <div className="w-[11rem]">
                   <h1 className="text-[0.75rem] font-HelveticaNeueItalic text-[#64748B]">
-                    Country <br /> India
+                  <span style={{fontWeight:'bold'}}> Country</span> <br /> {selectedProduct?.origin}
                   </h1>
                   <div>
                     <div className="w-fit">
@@ -428,16 +511,16 @@ const handleAddressSelect=(data)=>{
         <div>
           <div className="flex justify-between p-4 text-[#0F172A] rounded-4">
             <span className=" text-[0.625rem] font-HelveticaNeueMedium p-2 bg-[#C2F5E9] h-6">
-              {selectedProduct?.discount?.toFixed(2)}% OFF
+              {selectedProduct?.coupon?.percentage}% OFF
             </span>
             <div>
                 <div className="flex justify-between items-center">
                   <h1 className="font-HelveticaNeueMedium text-[#031B89]">
-                    MRP : Rs {selectedProduct.sp}
+                    MRP : Rs {selectedProduct.stocks[0]?.mrpPerSheet-(selectedProduct.stocks[0]?.mrpPerSheet*selectedProduct?.coupon?.percentage/100)}
                   </h1>
                   <p className="text-[0.75rem] text-[#94A3B8] pl-1">
                     <span className="line-through">
-                      {selectedProduct.maxRetailPrice} Rs
+                      {selectedProduct.stocks[0]?.mrpPerSheet} Rs
                     </span>
                   </p>
                 </div>
@@ -446,11 +529,11 @@ const handleAddressSelect=(data)=>{
 
                 <div className="flex justify-between items-center">
                   <h1 className="font-HelveticaNeueMedium text-[#031B89]">
-                    TOTAL : Rs {quantity * selectedProduct.sp}
+                    TOTAL : Rs {quantity * (selectedProduct.stocks[0]?.mrpPerSheet-(selectedProduct.stocks[0]?.mrpPerSheet*selectedProduct?.coupon?.percentage/100))||0}
                   </h1>
                   <p className="text-[0.75rem] text-[#94A3B8] pl-1">
                     <span className="line-through">
-                      {quantity * selectedProduct.maxRetailPrice} Rs
+                      {quantity * selectedProduct.stocks[0]?.mrpPerSheet} Rs
                     </span>
                   </p>
                 </div>
@@ -538,10 +621,10 @@ const handleAddressSelect=(data)=>{
               </div>
             </div>
 
-            <SubscriptionCard  />
+            <SubscriptionCard  pincode={selectedAddress?.pincode}/>
 
             <div className="flex flex-col gap-2">
-              <OfferCoupon />
+              <OfferCoupon selectedProduct={selectedProduct}/>
               <Link onClick={()=>{setIsopne(true)}}className="text-[0.875rem] font-HelveticaNeueMedium text-[#7487FF]">
                 Explore more offers
               </Link>

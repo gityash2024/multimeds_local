@@ -4,6 +4,7 @@ import LightArrow from "../assets/product/rightArrowLightIcon.svg";
 import DarkArrow from "../assets/product/rightArrowDarkIcon.svg";
 
 const ProductInformation = ({ item, isActive, setIsActive }) => {
+  console.log(item)
   const onClick = () => {
     setIsActive(item.id);
   };
@@ -15,7 +16,7 @@ const ProductInformation = ({ item, isActive, setIsActive }) => {
         isActive === item.id ? "text-white bg-[#7487FF]" : null
       }`}
     >
-      <h1>Product Information</h1>
+      <h1>{item?.Heading}</h1>
       <img
         src={isActive === item.id ? LightArrow : DarkArrow}
         className="h-[1.5rem] w-[1.5rem]"

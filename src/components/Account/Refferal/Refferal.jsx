@@ -3,9 +3,12 @@ import './refferal.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { gql, useQuery, useMutation } from '@apollo/client';
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from '../../loader';
+import { FaCopy, FaRedoAlt, FaLink } from 'react-icons/fa';
+import { HiOutlineClipboardCopy } from 'react-icons/hi';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const GET_REFERRALS = gql`
   query GetUserReferrals {
@@ -111,13 +114,18 @@ const Referrals = () => {
               <div className="refferal-refferal476">
                 <span className="refferal-text04 20Medium">{referrals.length > 0 ? referrals[0].code : 'No referral code available'}</span>
               </div>
-              <div style={{ cursor: "pointer" }} className="refferal-refferal477" onClick={() => handleCopyLink(referrals.length > 0 ? referrals[0].code : null)}>
-                <span className="refferal-text06 16Medium">Copy </span>
+              <Tooltip title="Copy" arrow>
+                <div style={{ cursor: "pointer" }} className="refferal-refferal477" onClick={() => handleCopyLink(referrals.length > 0 ? referrals[0].code : null)}>
+                  <HiOutlineClipboardCopy className="text-gray-500 hover:text-gray-700" size={24} />
+                </div>
+              </Tooltip>
+            </div>
+            <Tooltip title="Regenerate Link" arrow>
+              <div style={{ cursor: "pointer" }} className="refferal-refferal480" onClick={handleRegenerateLink}>
+                <FaRedoAlt className="text-blue-500 hover:text-blue-700" size={18} />
+                <span className="refferal-text08 14Medium" style={{ color: "blue" }}>Regenerate Link</span>
               </div>
-            </div>
-            <div style={{ cursor: "pointer" }} className="refferal-refferal480" onClick={handleRegenerateLink}>
-              <span className="refferal-text08 14Medium" style={{ color: "blue" }}>Regenerate Link</span>
-            </div>
+            </Tooltip>
           </div>
         </div>
         <div className="refferal-refferal281">
@@ -139,12 +147,19 @@ const Referrals = () => {
           <div className="refferal-refferal473" style={{ maxHeight: '520px', overflowY: 'auto' }}>
             {filteredReferrals.length > 0 ? filteredReferrals.map((referral, index) => (
               <div key={index} className="refferal-refferal381" style={{ backgroundColor: index % 2 === 0 ? "rgb(238, 245, 253)" : "none" }}>
-                <div>
+                <div className="refferal-refferal483">
+                  <FaLink className="text-gray-500" size={16} />
                   <span className="refferal-text21 14Medium">{referral.code}</span>
-                  <span style={{ cursor: "pointer", marginLeft: "10px" }} className="refferal-text23 12Medium" onClick={() => handleCopyLink(referral.code)}>Copy </span>
+                  <Tooltip title="Copy" arrow>
+                    <span style={{ cursor: "pointer" }} className="refferal-text23 12Medium" onClick={() => handleCopyLink(referral.code)}>
+                      <HiOutlineClipboardCopy className="text-gray-500 hover:text-gray-700" size={16} />
+                    </span>
+                  </Tooltip>
                 </div>
-                <span className="refferal-text25 14Medium">{new Date(referral.expiryDate).toLocaleString()}</span> {/* Format date here */}
-                <span className="refferal-text27 14Medium">{referral.linkStatus}</span>
+                <span className="refferal-text25 14Medium">{new Date(referral.expiryDate).toLocaleString()}</span>
+                <span className="refferal-text27 14Medium" style={{ color: referral.linkStatus === 'ACTIVE' ? 'green' : 'red' }}>
+                  {referral.linkStatus === 'ACTIVE' ? 'Active' : 'Inactive'}
+                </span>
               </div>
             )) : (
               <div className="refferal-refferal381" style={{ backgroundColor: "rgb(238, 245, 253)" }}>
@@ -154,11 +169,9 @@ const Referrals = () => {
               </div>
             )}
           </div>
-
         </div>
       </div>
       {loadingg && <Loading />} {/* Show loader when generating referral link */}
-   
     </div>
   );
 };

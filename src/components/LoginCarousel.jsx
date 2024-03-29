@@ -10,8 +10,6 @@ import Design2 from "../assets/login/designElement2.svg";
 import Design3 from "../assets/login/designElement3.svg";
 
 const LoginCarousel = () => {
-  const [slide, setSlide] = useState(1);
-
   const slideData = [
     {
       sno: 1,
@@ -54,6 +52,9 @@ const LoginCarousel = () => {
         "Your safety is paramount to us. We ensure secure and encrypted transactions to safeguard your personal and financial information.",
     },
   ];
+  const [slide, setSlide] = useState(() =>
+    Math.floor(Math.random() * slideData.length)
+  );
 
   const res = slideData.filter((item, index) => {
     return index === slide;

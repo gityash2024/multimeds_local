@@ -9,55 +9,12 @@ import ProductOverview from "../components/ProductOverview";
 import CompareProducts from "../components/CompareProducts";
 import Context from "../context/AppContext";
 import { gql, useQuery } from "@apollo/client";
-const PRODUCT_LIST= gql`
-query {
-  getAllProducts {
-    status
-    message
-    products {
-      id
-  productName
-  productImages
-  manufacturer
-  composition
-  price
-  prescriptionRequired
-  type
-  tags
-  concerns
-  sku
-  manufacturerAddress
-  marketer
-  marketerAddress
-  description
-  directionToUse
-  safetyInformation
-  ingredients
-  productForm
-  consumeType
-  unitsInPack
-  boxContent
-  size
-  scentOrFlavour
-  stockQuantity
-  packForm
-  productWeightInGrams
-  lengthInCentimeters
-  widthInCentimeters
-  heightInCentimeters
-  hsn
-  gstPercentage
-  maxRetailPrice
-  sp
-  discount
-    }
-  }
-}`;
+import { GET_ALL_PRODUCTS } from "../context/mutation";
 
 const Product = () => {
   const[productList,setProductList]=useState([])
 
-    const { loadingProduct, errorproduct, data:dataListProduct,refetch } = useQuery(PRODUCT_LIST,{
+    const {   data:dataListProduct,refetch } = useQuery(GET_ALL_PRODUCTS,{
     onCompleted: (data) => {
       setProductList(data?.getAllProducts?.products);
     },
