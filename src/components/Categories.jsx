@@ -8,7 +8,7 @@ import overTheCounterImage from "../assets/categories/overTheCounter.png";
 
 const Categories = () => {
   return (
-    <div className="bg-white/75 backdrop-blur-sm p-4 mt-8" style={{borderRadius: '10px'}}>
+    <div className="   mt-2" style={{borderRadius: '10px'}}>
       <div className="grid md:grid-cols-4 grid-cols-2 justify-center gap-[4.5rem]">
         <CategoryCard title="Medicines" image={MedicinesImage} subCategory="medicine" />
         <CategoryCard title="Devices" image={DevicesImage} subCategory={"device"}/>
