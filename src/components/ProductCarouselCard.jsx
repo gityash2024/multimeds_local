@@ -41,16 +41,20 @@ const ProductCarouselCard = ({
       {/* Product Image */}
       <div className="image-container flex justify-center items-center relative h-[8.438rem] w-full">
         {image?.length > 0 && (
-          <img
-            onClick={() => openProduct(id)}
-            src={image}
-            alt={title}
-            className="h-full w-full object-contain"
-            data-tooltip-id={`imageTooltip-${id}`}
-          />
+          <>
+            <img
+              onClick={() => openProduct(id)}
+              src={image}
+              alt={title}
+              className="h-full w-full object-contain"
+            />
+             <h1 className="absolute top-0 left-0 text-[0.625rem] font-HelveticaNeueMedium p-2 bg-[#C2F5E9]">
+          {discount}% OFF
+        </h1>
+          </>
         )}
-        <ReactTooltip id={`imageTooltip-${id}`} place="bottom" content={title} />
       </div>
+
 
       {/* Product Details */}
       <div className="details flex flex-col gap-2 text-[#0F172A]" onClick={() => openProduct(id)}>

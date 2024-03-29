@@ -141,7 +141,4 @@ body {
   .PhoneInputInput{
     padding: 5px !important;
   }
-  .phone-input::placeholder {
-    color: #a0aec0; /* This color is just an example, choose what suits your design */
-  }
   
