@@ -300,6 +300,26 @@ const handleAddressSelect=(data)=>{
   const handleClose=()=>{
     setIsopne(false);
   }
+  function getFormattedQuantity(stockData) {
+    if (!stockData) return "N/A";
+  
+    switch (stockData.stockType) {
+      case 'Boxes':
+        return `${stockData.sheets} Sheets per Box, ${stockData.noOfTabletsPerSheet} Units per Sheet`;
+      case 'Units':
+        return `${stockData.noOfUnits} Units`;
+      case 'Grams':
+        return `${stockData.noOfGrams} Grams`;
+      case 'Kilograms':
+        return `${stockData.noOfKgs} Kilograms`;
+      default:
+        return "N/A";
+    }
+  }
+  const toCapitalize = (str) => {
+    
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 
   return (
     <div className="flex py-12 px-[6.25rem] justify-center gap-[1.25rem] bg-white mb-4">
@@ -335,14 +355,18 @@ const handleAddressSelect=(data)=>{
       </div>
 
       <div>
-        <div className="flex flex-col gap-6 py-6">
-          <div className="border-b border-[#E2E8F0] pb-6 px-4">
+        <div className="flex flex-col gap-4 py-6">
+          <div className="border-b border-[#E2E8F0] pb-1 px-2">
             <div className="flex flex-col gap-2 text-[#0F172A]">
               {/* Product name */}
               <div className="w-[38.438rem] flex justify-between items-start">
-                <h1 className="text-[2rem] font-HelveticaNeueBold">
-                  {selectedProduct["productName"]}
+                <h1 className="text-[1.5rem] font-HelveticaNeueBold">
+                  {toCapitalize(selectedProduct["productName"])}
+                <p className="text-[1rem] mt-2 font-HelveticaNeue">
+                  {getFormattedQuantity(selectedProduct["stocks"][0])}
+                </p>
                 </h1>
+
                 <div className="flex relative gap-1">
                 {productInFavList?<span title="Added to favorites" style={{cursor:'pointer'}} onClick={()=>{toast.info("Already added to favorites")}}><BookmarkAddSharp/></span>: <button
                     onClick={() => {

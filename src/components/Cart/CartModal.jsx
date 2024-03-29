@@ -11,7 +11,10 @@ const CartModal = ({ cartData ,refetch}) => {
     let amount=0
     cartData.forEach(element => {
       console.log(element)
-     amount+= element?.product?.stocks[0]?.mrpPerSheet-(element?.product?.coupons[0]?.percentage / 100) * element?.quantity
+      console.log(element?.product?.stocks?.[0]?.mrpPerSheet)
+      console.log(element?.product?.coupons?.[0]?.percentage)
+      console.log(element?.quantity)
+     amount+= Number(element?.product?.stocks?.[0]?.mrpPerSheet)-(Number(element?.product?.coupons?.[0]?.percentage )/ 100) * Number(element?.quantity)
     });
     return amount;
 
