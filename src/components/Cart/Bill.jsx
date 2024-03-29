@@ -16,7 +16,7 @@ const GET_WALLET_BALANCE = gql`
   }
 `;
 
-const Coupons = ({ cartListCoupon, discountPercent = 0 }) => {
+const Coupons = ({ cartListCoupon,remainingReferralDiscounts, discountPercent = 0 }) => {
   const { useWallet, userWalletDebit, setUseWallet, setAmountDebitedFromWallet } = useContext(Context);
 
   const { loading, error, data } = useQuery(GET_WALLET_BALANCE);
@@ -45,7 +45,9 @@ useEffect(() => {
 
     const couponDiscount = mrp * (discountPercent / 100);
     discount += couponDiscount;
-    
+    if(remainingReferralDiscounts>0){
+      discount += (Number(mrp)*0.20)
+    }
     let walletAmountToUse = useWallet ? Math.min(walletBalance, mrp - discount) : 0;
     const finalAmount = mrp - discount - walletAmountToUse;
 
@@ -83,6 +85,10 @@ useEffect(() => {
       <div className="flex justify-between items-center">
         <h1>Total Discount</h1>
         <h2>-Rs {totalDiscount.toFixed(2)}</h2>
+      </div>
+      <div className="flex justify-between items-center">
+        <h1>Refferal Discount</h1>
+        <h2>-Rs {Number(totalMrp)*(0.20)}</h2>
       </div>
 
       <div className="flex justify-between items-center">

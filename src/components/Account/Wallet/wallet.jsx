@@ -143,7 +143,7 @@ const Wallet = () => {
                 transactions.map(transaction => (
                   <div key={transaction.id} className={`wallet-frame380`}>
                     <span className="wallet-text10 14MediumItalic" style={{color:"black"}}>{formatDate(transaction.createdAt)}</span>
-                    <span className={`wallet-text12 14MediumItalic `} style={{color:"red"}}>Rs {transaction.amount}</span>
+                    <span className={`wallet-text12 14MediumItalic `} style={{color:"red"}}>Rs {(transaction.amount/100).toFixed(2)}</span>
                     <span className="wallet-text14 14MediumItalic" style={{color:"black"}}>{transaction.id}</span>
                     <span className="wallet-text16 14MediumItalic" style={{color:"black"}}>{transaction.paymentMethod}</span>
                   </div>

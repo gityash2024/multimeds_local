@@ -21,6 +21,24 @@ const GET_WALLET_BALANCE = gql`
     }
   }
 `;
+const GET_USER_DETAILS = gql`
+query{
+  getUser{
+    status
+    message
+    user{
+      id
+      fullName
+      email
+      walletBalance
+      successfulReferrals
+      referralDiscountPercentage
+      remainingReferralDiscounts
+      createdAt
+    }
+  }
+}
+`;
 
 const CREATE_PAYMENT_INTENT = gql`
   mutation createPaymentIntents($input: CreatePaymentIntentsInput!) {
@@ -57,6 +75,7 @@ const CartItems = ({
   setNeedingProducts
 }) => {
   const { loading: balanceLoading, error: balanceError, data: balanceData, refetch: refetchBalance } = useQuery(GET_WALLET_BALANCE);
+  const { loading: loadingUser, error: userError, data: userData, refetch: refetchUser } = useQuery(GET_USER_DETAILS);
   const walletBalance = balanceData?.getWalletBalance?.walletBalance;
   const {handleRefetchCart,cartListFromContext,userWalletDebit,useWallet} = useContext(Context);
   const [cart, setCart] = useState(cartListFromContext||[]);
@@ -70,12 +89,19 @@ const CartItems = ({
   const [finalPrice, setFinalPrice] = useState(0);
   const[appliedCoupon,setAppliedCoupon]=useState(null)
   const [showModal, setShowModal] = useState(false);
+  const [remainingReferralDiscounts, setRemainingReferralDiscounts] = useState(0);
 
 
+useEffect(()=>{
+  if(userData?.getUser?.user){
+    setRemainingReferralDiscounts(userData?.getUser?.user?.remainingReferralDiscounts);
+  }
 
+},[userData])
 
   const handleRefetch = async () => {
-    handleRefetchCart()
+    handleRefetchCart();
+    refetchUser()
   };
   
 
@@ -172,6 +198,9 @@ const calculateCartTotals = () => {
   const couponDiscount = Number(mrp) * (Number(appliedCoupon?.percentage||0)/ 100);
   console.log(appliedCoupon?.percentage,'couponDiscount')
   discount += couponDiscount;
+  if(remainingReferralDiscounts>0){
+    discount += (Number(mrp)*0.20)
+  }
   
   let walletAmountToUse = Number(userWalletDebit);
   console.log(mrp, discount, walletAmountToUse)
@@ -190,14 +219,14 @@ useEffect(() => {
 
 async function displayRazorpay() {
   console.log(finalPrice);
-  
+
   if (finalPrice <= 0) {
     navigate("/verifying-prescription");
     setTimeout(() => {
       navigate("/transaction/success");
-    }, 10000);
-    localStorage.removeItem("useWalletForPayment")
-    localStorage.removeItem("amountDebitedFromWallet")
+    }, 5000);
+    localStorage.removeItem("useWalletForPayment");
+    localStorage.removeItem("amountDebitedFromWallet");
     return;
   }
   setLoading(true);
@@ -209,12 +238,14 @@ async function displayRazorpay() {
     return;
   }
 
+  // Convert the final price from rupees to paise by multiplying by 100
+  const amountInPaise = parseInt(finalPrice * 100);
 
   createPayment({
     variables: {
       input: {
-        'amount':parseInt(finalPrice),
-        'currency':"INR"
+        'amount': amountInPaise, // Send amount in paise to Razorpay
+        'currency': "INR"
       }
     }
   }).then((response) => {
@@ -227,7 +258,7 @@ async function displayRazorpay() {
 
     const options = {
       key: "rzp_test_FELPeq7HeVvV2w",
-      amount: (finalPrice*100)?.toString(),
+      amount: finalPrice,
       currency: 'INR',
       name: "Multimeds",
       description: "Test Transaction",
@@ -254,7 +285,7 @@ async function displayRazorpay() {
                 console.error('Clear cart failed after successful payment', error);
                 navigate("/transaction/fail");
               });
-            }, 10000);
+            }, 5000);
           } else {
             navigate("/transaction/fail");
           }
@@ -379,7 +410,7 @@ async function displayRazorpay() {
           )}  
         <PrescriptionUpload />
   
-        <Bill cartListCoupon={cart} discountPercent={appliedCoupon?.percentage} />
+        <Bill remainingReferralDiscounts={remainingReferralDiscounts} cartListCoupon={cart} discountPercent={appliedCoupon?.percentage} />
   
         <DeliveringTo isAddressSelected isAddressInvalid={true} />
   
