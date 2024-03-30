@@ -381,10 +381,7 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
   const CheckUser = async (e) => {
  
     e?.preventDefault();
-    const userCheckInput =
-    googleLogin
-        ? { email: googleResponse?.email }
-        : { contactNumber: phoneNumber };
+    const userCheckInput =googleLogin? { email: googleResponse?.email }: { contactNumber: phoneNumber };
 
     checkUser({
       variables: { input: userCheckInput },
