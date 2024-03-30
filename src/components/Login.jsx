@@ -181,8 +181,8 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
   const [loginMethod, setLoginMethod] = useState("phone number");
   const [loginId, setLoginId] = useState("");
   const [otp, setOtp] = useState("");
-  const [googleLogin, setGoogleLogin] = useState(false);
-  const [googleResponse, saveGoogleResponse] = useState({});
+  let googleLogin=false;
+  let googleResponse={};
   const backdropRef = useRef(); // Reference to the backdrop
   const [sendOTP, { loading: otpLoading }] = useMutation(SENDOTP);
   const [sendEmailOTP, { loading: emailLoading }] = useMutation(SENDEMAILOTP);
@@ -368,8 +368,8 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
           )
           .then((res) => {
             console.log(res.data);
-            saveGoogleResponse(res.data);
-            setGoogleLogin(true);
+            googleResponse=res.data;
+            googleLogin=true;
             CheckUser();
           })
           .catch((err) => console.log(err));
@@ -378,22 +378,44 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
     onError: (error) => console.log("Login Failed:", error),
   });
 
-  const CheckUser = async (e) => {
- 
-    e?.preventDefault();
-    const userCheckInput =googleLogin? { email: googleResponse?.email }: { contactNumber: phoneNumber };
-
+  const CheckUser = async () => {
+    // Initialize an empty object for userCheckInput
+    let userCheckInput = {};
+  
+    // Conditionally set userCheckInput based on whether it's a Google login or phone login
+    if (googleLogin) {
+      // For Google login, use the email address
+      if (googleResponse?.email) {
+        userCheckInput = { email: googleResponse.email };
+      } else {
+        // Handle the case where Google login doesn't provide an email
+        console.error("Google login response does not contain an email address.");
+        return; // Optionally, add error handling or user notification here
+      }
+    } else {
+      // For phone login, use the phone number
+      if (phoneNumber) {
+        userCheckInput = { contactNumber: phoneNumber };
+      } else {
+        // Handle the case where phone number is not provided
+        console.error("Phone number is empty.");
+        return; // Optionally, add error handling or user notification here
+      }
+    }
+  
     checkUser({
       variables: { input: userCheckInput },
       onCompleted: (data) => {
         // Assuming 'isUserPresent' field indicates if the user exists
         if (data.checkUser.isUserPresent) {
+          // Handle existing user logic
           if (!googleLogin) {
             openOtpWindow();
           } else {
             signInViaGoogle();
           }
         } else {
+          // Handle new user logic
           if (!googleLogin) {
             openReferralWindow();
           } else {
@@ -408,7 +430,7 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
       },
     });
   };
-
+  
   const handlePaste = () => {
     navigator.clipboard
       .readText()
@@ -434,13 +456,14 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
       if (response.data.googleSignIn.status === "SUCCESS") {
         localStorage.setItem("token", response.data.googleSignIn.token);
         setUserDetails(response.data.googleSignIn.token);
+        response.data.googleSignIn.user.email=googleResponse?.email
         localStorage.setItem(
           "userInfo",
           JSON.stringify(response.data.googleSignIn.user)
         );
         localStorage.setItem("isLoggedInNow", true);
         localStorage.setItem('shouldShowBanner', 'true');
-        setGoogleLogin(false);
+        googleLogin=false;
         
         setReferralCode("");
         setOtp("");

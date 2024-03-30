@@ -7,7 +7,7 @@ const ConfirmationModal = ({ onConfirm, onCancel }) => {
         <h2 className="confirmation-modal-heading">Confirm Logout</h2>
         <p className="confirmation-modal-message">Are you sure you want to log out?</p>
         <div className="confirmation-modal-actions">
-          <button className="confirmation-modal-logout-btn" onClick={onConfirm}>Logout</button>
+          <button className="confirmation-modal-logout-btn mr-2" onClick={onConfirm}>Logout</button>
           <button className="confirmation-modal-cancel-btn" onClick={onCancel}>Cancel Logout</button>
         </div>
       </div>
