@@ -12,14 +12,14 @@ const AddressOptions = ({ isDefault,address,setLoading,setIsOptionsModal,refetch
     }
   }
 `;
-const DELETE_ADDRESS = gql`
-  mutation DeletePrescription($input: ID!) {
-    deleteAddress(input: $input) {
-      status
-      message
+  const DELETE_ADDRESS = gql`
+    mutation DeletePrescription($input: ID!) {
+      deleteAddress(input: $input) {
+        status
+        message
+      }
     }
-  }
-`;
+  `;
 const [deleteAddress] = useMutation(DELETE_ADDRESS);
 const handleDelete = async (id) => {
   setLoading(true);
