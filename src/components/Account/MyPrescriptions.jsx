@@ -5,7 +5,7 @@ import {  toast } from "react-toastify";
 import Loader from "../loader";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "../modal";
-
+import useS3 from "../useS3Upload";
 const GET_MY_PRESCRIPTIONS = gql`
   query getMyPrescriptions {
     getMyPrescriptions {
@@ -33,6 +33,7 @@ const MyPrescriptions = () => {
   const [fileInput, setFileInput] = React.useState(null);
   const [loadingg, setLoading] = useState(false);
   const [url, setUrl] = useState('');
+  const { uploadImageOnS3 } = useS3();
 
   useEffect(()=>{
     if(url){
@@ -98,43 +99,24 @@ useEffect(()=>{
   };
 
 
+
   const handleFileInput = async (e) => {
     const file = e.target.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    setLoading(true);
-
+    if (!file) return;
+    
     try {
-      // Create a FormData object to send the file
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // Make a request to the API endpoint to upload the file
-      const response = await fetch("https://api.mymultimeds.com/api/file/upload", {
-        method: "POST",
-        body: formData,
+      const uploadedUrl = await uploadImageOnS3({
+        file,
+        title: 'prescription',
+        type: 'prescriptions',
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to upload file: ${response.statusText}`);
-      }
-
-      // Parse the JSON response and extract the URL
-      const responseData = await response.json();
-      const uploadedUrl = responseData.publicUrl;
-      // const uploadedUrl = responseData.url;
-
-      // Set the URL in the state and log it to the console
+      console.log('Uploaded URL:', uploadedUrl);
       setUrl(uploadedUrl);
-      console.log("Uploaded URL:", uploadedUrl);
+      // Here, you can call a mutation or another function to utilize the uploaded URL
+      // For example, saving the URL in your database
     } catch (error) {
-      console.error("Error uploading file", error);
-      toast.error("Error uploading file");
-    } finally {
-      setLoading(false);
+      toast.error("Error uploading file: " + error.message);
     }
   };
 

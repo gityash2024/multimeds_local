@@ -110,6 +110,7 @@ export function AppContext({children}) {
     const [selectedProduct, setSelectedProduct] = useState(JSON.parse(localStorage.getItem('selectedProduct'))||{});
     const [cartListFromContext,setCartList]=useState();
     const[useWallet,setUseWallet]=useState(false);
+    const[done,setDone]=useState(false);
     const [isLoggedIn, setUserLoggedIn] = useState(false);
     const[userWalletDebit,setAmountDebitedFromWallet]=useState(0);
     const [loader,setLoading]=useState(false);
@@ -149,7 +150,7 @@ export function AppContext({children}) {
       
   return (
 
-    <Context.Provider value={{selectedProduct, setCartList,setSelectedProduct,handleRefetchCart,cartListFromContext,useWallet,setUseWallet,userWalletDebit,setAmountDebitedFromWallet,setUserLoggedIn,isLoggedIn}}>
+    <Context.Provider value={{selectedProduct,setDone,done, setCartList,setSelectedProduct,handleRefetchCart,cartListFromContext,useWallet,setUseWallet,userWalletDebit,setAmountDebitedFromWallet,setUserLoggedIn,isLoggedIn}}>
 
       {(loader ||loading) && <Loader />}
         {children}

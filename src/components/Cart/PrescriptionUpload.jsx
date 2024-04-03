@@ -8,7 +8,7 @@ import { gql } from "@apollo/client";
 import Loader from '../loader';
 import  "react-toastify/dist/ReactToastify.css";
 import {  toast } from "react-toastify";
-
+import useS3 from '../useS3Upload';
 const GET_MY_PRESCRIPTIONS = gql`
   query getMyPrescriptions {
     getMyPrescriptions {
@@ -42,6 +42,7 @@ mutation addPrescription($input: String!) {
 `;
 
 const PrescriptionUpload = () => {
+    const { uploadImageOnS3 } = useS3();
 
   const [loading, setLoading] = useState(false);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
@@ -76,41 +77,29 @@ const PrescriptionUpload = () => {
       fileInputRef.current.click();
   };
 
-  const handleFileSelected = async (event) => {
-      setLoading(true);
-      const file = event.target.files[0];
+  
 
-      if (!file) {
-          toast.error('Please select a file first.');
-          setLoading(false);
-          return;
-      }
+  const handleFileSelected = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    try {
+      const uploadedUrl = await uploadImageOnS3({
+        file,
+        title: 'profilePicture',
+        type: 'profilePicture',
+      });
 
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-          const response = await fetch("https://api.mymultimeds.com/api/file/upload", {
-              method: 'POST',
-              body: formData,
-          });
-
-          if (!response.ok) {
-              throw new Error('File upload failed');
-          }
-
-          const data = await response.json();
-          const newPrescriptionUrl = data.publicUrl;
-          setSelectedPrescription({ url: newPrescriptionUrl }); // Assume the object structure for a prescription
-          await addPrescriptionMutation({ variables: { input: newPrescriptionUrl } });
-          toast.success('Prescription uploaded successfully');
-          refetch();
-      } catch (error) {
-          toast.error('Error uploading file');
-          console.error('Error uploading file:', error);
-      }
-      setLoading(false);
+      console.log('Uploaded URL:', uploadedUrl);
+      setSelectedPrescription({ url: uploadedUrl }); // Assume the object structure for a prescription
+          await addPrescriptionMutation({ variables: { input: uploadedUrl } });
+      // Here, you can call a mutation or another function to utilize the uploaded URL
+      // For example, saving the URL in your database
+    } catch (error) {
+      toast.error("Error uploading file: " + error.message);
+    }
   };
+
 
   if (loadPrescription || loading) return <Loader />;
   if (error) {

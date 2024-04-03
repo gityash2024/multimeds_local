@@ -378,7 +378,8 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
     onError: (error) => console.log("Login Failed:", error),
   });
 
-  const CheckUser = async () => {
+  const CheckUser = async (e) => {
+    e.preventDefault()
     // Initialize an empty object for userCheckInput
     let userCheckInput = {};
   

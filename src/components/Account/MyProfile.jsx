@@ -5,6 +5,7 @@ import ProfileInput from "../../components/Account/ProfileInput";
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from "../loader";
+import useS3 from "../useS3Upload";
 const UPDATE_PROFILE = gql`
 mutation updateProfile($fullName: String!, $contactNumber: String!, $email: String!, $profilePicture: String!) {
   updateProfile(input: {
@@ -21,6 +22,8 @@ mutation updateProfile($fullName: String!, $contactNumber: String!, $email: Stri
 
 
 const MyProfile = (key) => {
+  const { uploadImageOnS3 } = useS3();
+
   const fileInputRef = useRef();
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
@@ -69,45 +72,25 @@ console.log(profilePicture,'pro')
     }
   });
 
+ 
   const handleFileInput = async (e) => {
     const file = e.target.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    setLoading(true);
-
+    if (!file) return;
+    
     try {
-      // Create a FormData object to send the file
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // Make a request to the API endpoint to upload the file
-      const response = await fetch("https://api.mymultimeds.com/api/file/upload", {
-        method: "POST",
-        body: formData,
+      const uploadedUrl = await uploadImageOnS3({
+        file,
+        title: 'profilePicture',
+        type: 'profilePicture',
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to upload file: ${response.statusText}`);
-      }
-
-      // Parse the JSON response and extract the URL
-      const responseData = await response.json();
-      // const uploadedUrl = responseData.url;
-      const uploadedUrl = responseData.publicUrl;
-
-      // Set the URL in the state and log it to the console
+      console.log('Uploaded URL:', uploadedUrl);
       setProfilePicture(uploadedUrl);
-      setProfilePictureUri(responseData.publicUrl);
-      toast.success('Profile picture uploaded successfully')
-      console.log("Uploaded URL:", uploadedUrl);
+      setProfilePictureUri(uploadedUrl);
+      // Here, you can call a mutation or another function to utilize the uploaded URL
+      // For example, saving the URL in your database
     } catch (error) {
-      console.error("Error uploading file", error);
-      toast.error("Error uploading file");
-    } finally {
-      setLoading(false);
+      toast.error("Error uploading file: " + error.message);
     }
   };
 
