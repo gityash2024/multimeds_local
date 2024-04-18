@@ -150,7 +150,7 @@ export function AppContext({children}) {
       
   return (
 
-    <Context.Provider value={{selectedProduct,setDone,done, setCartList,setSelectedProduct,handleRefetchCart,cartListFromContext,useWallet,setUseWallet,userWalletDebit,setAmountDebitedFromWallet,setUserLoggedIn,isLoggedIn}}>
+    <Context.Provider value={{setCartList,selectedProduct,setDone,done, setCartList,setSelectedProduct,handleRefetchCart,cartListFromContext,useWallet,setUseWallet,userWalletDebit,setAmountDebitedFromWallet,setUserLoggedIn,isLoggedIn}}>
 
       {(loader ||loading) && <Loader />}
         {children}

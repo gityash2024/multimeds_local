@@ -87,7 +87,7 @@ const CartItems = ({
   const { loading: balanceLoading, error: balanceError, data: balanceData, refetch: refetchBalance } = useQuery(GET_WALLET_BALANCE);
   const { loading: loadingUser, error: userError, data: userData, refetch: refetchUser } = useQuery(GET_USER_DETAILS);
   const walletBalance = balanceData?.getWalletBalance?.walletBalance;
-  const {handleRefetchCart,cartListFromContext,userWalletDebit,useWallet} = useContext(Context);
+  const {handleRefetchCart,cartListFromContext,userWalletDebit,useWallet,setCartList} = useContext(Context);
   const [cart, setCart] = useState(cartListFromContext||[]);
   const navigate=useNavigate()
   const [itemsNeedingPrescription, setItemsNeedingPrescription] = useState([]);
@@ -191,6 +191,7 @@ const [clearCart] = useMutation(CLEAR_CART, {
     console.log('Cart cleared:', data.clearCart);
     if (data.clearCart.status === "SUCCESS") {
       handleRefetch();
+      setCartList([]);
       navigate("/transaction/success");
     } else {
       console.error('Error clearing cart:', data.clearCart.message);
@@ -236,7 +237,10 @@ const [placeOrder] = useMutation(PLACE_ORDER, {
   onCompleted: (data) => {
     console.log('Order placed:', data.placeOrder);
     if (data.placeOrder.status === "SUCCESS") {
+      
       clearCart().then(() => {
+      setCartList([]);
+
         navigate("/transaction/success");
       }).catch((error) => {
         console.error('Clear cart failed after successful payment', error);
@@ -269,6 +273,8 @@ async function displayRazorpay() {
     }).then(orderResponse => {
       if (orderResponse.data.placeOrder.status === "SUCCESS") {
         clearCart().then(() => {
+      setCartList([]);
+
           navigate("/verifying-prescription");
           setTimeout(() => {
             navigate("/transaction/success");
@@ -354,6 +360,8 @@ async function displayRazorpay() {
             }).then(orderResponse => {
               if (orderResponse.data.placeOrder.status === "SUCCESS") {
                 clearCart().then(() => {
+      setCartList([]);
+
                   navigate("/transaction/success");
                 }).catch((error) => {
                   console.error('Clear cart failed after successful payment', error);

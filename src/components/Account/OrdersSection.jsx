@@ -9,7 +9,7 @@ import Loader from "../loader";
 const GET_PROCESSING_ORDER = gql`
 query
 {
-  getAllProcessingOrders{
+  getProcessingOrders{
 status
 message
 orders{
@@ -41,7 +41,7 @@ dateOfOrder
 const GET_CANCELLED_ORDER = gql`
 query
 {
-  getAllCancelledOrders{
+  getCancelledOrders{
 status
 message
 orders{
@@ -73,7 +73,7 @@ dateOfOrder
 const GET_ORDER_HISTORY = gql`
 query
 {
-  getAllOrderHistory{
+  getOrderHistory{
 status
 message
 orders{
