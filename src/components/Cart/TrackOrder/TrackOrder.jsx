@@ -1,16 +1,49 @@
 import React, { useState } from 'react';
 import './TrackOrder.css';
 import { useNavigate } from 'react-router-dom';
+import { gql, useLazyQuery } from '@apollo/client';
+import { toast } from 'react-toastify';
+
+const TRACK_ORDER = gql`
+  query trackOrder($input: TrackOrderInput!) {
+    trackOrder(input: $input) {
+      status
+      message
+      shipmentActivity {
+        date
+        status
+        activity
+        location
+      }
+      trackURL
+    }
+  }`;
 
 const TrackOrder = () => {
   const navigate = useNavigate();
   const [orderId, setOrderId] = useState('');
   const [error, setError] = useState('');
 
+  const [getTrackOrder, { data, loading, error: queryError }] = useLazyQuery(TRACK_ORDER, {
+    variables: { input: { orderId } },
+    fetchPolicy: 'no-cache',  // Ensures the query always goes to the network and does not use cache
+    onCompleted: data => {
+      if (data && data.trackOrder && data.trackOrder.status === 'success') {
+        toast.success(data.trackOrder.message);
+        navigate(`/track-order/details/${orderId}`, { state: { orderDetails: data.trackOrder } });
+      } else {
+        toast.error('Tracking order failed. Please try again.');
+      }
+    },
+    onError: err => {
+      toast.error('Error tracking order. Please try again.');
+      console.error('Error tracking order:', err);
+    }
+  });
+
   const handleInputChange = (event) => {
     const { value } = event.target;
     setOrderId(value);
-    // Update the error message as the user types
     validateOrderId(value);
   };
 
@@ -26,11 +59,9 @@ const TrackOrder = () => {
 
   const trackOrder = () => {
     if (!error && orderId) {
-      // If there's no error and orderId is not empty, proceed to navigate
-      navigate(`/track-order/details/${orderId}`);
+      getTrackOrder();
     } else {
-      // If the input is not valid, set an appropriate error message
-      setError('Please enter a valid Order ID');
+      toast.error('Please enter a valid Order ID');
     }
   };
 
@@ -56,7 +87,7 @@ const TrackOrder = () => {
               <input
                 type="text"
                 className={`track-order-input ${error ? 'input-error' : ''} p-2`}
-                style={{border:"1px solid #E2E8F0",borderRadius:"8px"}}
+                style={{border:"1px solid #E2E8F0", borderRadius:"8px"}}
                 value={orderId}
                 onChange={handleInputChange}
                 placeholder="Enter Order Id"

@@ -7,100 +7,124 @@ import { useQuery,gql } from "@apollo/client";
 import Loader from "../loader";
 
 const GET_PROCESSING_ORDER = gql`
-query
-{
-  getProcessingOrders{
-status
-message
-orders{
+query{getProcessingOrders{
   status
-  eta
-dateOfOrder
-  noOfItems
-  total
-  userId
-  address{
-    pincode
-    aptOrBuildingName
-    streetOrAreaName
-    state
-    city
-    label
+  message
+ 
+  orders{
+    id
+    status
+    eta
+    dateOfOrder
+    noOfItems
+    total
+    userId
+    couponId
+  
+    user{
+      id
+      fullName
+      prescriptions{
+        id
+        url
+        isApproved
+        
+      }
+      email
+      contactNumber
+      
+    }
+    address{
+      id
+      pincode
+    }
+    coupon{
+      id
+      code
+      percentage
+    }
+  }
+}}`;
 
-  }
-  coupon{
-    code
-    description
-    percentage
-    type
-    id
-  }
-}
-}  }
-`;
 const GET_CANCELLED_ORDER = gql`
-query
-{
-  getCancelledOrders{
-status
-message
-orders{
+query{getCancelledOrders{
   status
-  eta
-dateOfOrder
-  noOfItems
-  total
-  userId
-  address{
-    pincode
-    aptOrBuildingName
-    streetOrAreaName
-    state
-    city
-    label
-    
-  }
-  coupon{
-    code
-    description
-    percentage
-    type
+  message
+  
+  orders{
     id
+    status
+    eta
+    dateOfOrder
+    noOfItems
+    total
+    userId
+    couponId
+   
+    user{
+      id
+      fullName
+      prescriptions{
+        id
+        url
+        isApproved
+        
+      }
+      email
+      contactNumber
+      
+    }
+    address{
+      id
+      pincode
+    }
+    coupon{
+      id
+      code
+      percentage
+    }
   }
-}
-}  }
-`;
+}}`;
+
 const GET_ORDER_HISTORY = gql`
-query
-{
-  getOrderHistory{
-status
-message
-orders{
+query{getOrderHistory{
   status
-  eta
-dateOfOrder
-  noOfItems
-  total
-  userId
-  address{
-    pincode
-    aptOrBuildingName
-    streetOrAreaName
-    state
-    city
-    label
-  }
-  coupon{
-    code
-    description
-    percentage
-    type
+  message
+
+  orders{
     id
+    status
+    eta
+    dateOfOrder
+    noOfItems
+    total
+    userId
+    couponId
+   
+    user{
+      id
+      fullName
+      prescriptions{
+        id
+        url
+        isApproved
+        
+      }
+      email
+      contactNumber
+      
+    }
+    address{
+      id
+      pincode
+    }
+    coupon{
+      id
+      code
+      percentage
+    }
   }
-}
-}  }
-`;
+}}`;
 
 const OrdersSection = ({ isActive }) => {
   const [loading, setLoading] = useState(true);
