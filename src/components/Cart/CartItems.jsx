@@ -11,7 +11,7 @@ import axios from "axios";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import Loader from "../loader";
 import CouponsModal from "../couponsModal";
-
+import { toast } from "react-toastify";
 const GET_WALLET_BALANCE = gql`
   query GetWalletBalance {
     getWalletBalance {
@@ -253,6 +253,19 @@ const [placeOrder] = useMutation(PLACE_ORDER, {
   }
 });
 async function displayRazorpay() {
+  if(!selectedAddress?.id){
+    toast.info("Please select an address");
+    return;
+  }
+  let userInfo=JSON.parse(localStorage.getItem('userInfo'));
+  if(!userInfo?.fullName || !userInfo?.contactNumber || !userInfo?.email){
+    toast.info("Please complete your profile to proceed");
+    return;
+  }
+  if(finalPrice <= 0){
+    toast.info("Please add items to proceed");
+    return;
+  }
   console.log(finalPrice);
 
   if (finalPrice <= 0) {
@@ -353,12 +366,12 @@ async function displayRazorpay() {
                   couponId: (appliedCoupon?.id||''),
                   dateOfOrder: new Date().toISOString(),
                   noOfItems: parseInt(cart.length),
-                  paidWithWallet: parseFloat(userWalletDebit),
-                  paidWithRazorPay: parseFloat(finalPrice) - parseFloat(userWalletDebit)
+                  paidWithWallet: parseInt(userWalletDebit),
+                  paidWithRazorPay: parseInt(finalPrice) - parseInt(userWalletDebit)
                 }
               }
             }).then(orderResponse => {
-              if (orderResponse.data.placeOrder.status === "SUCCESS") {
+              if (orderResponse?.data?.placeOrder?.status === "SUCCESS") {
                 clearCart().then(() => {
       setCartList([]);
 
@@ -368,6 +381,8 @@ async function displayRazorpay() {
                   navigate("/transaction/fail");
                 });
               } else {
+                console.error('Error placing order:', orderResponse?.data?.placeOrder?.message);
+                toast.info(orderResponse?.data?.placeOrder?.message);
                 navigate("/transaction/fail");
               }
             });
@@ -501,7 +516,6 @@ async function displayRazorpay() {
         <div className="p-4 flex flex-col gap-2">
         <button
   onClick={displayRazorpay}
-  disabled={!isDeliveryEnabled || showModal|| !selectedPrescription} // Use the state to disable the button
   className={`w-full font-HelveticaNeueMedium rounded text-white text-center p-4 leading-[1.25rem] ${showModal ? "bg-gray-300" : "bg-[blue]"} `}
 >
   {showModal ? "LOADING..." : "PROCEED"}

@@ -47,8 +47,8 @@ const DeliveringTo = ({setIsDeliveryEnabled,setSelectedAddress,selectedAddress})
       getDeliveryTime({
         variables: {
           input: {
-            delivery_postcode:Number(selectedAddress.pincode),
-            pickup_postcode: Number(302034),
+            delivery_postcode:Number(431701),
+            pickup_postcode: Number(431705),
             carts: ["0d3aa31f-255c-474f-a2f4-4ce6cef47e02"]
           }
         }

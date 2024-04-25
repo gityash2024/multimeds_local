@@ -5,6 +5,8 @@ import ProductImage from "../../assets/cart/deviceImage.png";
 import CheckIcon from "../../assets/product/tickIcon.svg";
 import { useQuery,gql } from "@apollo/client";
 import Loader from "../loader";
+import { toast } from "react-toastify";
+import { CopyAll } from "@mui/icons-material";
 
 const GET_PROCESSING_ORDER = gql`
 query{getProcessingOrders{
@@ -170,13 +172,13 @@ const OrdersSection = ({ isActive }) => {
 
   useEffect(() => {
     if(isActive === "processing"){
-      setListingData(processingOrderData?.getAllProcessingOrders?.orders)
+      setListingData(processingOrderData?.getProcessingOrders?.orders)
     }else if(isActive === "cancelled"){
-      setListingData(cancelledOrderData?.getAllCancelledOrders?.orders)
+      setListingData(cancelledOrderData?.getCancelledOrders?.orders)
     }
     else if(isActive === "history"){
-      setListingData(orderHistory?.getAllOrderHistory?.orders)
-      console.log(orderHistory?.getAllOrderHistory?.orders, "orderHistory")
+      setListingData(orderHistory?.getOrderHistory?.orders)
+      console.log(orderHistory?.getOrderHistory?.orders, "orderHistory")
     }else{
       setListingData([])
     }
@@ -203,7 +205,11 @@ function formatDate(dateString) {
 
   return `${day}${ordinal} ${month} ${year}`;
 }
-
+const handleCopy = (item) => {
+  navigator.clipboard.writeText(item?.id)
+    .then(() => toast.success('Ordre Id Copied!'))
+    .catch(err => console.error('Failed to copy:', err));
+};
   return (
     <>
     {listingData?.map((item)=>{
@@ -214,8 +220,10 @@ function formatDate(dateString) {
       <div className="flex border-b border-[#CBD5E1] justify-between py-4 px-6">
         {/* id and details button */}
         <div className="w-full items-center flex gap-4">
-          <h1 className="font-medium">{item?.userId}</h1>
-
+          <h1 className="font-medium">Order Id: {item?.id}</h1>
+          <button title="Copy" onClick={()=>{handleCopy(item)}} aria-label="Copy Order ID">
+        <CopyAll/>
+      </button>
       
         </div>
 
@@ -266,7 +274,7 @@ function formatDate(dateString) {
           </h1>
 
           <h1 className="text-[0.875rem] font-HelveticaNeueMedium text-[#1E293B]">
-            Delivering to : <span className="text-[#7487FF]">{item?.address?.label||'xxxxxx'}</span>
+            Delivering to : <span className="text-[#7487FF]">{item?.address?.pincode||'xxxxxx'}</span>
           </h1>
         </div>
 

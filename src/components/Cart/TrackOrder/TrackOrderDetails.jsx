@@ -23,7 +23,7 @@ const TrackOrderDetail = () => {
         <div className="track-detail-frame471">
         <span className="track-detail-text20 16Medium">
             {orderDetails?.trackURL ? (
-              <a href={orderDetails?.trackURL} className="link-style" target="_blank" rel="noopener noreferrer">Track your order</a>
+              <a href={orderDetails?.trackURL} className="link-style " target="_blank" rel="noopener noreferrer">Track your order</a>
             ) : '--'}
           </span>
         </div>
