@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import HouseIcon from "../../assets/cart/houseIcon.svg";
@@ -7,6 +7,7 @@ import PincodeModal from "../PincodeModal";
 import Loader from "../loader";
 import { toast } from "react-toastify";
 import { gql ,useMutation,useQuery} from "@apollo/client";
+import Context from "../../context/AppContext";
 const GET_MY_ADDRESSES = gql`
   query getMyAddresses {
     getMyAddresses {
@@ -35,9 +36,22 @@ mutation getDeliveryTime($input: GetDeliveryTimeInput!) {
 }
 `;
 const DeliveringTo = ({setIsDeliveryEnabled,setSelectedAddress,selectedAddress}) => {
+  const [cartListIds, setCartListIds] = useState([]);
   const [getDeliveryTime, { data: deliveryTimeData, loading: deliveryTimeLoading, error: deliveryTimeError }] = useMutation(GET_DELIVERY_TIME);
 
- 
+ const {cartListFromContext}=useContext(Context);
+ useEffect(()=>{
+  if(cartListFromContext?.length){
+    console.log(cartListFromContext,'----------------------art list from context ----------------------')
+    cartListFromContext?.map((cart,index)=>{
+
+      setCartListIds((prev)=>[...prev, cart?.id]);
+
+    })
+  }
+
+ },[cartListFromContext])
+
 
   let userData = JSON.parse(localStorage.getItem('userInfo'));
 
@@ -47,9 +61,9 @@ const DeliveringTo = ({setIsDeliveryEnabled,setSelectedAddress,selectedAddress})
       getDeliveryTime({
         variables: {
           input: {
-            delivery_postcode:Number(431701),
+            delivery_postcode:Number(selectedAddress?.pincode),
             pickup_postcode: Number(431705),
-            carts: ["0d3aa31f-255c-474f-a2f4-4ce6cef47e02"]
+            carts: cartListIds
           }
         }
       }).then((res) => {
