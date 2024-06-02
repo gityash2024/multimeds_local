@@ -6,9 +6,10 @@ import { gql, useQuery, useMutation } from '@apollo/client';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from '../../loader';
-import { FaCopy, FaRedoAlt, FaLink } from 'react-icons/fa';
+import { FaRedoAlt, FaLink } from 'react-icons/fa';
 import { HiOutlineClipboardCopy } from 'react-icons/hi';
 import Tooltip from '@material-ui/core/Tooltip';
+import Pagination from '@mui/material/Pagination';
 
 const GET_REFERRALS = gql`
   query GetUserReferrals {
@@ -50,6 +51,14 @@ const Referrals = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [loadingg, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [filteredReferrals, setFilteredReferrals] = useState([]);
+
+  useEffect(() => {
+    if (data && data.getUserReferrals && data.getUserReferrals.referrals) {
+      setFilteredReferrals(data.getUserReferrals.referrals);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (error) {
@@ -88,27 +97,38 @@ const Referrals = () => {
     setEndDate(end);
   };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const referralsPerPage = 5;
+  const paginatedReferrals = filteredReferrals.slice((page - 1) * referralsPerPage, page * referralsPerPage);
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      setFilteredReferrals((data.getUserReferrals.referrals || []).filter(referral => {
+        const expiryDate = new Date(referral.expiryDate);
+        return expiryDate >= startDate && expiryDate <= endDate;
+      }));
+    } else {
+      setFilteredReferrals(data?.getUserReferrals?.referrals || []);
+    }
+  }, [startDate, endDate, data]);
+
   if (loading) return <Loading />; // Show loader when fetching data
   if (error) return <p>Error :(</p>;
 
   const referrals = data.getUserReferrals.referrals;
-
-  const filteredReferrals = referrals.filter(referral => {
-    const expiryDate = new Date(referral.expiryDate);
-    if (startDate && endDate) {
-      return expiryDate >= startDate && expiryDate <= endDate;
-    }
-    return true;
-  });
 
   return (
     <div className="refferal-container">
       <div className="refferal-refferal">
         <div className="refferal-refferal479">
           <div className="refferal-refferal482">
-            <span className="refferal-text 18Medium" style={{ fontWeight: "bold" }}>Referral Code</span>
+            <span className="refferal-text 18Medium" style={{ fontWeight: "bold" }}>Referral Code (Total Referrals : {referrals?.filter(referral => referral.linkStatus === "INACTIVE").length})</span>
             <span className="refferal-text02 14RegularItalic">Refer a friend and get 20% off on your next order</span>
           </div>
+         
           <div className="refferal-refferal481">
             <div className="refferal-refferal478">
               <div className="refferal-refferal476">
@@ -122,7 +142,7 @@ const Referrals = () => {
             </div>
             <Tooltip title="Regenerate Link" arrow>
               <div style={{ cursor: "pointer" }} className="refferal-refferal480" onClick={handleRegenerateLink}>
-                <FaRedoAlt className="text-blue-500 hover:text-blue-700" size={18} />
+                <FaRedoAlt className={`text-blue-500 hover:text-blue-700 ${loadingg ? 'rotate-icon' : ''}`} size={18} />
                 <span className="refferal-text08 14Medium" style={{ color: "blue" }}>Regenerate Link</span>
               </div>
             </Tooltip>
@@ -145,7 +165,7 @@ const Referrals = () => {
             </div>
           </div>
           <div className="refferal-refferal473" style={{ maxHeight: '520px', overflowY: 'auto' }}>
-            {filteredReferrals.length > 0 ? filteredReferrals.map((referral, index) => (
+            {paginatedReferrals.length > 0 ? paginatedReferrals.map((referral, index) => (
               <div key={index} className="refferal-refferal381" style={{ backgroundColor: index % 2 === 0 ? "rgb(238, 245, 253)" : "none" }}>
                 <div className="refferal-refferal483">
                   <FaLink className="text-gray-500" size={16} />
@@ -169,6 +189,25 @@ const Referrals = () => {
               </div>
             )}
           </div>
+          {/* <Pagination
+          className='ml-3 mb-3'
+            color="primary" 
+            count={Math.ceil(filteredReferrals.length / referralsPerPage)}
+            page={page}
+            onChange={handlePageChange}
+            style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}
+          /> */}
+           <div className="d-flex justify-content-center mt-3">
+              <Pagination
+              className='mb-3 ml-3'
+                color="primary"
+                count={Math.ceil(filteredReferrals.length / referralsPerPage)}
+                page={page}
+                onChange={handlePageChange}
+                variant="outlined"
+                shape="rounded"
+              />
+            </div>
         </div>
       </div>
       {loadingg && <Loading />} {/* Show loader when generating referral link */}

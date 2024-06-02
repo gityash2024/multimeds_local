@@ -3,10 +3,10 @@ import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Refresh, AccountBalanceWallet, Cancel } from '@mui/icons-material';
+import { Refresh, AccountBalanceWallet } from '@mui/icons-material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
+import Pagination from '@mui/material/Pagination';
 import Loader from '../../loader';
 import './wallet.css';
 
@@ -38,9 +38,11 @@ const GET_TRANSACTIONS = gql`
 
 const Wallet = () => {
   const { loading: balanceLoading, error: balanceError, data: balanceData, refetch: refetchBalance } = useQuery(GET_WALLET_BALANCE);
-  const [transactionsData, setTransactionsData] = useState([]); // Use state with dummy data for now
+  const [transactionsData, setTransactionsData] = useState([]); 
   const [loading, setLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState({ startDate: null, endDate: null });
+  const [page, setPage] = useState(1);
+  const transactionsPerPage = 5;
 
   const { loading: transactionsLoading, error: transactionsError, data: transactionData, refetch: refetchTransactions } = useQuery(GET_TRANSACTIONS);
 
@@ -75,7 +77,6 @@ const Wallet = () => {
     setDateFilter({ startDate: null, endDate: null });
   };
 
-  // Apply local date range filter
   if (dateFilter.startDate && dateFilter.endDate) {
     transactions = transactions.filter(transaction => {
       const transactionDate = new Date(transaction.createdAt);
@@ -86,12 +87,19 @@ const Wallet = () => {
   useEffect(() => {
     refetchBalance();
     refetchTransactions();
-  })
+  }, []);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
     return new Date(Number(dateString)).toLocaleDateString(undefined, options);
   };
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const paginatedTransactions = transactions.slice((page - 1) * transactionsPerPage, page * transactionsPerPage);
+
   return (
     <div className="wallet-container">
       <div className="wallet-frame424">
@@ -105,7 +113,10 @@ const Wallet = () => {
               <span className="wallet-text02 16Medium">
                 <span>Wallet Balance</span>
               </span>
-              <button onClick={handleRefetchBalance} className="refetch-balance-icon">
+              <button
+                onClick={handleRefetchBalance}
+                className={`refetch-balance-icon ${loading ? 'spinning' : ''}`}
+              >
                 <Refresh />
               </button>
             </div>
@@ -121,9 +132,6 @@ const Wallet = () => {
                 </span>
               </div>
               <div className="wallet-frame276">
-                {/* <span className="wallet-text08 14Regular">
-                  <span>Choose Date Range</span>
-                </span> */}
                 <DatePicker
                   selectsRange={true}
                   startDate={dateFilter.startDate}
@@ -131,28 +139,37 @@ const Wallet = () => {
                   onChange={handleDateFilter}
                   isClearable={true}
                   placeholderText="Select a date range"
+                  className="form-control"
                 />
-                {/* <button onClick={resetDateFilter} className="reset-date-filter">
-                  <Cancel />
-                </button> */}
               </div>
             </div>
 
             <div className="wallet-frame473">
-              {transactions?.length > 0 ? (
-                transactions.map(transaction => (
-                  <div key={transaction.id} className={`wallet-frame380`}>
-                    <span className="wallet-text10 14MediumItalic" style={{color:"black"}}>{formatDate(transaction.createdAt)}</span>
-                    <span className={`wallet-text12 14MediumItalic `} style={{color:"red"}}>Rs {(transaction.amount/100).toFixed(2)}</span>
-                    <span className="wallet-text14 14MediumItalic" style={{color:"black"}}>{transaction.id}</span>
-                    <span className="wallet-text16 14MediumItalic" style={{color:"black"}}>{transaction.paymentMethod}</span>
+              {paginatedTransactions.length > 0 ? (
+                paginatedTransactions.map(transaction => (
+                  <div key={transaction.id} className="wallet-frame380 mb-2">
+                    <span className="wallet-text10 14MediumItalic" style={{ color: "black" }}>{formatDate(transaction.createdAt)}</span>
+                    <span className="wallet-text12 14MediumItalic" style={{ color: "red" }}>Rs {(transaction.amount / 100).toFixed(2)}</span>
+                    <span className="wallet-text14 14MediumItalic" style={{ color: "black" }}>{transaction.id}</span>
+                    <span className="wallet-text16 14MediumItalic" style={{ color: "black" }}>{transaction.paymentMethod}</span>
                   </div>
                 ))
               ) : (
-                <div className="wallet-frame380 no-transactions-found" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div className="wallet-frame380 no-transactions-found d-flex justify-content-center align-items-center">
                   <span className="wallet-text10 14MediumItalic">No Transactions Found</span>
                 </div>
               )}
+            </div>
+            <div className="d-flex justify-content-center mt-3">
+              <Pagination
+              className='mb-3 ml-3'
+                color="primary"
+                count={Math.ceil(transactions.length / transactionsPerPage)}
+                page={page}
+                onChange={handlePageChange}
+                variant="outlined"
+                shape="rounded"
+              />
             </div>
           </div>
         </div>

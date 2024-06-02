@@ -93,11 +93,11 @@ const TrackOrder = () => {
                 placeholder="Enter Order Id"
               />
               {error && <div className="error-message">{error}</div>}
-              <div onClick={trackOrder} style={{cursor:"pointer"}} className="track-order-frame12">
+              <button onClick={trackOrder} style={{cursor:"pointer",width: "218px"}} className="track-order-frame12">
                 <span className="track-order-text08 16Medium">
                   TRACK ORDER
                 </span>
-              </div>
+              </button>
               <span className="track-order-text10 14Medium" onClick={() => navigate('/contact-us')} style={{cursor:"pointer"}}>
                 Need help? Contact Us
               </span>

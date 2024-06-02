@@ -66,15 +66,19 @@ const WhyChooseUs = ({ columns3, isContent }) => {
 			</div>
 
 			{/* Content */}
-			<div className="xl:max-h-[11rem] flex flex-col sm:flex-row justify-center gap-6 items-center p-4 sm:px-6 sm:py-12 bg-[#C2F5E9]">
-				<div className="flex flex-col justify-center items-center gap-4">
-					<div className="p-4 bg-[#EEF2FF]">
+			<div className="xl:max-h-[11rem] flex flex-col sm:flex-row  gap-6 items-center mr-5 ml-5  p-4 sm:px-6 sm:py-12 bg-[#C2F5E9]" style={{justifyContent:"space-between"}}>
+				<div className="flex flex-col  items-center gap-4">
+					<div className="p-4 " style={{display: 'flex',flexDirection:"row"}}>
+						<div className="bg-[#EEF2FF] p-4 mr-2">
+
 						<img src={Health} alt="Health Icon" />
-					</div>
+						</div>
+
 					<h1 className="text-[1.5rem] font-HelveticaNeueBold text-[#021156] leading-[1.875rem] tracking-tight text-center">
 						Join Us in Building a<br />
 						Healthier Tomorrow
 					</h1>
+					</div>
 				</div>
 				<div>
 					<p className="xl:w-[32.5rem] text-[#021156] leading-[1.25rem] tracking-tight">

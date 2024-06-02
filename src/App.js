@@ -172,7 +172,7 @@ function App() {
           }
         />
         <Route
-          path="blogDetails"
+          path="/blogDetails/:blogId"
           element={
             // <ProtectedRoute>
               <BlogDetails />

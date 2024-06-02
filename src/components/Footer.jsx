@@ -7,11 +7,12 @@ import Instagram from "../assets/footer/instagram.svg";
 import CouponModal from "./Cart/CouponModal";
 
 const Footer = () => {
-  const navigate=useNavigate()
-  const[isOpen,setIsopne]=useState(false)
-  const handleClose=()=>{
+  const navigate = useNavigate();
+  const [isOpen, setIsopne] = useState(false);
+  const handleClose = () => {
     setIsopne(false);
-  }
+  };
+
   return (
     <div className="w-full flex flex-col justify-center items-center bg-[#031B89] text-white py-14 px-8 gap-6">
       <div className="w-full flex flex-wrap gap-4">
@@ -25,63 +26,73 @@ const Footer = () => {
               />
             </div>
           </Link>
-          <h1>
+          <div className="row gap-8"  style={{display:"flex"}}>
+
+          <div className="col-md-4  flex flex-col text-[0.875rem] gap-1">
+          <h1  style={{width:"200px"}}>
             Multimeds Healthcare OPC
             <br /> 456, Emerald Avenue, Indiranagar,
             <br /> Bangalore - 560038,
             <br /> Karnataka, India
           </h1>
-        </div>
-
-        <div className="flex flex-col gap-2 md:gap-4 mt-auto">
-          <h1 className="font-HelveticaNeueMedium">Contact</h1>
-          <div className="flex flex-col text-[0.875rem] gap-1">
+</div>
+          <div className="col-md-4 flex flex-col text-[0.875rem] gap-1">
+            <p>Contact</p>
             <p>91 902838890</p>
             <p>contact@mymultimeds.com</p>
+          </div>
           </div>
         </div>
       </div>
 
-      <div className="w-full grid grid-cols-2 md:grid-cols-4">
+      <div className="w-full grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="flex flex-col gap-4">
           <h1 className="font-HelveticaNeueMedium">Multimeds pharma</h1>
           <ul className="flex flex-col text-[0.875rem] gap-1">
-            <Link  to="/products">
+            <Link to="/products">
               <li>Medicines</li>
             </Link>
-            <Link  to="/products">
+            <Link to="/products">
               <li>Devices</li>
             </Link>
-            <Link  to="/products">
+            <Link to="/products">
               <li>Sort by Condition</li>
             </Link>
-            <Link  to="/products">
+            <Link to="/products">
               <li>Essentials</li>
             </Link>
-            <Link  to="/products">
+            <Link to="/products">
               <li>Over the Counter</li>
             </Link>
           </ul>
         </div>
+
         <div className="flex flex-col gap-4">
-          <Link to="/account" className="font-HelveticaNeueMedium" >Account</Link>
+          <Link to="/account" className="font-HelveticaNeueMedium">
+            Account
+          </Link>
           <ul className="flex flex-col text-[0.875rem] gap-1">
             <Link to="/account">
               <li>Profile</li>
             </Link>
             <Link onClick={() => setIsopne(true)}>
-                  <li>Offers</li>
-                </Link>
-
+              <li>Offers</li>
+            </Link>
             <Link to="/track-order">
               <li>Track your Order</li>
             </Link>
-            <Link to="/account" onClick={() => {localStorage.setItem('referral',true)}} >
+            <Link
+              to="/account"
+              onClick={() => {
+                localStorage.setItem("referral", true);
+              }}
+            >
               <li>Referrals</li>
             </Link>
           </ul>
         </div>
-        {isOpen && <CouponModal handleClose={handleClose}/>}
+        {isOpen && <CouponModal handleClose={handleClose} />}
+
         <div className="flex flex-col gap-4">
           <h1 className="font-HelveticaNeueMedium">More about Us</h1>
           <ul className="flex flex-col text-[0.875rem] gap-1">
@@ -91,14 +102,12 @@ const Footer = () => {
             <Link to="/contact-us">
               <li>Contact Us</li>
             </Link>
-            {/* <Link to="#">
-              <li>Careers</li>
-            </Link> */}
             <Link to="/blog">
               <li>Blogs</li>
             </Link>
           </ul>
         </div>
+
         <div className="flex flex-col gap-4">
           <h1 className="font-HelveticaNeueMedium">Policies</h1>
           <ul className="flex flex-col text-[0.875rem] gap-1">
@@ -119,21 +128,20 @@ const Footer = () => {
             </Link>
           </ul>
         </div>
+
         <div className="flex flex-col gap-4">
           <h1 className="font-HelveticaNeueMedium">Connect with us</h1>
-          <ul className="flex flex-col text-[0.875rem] gap-4">
-            <div className="flex gap-4">
-              <Link>
-                <img src={Facebook} alt="facebook icon" />
-              </Link>
-              <Link>
-                <img src={Instagram} alt="instagram icon" />
-              </Link>
-            </div>
-            <Link to="#">
-              <li>Whatsapp Us : +91 8899000992</li>
+          <div className="flex gap-4">
+            <Link>
+              <img src={Facebook} alt="facebook icon" />
             </Link>
-          </ul>
+            <Link>
+              <img src={Instagram} alt="instagram icon" />
+            </Link>
+          </div>
+          <Link to="#">
+            <li>Whatsapp Us : +91 8899000992</li>
+          </Link>
         </div>
       </div>
 

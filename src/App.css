@@ -151,4 +151,86 @@ body {
     color: red;
     margin-top: 8px;
   }
-  
+  /* wallet.css */
+.wallet-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.wallet-frame424 {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  /* max-width: 600px; */
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.wallet-frame467 {
+  margin-top: 20px;
+}
+
+.wallet-frame281 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.wallet-frame474 {
+  display: flex;
+  align-items: center;
+}
+
+.wallet-icon {
+  font-size: 32px;
+  margin-right: 10px;
+}
+
+.refetch-balance-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.spinning {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.wallet-frame2811 {
+  margin-top: 20px;
+}
+
+.wallet-frame295 {
+  margin-bottom: 20px;
+}
+
+.wallet-frame276 {
+  margin-top: 10px;
+}
+
+.wallet-frame473 {
+  margin-top: 20px;
+}
+
+.wallet-frame380 {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.no-transactions-found {
+  text-align: center;
+}
