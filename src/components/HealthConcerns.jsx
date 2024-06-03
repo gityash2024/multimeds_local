@@ -2,11 +2,11 @@ import React from "react";
 
 import HealthConcernCard from "./HealthConcernCard";
 
-import Kidney from "../assets/healthConcerns/kidney.jpg";
-import Respiratory from "../assets/healthConcerns/racipiratory.jpg";
-import Stomach from "../assets/healthConcerns/stomach.webp";
-import BonesAndJoints from "../assets/healthConcerns/bonesandjoint.jpg";
-import HeartImage from "../assets/healthConcerns/heartImage.png";
+import Kidney from "../assets/Kidney.png";
+import Respiratory from "../assets/Lungs.png";
+import Stomach from "../assets/Stomach.png";
+import BonesAndJoints from "../assets/Bones.png";
+import HeartImage from "../assets/Heart.png";
 
 const HealthConcerns = () => {
   return (  
