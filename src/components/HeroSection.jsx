@@ -69,7 +69,7 @@ const HeroSection = () => {
           <Slider {...settings}>
             {banners.map(banner => (
               <div key={banner.id} >
-                <img src={banner.url} alt={`Banner ${banner.index}`} style={{ width: '100vw', height: '46vh' }} />
+                <img src={banner.url} alt={`Banner ${banner.index}`} style={{ width: '100vw', height: '52vh' }} />
               </div>
             ))}
           </Slider>
