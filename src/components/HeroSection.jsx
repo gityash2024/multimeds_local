@@ -65,7 +65,7 @@ const HeroSection = () => {
   
       {/* Carousel section */}
       {banners.length > 0 && (
-        <div className="w-full" style={{ height: '46vh',padding:"10px" }}>
+        <div className="w-full" style={{ height: '52vh',padding:"10px" }}>
           <Slider {...settings}>
             {banners.map(banner => (
               <div key={banner.id} >
