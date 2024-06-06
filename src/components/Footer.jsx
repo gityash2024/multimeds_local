@@ -5,6 +5,7 @@ import FooterLogo from "../assets/footer/footerLogo.svg";
 import Facebook from "../assets/footer/facebook.svg";
 import Instagram from "../assets/footer/instagram.svg";
 import CouponModal from "./Cart/CouponModal";
+import { WhatsApp } from "@material-ui/icons";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -12,9 +13,13 @@ const Footer = () => {
   const handleClose = () => {
     setIsopne(false);
   };
-
+  const handleWhatsAppClick = () => {
+    const phoneNumber = '+918899000992';
+    const whatsappURL = `https://wa.me/${phoneNumber}`;
+    window.open(whatsappURL, '_blank');
+  };
   return (
-    <div className="w-full flex flex-col justify-center items-center bg-[#031B89] text-white py-14 px-8 gap-6">
+    <div className="w-full flex flex-col justify-center items-center bg-[#031B89] text-white py-5 px-8 gap-6">
       <div className="w-full flex flex-wrap gap-4">
         <div className="flex flex-col gap-4 w-[16.125rem] font-HelveticaNeueMedium">
           <Link to="/">
@@ -49,20 +54,20 @@ const Footer = () => {
         <div className="flex flex-col gap-4">
           <h1 className="font-HelveticaNeueMedium">Multimeds pharma</h1>
           <ul className="flex flex-col text-[0.875rem] gap-1">
-            <Link to="/products">
-              <li>Medicines</li>
+            <Link  to="/products">
+              <li className="font-HelveticaNeueMedium">Medicines</li>
             </Link>
             <Link to="/products">
-              <li>Devices</li>
+              <li className="font-HelveticaNeueMedium">Devices</li>
             </Link>
             <Link to="/products">
-              <li>Sort by Condition</li>
+              <li className="font-HelveticaNeueMedium">Sort by Condition</li>
             </Link>
             <Link to="/products">
-              <li>Essentials</li>
+              <li className="font-HelveticaNeueMedium">Essentials</li>
             </Link>
             <Link to="/products">
-              <li>Over the Counter</li>
+              <li className="font-HelveticaNeueMedium">Over the Counter</li>
             </Link>
           </ul>
         </div>
@@ -73,13 +78,13 @@ const Footer = () => {
           </Link>
           <ul className="flex flex-col text-[0.875rem] gap-1">
             <Link to="/account">
-              <li>Profile</li>
+              <li className="font-HelveticaNeueMedium">Profile</li>
             </Link>
             <Link onClick={() => setIsopne(true)}>
-              <li>Offers</li>
+              <li className="font-HelveticaNeueMedium">Offers</li>
             </Link>
             <Link to="/track-order">
-              <li>Track your Order</li>
+              <li className="font-HelveticaNeueMedium">Track your Order</li>
             </Link>
             <Link
               to="/account"
@@ -87,7 +92,7 @@ const Footer = () => {
                 localStorage.setItem("referral", true);
               }}
             >
-              <li>Referrals</li>
+              <li className="font-HelveticaNeueMedium">Referrals</li>
             </Link>
           </ul>
         </div>
@@ -97,13 +102,13 @@ const Footer = () => {
           <h1 className="font-HelveticaNeueMedium">More about Us</h1>
           <ul className="flex flex-col text-[0.875rem] gap-1">
             <Link to="/about">
-              <li>About Us</li>
+              <li className="font-HelveticaNeueMedium">About Us</li>
             </Link>
             <Link to="/contact-us">
-              <li>Contact Us</li>
+              <li className="font-HelveticaNeueMedium">Contact Us</li>
             </Link>
             <Link to="/blog">
-              <li>Blogs</li>
+              <li className="font-HelveticaNeueMedium">Blogs</li>
             </Link>
           </ul>
         </div>
@@ -112,19 +117,19 @@ const Footer = () => {
           <h1 className="font-HelveticaNeueMedium">Policies</h1>
           <ul className="flex flex-col text-[0.875rem] gap-1">
             <Link to="/privacypolicy">
-              <li>Privacy Policy</li>
+              <li className="font-HelveticaNeueMedium">Privacy Policy</li>
             </Link>
             <Link to="/legal">
-              <li>Legal</li>
+              <li className="font-HelveticaNeueMedium">Legal</li>
             </Link>
             <Link to="/shippingpolicy">
-              <li>Shipping Policy</li>
+              <li className="font-HelveticaNeueMedium">Shipping Policy</li>
             </Link>
             <Link to="/returnpolicy">
-              <li>Return Policy</li>
+              <li className="font-HelveticaNeueMedium">Return Policy</li>
             </Link>
             <Link to="/terms-and-conditions">
-              <li>Terms and Conditions</li>
+              <li className="font-HelveticaNeueMedium">Terms and Conditions</li>
             </Link>
           </ul>
         </div>
@@ -138,10 +143,11 @@ const Footer = () => {
             <Link>
               <img src={Instagram} alt="instagram icon" />
             </Link>
-          </div>
-          <Link to="#">
-            <li>Whatsapp Us : +91 8899000992</li>
+          <Link to="#" onClick={handleWhatsAppClick}>
+            {/* <li>Whatsapp Us : +91 8899000992</li> */}
+            <WhatsApp/>
           </Link>
+          </div>
         </div>
       </div>
 

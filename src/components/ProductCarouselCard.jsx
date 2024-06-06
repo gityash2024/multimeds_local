@@ -59,7 +59,7 @@ const ProductCarouselCard = ({
       {/* Product Details */}
       <div className="details flex flex-col gap-2 text-[#0F172A]" onClick={() => openProduct(id)}>
         <div className="title flex justify-between items-center">
-          <h1 className="font-medium truncate" data-tooltip-id={`titleTooltip-${id}`}>
+          <h1 className="font-bold truncate" data-tooltip-id={`titleTooltip-${id}`}>
             {toupperCase(title)}
           </h1>
           <ReactTooltip id={`titleTooltip-${id}`} place="bottom" content={toupperCase(title)} />
@@ -71,21 +71,21 @@ const ProductCarouselCard = ({
           </h1>
           <ReactTooltip id={`priceTooltip-${id}`} place="bottom" content={` ${parseFloat(sp).toFixed(2)}`} />
 
-          <p className="text-[0.75rem] text-[#94A3B8] truncate" data-tooltip-id={`mrpTooltip-${id}`}>
+          <p className="text-[0.775rem] text-[#94A3B8] truncate" data-tooltip-id={`mrpTooltip-${id}`}>
             MRP: Rs <span className="line-through">{parseFloat(maxRetailPrice).toFixed(2)}</span>
           </p>
           <ReactTooltip id={`mrpTooltip-${id}`} place="bottom" content={` ${parseFloat(maxRetailPrice).toFixed(2)}`} />
         </div>
 
         <div className="quantity-section flex justify-end">
-          <p className="text-[0.875rem] text-[#64748B] truncate" data-tooltip-id={`quantityTooltip-${id}`}>
+          <p className="text-[0.775rem] text-[#64748B] truncate" data-tooltip-id={`quantityTooltip-${id}`}>
             {getFormattedQuantity(product?.stocks?.[0])}
           </p>
           <ReactTooltip id={`quantityTooltip-${id}`} place="bottom" content={getFormattedQuantity(product?.stocks?.[0])} />
         </div>
 
         <div className="marketer-section">
-          <p className="text-[0.625rem] font-italic text-[#64748B] truncate" data-tooltip-id={`marketerTooltip-${id}`}>
+          <p className="text-[0.775rem] font-italic text-[#64748B] truncate" data-tooltip-id={`marketerTooltip-${id}`}>
             {toupperCase(marketer)}
           </p>
           <ReactTooltip id={`marketerTooltip-${id}`} place="bottom" content={toupperCase(marketer)} />
