@@ -57,42 +57,40 @@ const ProductCarouselCard = ({
 
 
       {/* Product Details */}
-      <div className="details flex flex-col gap-2 text-[#0F172A]" onClick={() => openProduct(id)}>
+      <div className="details flex flex-col gap-1 text-[#0F172A]" onClick={() => openProduct(id)}>
         <div className="title flex justify-between items-center">
-          <h1 className="font-bold truncate" data-tooltip-id={`titleTooltip-${id}`}>
+          <h1 className="truncate" style={{fontFamily:"HelveticaNeueMedium"}} data-tooltip-id={`titleTooltip-${id}`}>
             {toupperCase(title)}
           </h1>
           <ReactTooltip id={`titleTooltip-${id}`} place="bottom" content={toupperCase(title)} />
         </div>
 
         <div className="price-section flex justify-between items-center">
-          <h1 className="font-medium text-[#031B89] truncate" data-tooltip-id={`priceTooltip-${id}`}>
+          <h1 className="text-[#031B89] truncate" style={{fontFamily:"HelveticaNeueMedium"}} data-tooltip-id={`priceTooltip-${id}`}>
             Rs {parseFloat(sp).toFixed(2)}
           </h1>
           <ReactTooltip id={`priceTooltip-${id}`} place="bottom" content={` ${parseFloat(sp).toFixed(2)}`} />
 
-          <p className="text-[0.775rem] text-[#94A3B8] truncate" data-tooltip-id={`mrpTooltip-${id}`}>
+          <p className="text-[#94A3B8] truncate text-[0.775rem]" style={{fontFamily:"HelveticaNeueRegular"}} data-tooltip-id={`mrpTooltip-${id}`}>
             MRP: Rs <span className="line-through">{parseFloat(maxRetailPrice).toFixed(2)}</span>
           </p>
           <ReactTooltip id={`mrpTooltip-${id}`} place="bottom" content={` ${parseFloat(maxRetailPrice).toFixed(2)}`} />
         </div>
 
-        <div className="quantity-section flex justify-end">
-          <p className="text-[0.775rem] text-[#64748B] truncate" data-tooltip-id={`quantityTooltip-${id}`}>
+        <div className="quantity-marketer-section flex justify-between items-center">
+          <p className="text-[0.775rem] text-[#64748B] truncate" style={{fontFamily:"HelveticaNeueRegular"}} data-tooltip-id={`quantityTooltip-${id}`}>
             {getFormattedQuantity(product?.stocks?.[0])}
           </p>
           <ReactTooltip id={`quantityTooltip-${id}`} place="bottom" content={getFormattedQuantity(product?.stocks?.[0])} />
-        </div>
 
-        <div className="marketer-section">
-          <p className="text-[0.775rem] font-italic text-[#64748B] truncate" data-tooltip-id={`marketerTooltip-${id}`}>
+          <p style={{fontFamily:"HelveticaNeueRegular"}} className="text-[0.775rem] font-italic text-[#64748B] truncate" data-tooltip-id={`marketerTooltip-${id}`}>
             {toupperCase(marketer)}
           </p>
           <ReactTooltip id={`marketerTooltip-${id}`} place="bottom" content={toupperCase(marketer)} />
         </div>
 
         <button
-          className="add-to-cart-btn w-full font-medium border-[1px] rounded text-[#031B89] border-[#031B89] py-2"
+          className="add-to-cart-btn w-full font-medium border-[1px] rounded text-[#031B89] border-[#031B89] py-2 mt-2" style={{fontFamily:"HelveticaNeueBold"}}
           onClick={() => {/* function to handle adding to cart */}}
         >
           ADD TO CART

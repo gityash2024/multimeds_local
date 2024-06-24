@@ -72,7 +72,7 @@ export default function Blog() {
                     5 Powerful Home Remedies to Reverse Fatty Liver and Boost Liver Health Naturally
                   </div>
                   <div className="self-stretch text-slate-900 text-sm font-normal font-['Helvetica Neue'] leading-[17.50px]">
-                    Fatty liver disease, a condition where excess fat accumulates in the liver, is a growing concern worldwide. While it can be caused by various factors like obesity, insulin resistance, and high cholesterol, the good news is that you can take steps to improve your liver health naturally.
+                    Fatty liver disease, a condition where excess fat accumulates in the liver, is a growing concern worldwide.
                   </div>
                 </div>
               </div>
@@ -92,7 +92,7 @@ export default function Blog() {
                     Beat the Heat and Fatigue: 5 Refreshing Morning Drinks for Summer Energy
                   </div>
                   <div className="self-stretch text-slate-900 mb-3 text-sm font-normal font-['Helvetica Neue'] leading-[17.50px]">
-                    Summer's heat and humidity can leave you feeling sluggish and drained. But don't let fatigue hold you back from enjoying the sunny season! Start your day with these invigorating morning drinks, packed with nutrients and natural energy boosters to keep you feeling refreshed and revitalized all summer long.
+                    Summer's heat and humidity can leave you feeling sluggish and drained. But don't let fatigue hold you back from enjoying the sunny season!
                   </div>
                 </div>
               </div>

@@ -48,6 +48,7 @@ import CouponModal from "./components/Cart/CouponModal";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import VerifyingPrescription from "./components/verifying-prescription/verifying-prescription";
+import useSessionTimeout from "./useSessionTimeout";
 const ProtectedRoute = ({ children }) => {
   const isUserLoggedIn = localStorage.getItem("userInfo");
 
@@ -60,8 +61,10 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  const { updateLastActivity } = useSessionTimeout(24 * 60 * 60 * 1000); // 1 day timeout
+
   return (
-    <div className="App">
+    <div className="App" onClick={updateLastActivity}>
       <ScrollToTop />
       <Navbar />
       <Routes>

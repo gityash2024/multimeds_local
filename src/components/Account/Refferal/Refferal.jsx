@@ -5,11 +5,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Loading from '../../loader';
 import { FaRedoAlt, FaLink } from 'react-icons/fa';
 import { HiOutlineClipboardCopy } from 'react-icons/hi';
 import Tooltip from '@material-ui/core/Tooltip';
 import Pagination from '@mui/material/Pagination';
+import Loader from '../../loader';
 
 const GET_REFERRALS = gql`
   query GetUserReferrals {
@@ -115,7 +115,7 @@ const Referrals = () => {
     }
   }, [startDate, endDate, data]);
 
-  if (loading) return <Loading />; // Show loader when fetching data
+  if (loading) return <Loader />; // Show loader when fetching data
   if (error) return <p>Error :(</p>;
 
   const referrals = data.getUserReferrals.referrals;
@@ -210,7 +210,7 @@ const Referrals = () => {
             </div>
         </div>
       </div>
-      {loadingg && <Loading />} {/* Show loader when generating referral link */}
+      {loadingg && <Loader />} {/* Show loader when generating referral link */}
     </div>
   );
 };

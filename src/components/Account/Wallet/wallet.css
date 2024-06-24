@@ -7,7 +7,7 @@
     flex-direction: column;
   }
   .wallet-frame424 {
-    gap: 48px;
+    /* gap: 48px; */
     width: 100%;
     height: auto;
     display: flex;
@@ -212,6 +212,7 @@
     display: flex;
     padding: 24px 48px;
     align-self: stretch;
+    margin: 10px;
     align-items: center;
     flex-shrink: 0;
     border-color: rgba(203, 213, 225, 1);

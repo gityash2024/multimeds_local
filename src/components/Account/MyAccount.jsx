@@ -32,7 +32,7 @@ const MyAccount = () => {
           <AccountNav setElement={setElement} setSubElement={setSubElement} />
 
           {/* Main section*/}
-          <div className="w-full flex flex-col rounded p-12 gap-12 bg-white">
+          <div className="w-full flex flex-col rounded  gap-12 bg-white">
             {element === "account" && (
               <>
                 { subElement==='profile'&& <MyProfile />}

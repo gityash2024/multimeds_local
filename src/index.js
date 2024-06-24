@@ -33,8 +33,8 @@ const client = new ApolloClient({
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <GoogleOAuthProvider clientId="328905782048-g8nsa49t5mc9qbun6c1n3uvi7ndd4dn3.apps.googleusercontent.com">
-
+  <GoogleOAuthProvider clientId="865495857569-kac7d0i0grqluilmd0hcvct0ha1gfpj8.apps.googleusercontent.com">
+  {/* <GoogleOAuthProvider clientId="328905782048-g8nsa49t5mc9qbun6c1n3uvi7ndd4dn3.apps.googleusercontent.com"> */}
   <ApolloProvider client={client}>
     <BrowserRouter>
       <AppContext>

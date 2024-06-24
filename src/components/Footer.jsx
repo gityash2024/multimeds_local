@@ -51,26 +51,36 @@ const Footer = () => {
       </div>
 
       <div className="w-full grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="flex flex-col gap-4">
-          <h1 className="font-HelveticaNeueMedium">Multimeds pharma</h1>
-          <ul className="flex flex-col text-[0.875rem] gap-1">
-            <Link  to="/products">
-              <li className="font-HelveticaNeueMedium">Medicines</li>
-            </Link>
-            <Link to="/products">
-              <li className="font-HelveticaNeueMedium">Devices</li>
-            </Link>
-            <Link to="/products">
-              <li className="font-HelveticaNeueMedium">Sort by Condition</li>
-            </Link>
-            <Link to="/products">
-              <li className="font-HelveticaNeueMedium">Essentials</li>
-            </Link>
-            <Link to="/products">
-              <li className="font-HelveticaNeueMedium">Over the Counter</li>
-            </Link>
-          </ul>
-        </div>
+      <div className="flex flex-col gap-4">
+  <h1 className="font-HelveticaNeueMedium">Multimeds pharma</h1>
+  <ul className="flex flex-col text-[0.875rem] gap-1">
+    {/* subCategory : medicine,device,essentials,over the counter */}
+    <Link
+      to="/products"
+      state={{ subCategory: 'medicine' }}
+    >
+      <li className="font-HelveticaNeueMedium">Medicines</li>
+    </Link>
+    <Link
+      to="/products"
+      state={{ subCategory: 'device' }}
+    >
+      <li className="font-HelveticaNeueMedium">Devices</li>
+    </Link>
+    <Link
+      to="/products"
+      state={{ subCategory: 'essentials' }}
+    >
+      <li className="font-HelveticaNeueMedium">Essentials</li>
+    </Link>
+    <Link
+      to="/products"
+      state={{ subCategory: 'over the counter' }}
+    >
+      <li className="font-HelveticaNeueMedium">Over the Counter</li>
+    </Link>
+  </ul>
+</div>
 
         <div className="flex flex-col gap-4">
           <Link to="/account" className="font-HelveticaNeueMedium">

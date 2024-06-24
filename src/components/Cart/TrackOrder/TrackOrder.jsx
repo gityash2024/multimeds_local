@@ -3,6 +3,7 @@ import './TrackOrder.css';
 import { useNavigate } from 'react-router-dom';
 import { gql, useLazyQuery } from '@apollo/client';
 import { toast } from 'react-toastify';
+import WhyChooseUs from '../../WhyChooseUs';
 
 const TRACK_ORDER = gql`
   query trackOrder($input: TrackOrderInput!) {
@@ -66,6 +67,7 @@ const TrackOrder = () => {
   };
 
   return (
+    <>
     <div className="track-order-container">
       <div className="track-order-frame215">
         <div className="track-order-frame424">
@@ -84,16 +86,18 @@ const TrackOrder = () => {
               </span>
             </div>
             <div className="track-order-frame106">
+              <div className="track-order-frame123">
               <input
                 type="text"
                 className={`track-order-input ${error ? 'input-error' : ''} p-2`}
-                style={{border:"1px solid #E2E8F0", borderRadius:"8px"}}
+                style={{border:"1px solid #E2E8F0", borderRadius:"8px",width:"100%", fontSize:"16px"}}
                 value={orderId}
                 onChange={handleInputChange}
-                placeholder="Enter Order Id"
+                placeholder="XX-XXXXXXXX"
               />
               {error && <div className="error-message">{error}</div>}
-              <button onClick={trackOrder} style={{cursor:"pointer",width: "218px"}} className="track-order-frame12">
+              </div>
+              <button onClick={trackOrder} style={{cursor:"pointer"}} className="track-order-frame12">
                 <span className="track-order-text08 16Medium">
                   TRACK ORDER
                 </span>
@@ -106,6 +110,8 @@ const TrackOrder = () => {
         </div>
       </div>
     </div>
+      <WhyChooseUs/>
+    </>
   );
 };
 
