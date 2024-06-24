@@ -1,10 +1,10 @@
 import React from "react";
 import CategoryCard from "./CategoryCard";
 
-import home1 from "../assets/hero1.png";
-import home2 from "../assets/hero2.png";
-import home3 from "../assets/hero3.png";
-import home4 from "../assets/hero4.png";
+import home1 from "../assets/categories/medicines.png";
+import home2 from "../assets/categories/devices.png";
+import home3 from "../assets/categories/essentials.png";
+import home4 from "../assets/categories/overTheCounter.png";
 
 const Categories = () => {
   return (

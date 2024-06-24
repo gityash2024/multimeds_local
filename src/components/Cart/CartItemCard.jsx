@@ -271,9 +271,9 @@ console.log(cartData)
           </button>
         </div>
 
-        <h1 className="text-[#475569] text-[0.75rem]">
+        {/* <h1 className="text-[#475569] text-[0.75rem]">
           ETA Delivery to 560023 : today, 3pm
-        </h1>
+        </h1> */}
       </div>
     </div>
   );
