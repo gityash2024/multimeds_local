@@ -155,12 +155,12 @@ export default function ProductCard(props) {
 
     useEffect(() => {
         if (cartData?.cartProductsListing?.carts) {
-            const cartItems = cartData.cartProductsListing.carts;
+            const cartItems = cartData?.cartProductsListing?.carts;
             setCartList(cartItems);
-            const foundItem = cartItems.find(item => item.product.id === product?.id);
+            const foundItem = cartItems.find(item => item?.product?.id === product?.id);
             if (foundItem) {
-                setCartId(foundItem.id);
-                setProductCount(foundItem.quantity);
+                setCartId(foundItem?.id);
+                setProductCount(foundItem?.quantity);
                 setProductAlreadyInCart(true);
             } else {
                 setProductCount(0);

@@ -289,32 +289,37 @@ const Login = ({ ref, isLogin, setIsLogin, setUserDetails }) => {
       const res = await verifyOTP({ variables: { input: variObj } });
 
       if (res.data.verifyOTP.status === "SUCCESS") {
-        localStorage.setItem("token", res.data.verifyOTP.token);
-        localStorage.setItem('shouldShowBanner', 'true');
+        toast.success("Login Successful");
+        setTimeout(() => {
+          
+          localStorage.setItem("token", res.data.verifyOTP.token);
+          localStorage.setItem('shouldShowBanner', 'true');
+  
+          setUserDetails(res.data.verifyOTP.token);
+          localStorage.setItem(
+            "userInfo",
+            JSON.stringify(res.data.verifyOTP.user)
+          );
+          localStorage.setItem("isLoggedInNow", true);
+          setReferralCode("");
+          setOtp("");
+          setIsReferralWindow(false);
+          setUserLoggedIn(true);
+          setCartList([]);
+          navigate("/");
+          window.location.reload();
+        },1000)
 
-        setUserDetails(res.data.verifyOTP.token);
-        localStorage.setItem(
-          "userInfo",
-          JSON.stringify(res.data.verifyOTP.user)
-        );
-        localStorage.setItem("isLoggedInNow", true);
-        setReferralCode("");
-        setOtp("");
-        setIsReferralWindow(false);
-        setIsLogin(false);
-        setUserLoggedIn(true);
-        setCartList([]);
-        navigate("/");
       } else {
-        toast.error(`OTP not verified!`);
+        toast.error(`Provided OTP is not valid!`);
       }
     } catch (err) {
-      toast.error(`OTP not verified!`);
+        toast.error(`Provided OTP is not valid!`);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
 
-    setIsLogin(false);
+    // setIsLogin(false);
   };
 
   const handleClick = () => {
