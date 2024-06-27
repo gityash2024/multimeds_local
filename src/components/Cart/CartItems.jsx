@@ -277,7 +277,7 @@ async function displayRazorpay() {
           eta: "2-3 days", // Set your ETA accordingly
           addressId: selectedAddress?.id,
           couponId: (appliedCoupon?.id||''),
-          dateOfOrder: new Date().toISOString(),
+          dateOfOrder: new Date()?.toISOString()?.split("T")[0],
           noOfItems: parseInt(cart.length),
           paidWithWallet: parseFloat(userWalletDebit),
           paidWithRazorPay: parseFloat(0) // No amount paid via Razorpay

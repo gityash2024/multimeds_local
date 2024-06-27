@@ -33,11 +33,11 @@ const TrackOrder = () => {
         toast.success(data.trackOrder.message);
         navigate(`/track-order/details/${orderId}`, { state: { orderDetails: data.trackOrder } });
       } else {
-        toast.error('Tracking order failed. Please try again.');
+        toast.error( data?.trackOrder?.message || 'Tracking order failed. Please try again.');
       }
     },
     onError: err => {
-      toast.error('Error tracking order. Please try again.');
+      toast.error( err?.message || 'Error tracking order. Please try again.');
       console.error('Error tracking order:', err);
     }
   });

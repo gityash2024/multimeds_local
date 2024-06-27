@@ -62,7 +62,7 @@ const DeliveringTo = ({setIsDeliveryEnabled,setSelectedAddress,selectedAddress})
         variables: {
           input: {
             delivery_postcode:Number(selectedAddress?.pincode),
-            pickup_postcode: Number(431705),
+            pickup_postcode: Number(560053),
             carts: cartListIds
           }
         }
@@ -139,7 +139,9 @@ const DeliveringTo = ({setIsDeliveryEnabled,setSelectedAddress,selectedAddress})
                     {selectedAddress?.houseNumber}, {selectedAddress?.aptOrBuildingName}, {selectedAddress?.streetOrAreaName}, {selectedAddress?.city} ({selectedAddress?.state}) {selectedAddress?.pincode}
                   </p>
                   {deliveryTimeData?.getDeliveryTime?.isDeliveryAvailable && (
-                    <p className="text-[0.75rem] text-[green]">Delivery time: {deliveryTimeData.getDeliveryTime.maxDays} days</p>
+                    <>
+                    <p className="text-[0.75rem] text-[green]">Delivery time: {deliveryTimeData.getDeliveryTime.minDays} days (min) - {deliveryTimeData.getDeliveryTime.maxDays} days (max)</p>
+                    </>
                   )}
                 </div>
                 {!deliveryTimeData?.getDeliveryTime?.isDeliveryAvailable && (

@@ -220,7 +220,7 @@ const handleCopy = (item) => {
       <div className="flex border-b border-[#CBD5E1] justify-between py-4 px-6">
         {/* id and details button */}
         <div className="w-full items-center flex gap-4">
-          <h1 className="font-medium">Order Id: {item?.id}</h1>
+          <h1 className="font-bold" style={{fontFamily:"HelveticaNeueBold"}}>Order Id To Track: </h1>{item?.id}
           <button title="Copy" onClick={()=>{handleCopy(item)}} aria-label="Copy Order ID">
         <CopyAll/>
       </button>
@@ -230,19 +230,19 @@ const handleCopy = (item) => {
         {/* date and items */}
         <div className="min-w-[13rem] flex gap-6">
           <div className="min-w-[5rem] flex flex-col">
-            <h1 className="text-[#64748B] text-[0.625rem] font-HelveticaNeueItalic">
+            <h1 className="text-[#64748B] text-[0.725rem] font-HelveticaNeueItalic" style={{fontFamily:"HelveticaNeueMedium"}}>
               Date of order
             </h1>
-            <h2 className="text-[0.75rem] font-HelveticaNeueMedium">
+            <h2  style={{fontFamily:"HelveticaNeueMedium"}} className="text-[0.75rem] font-HelveticaNeueMedium">
              {formatDate(item?.dateOfOrder)}
             </h2>
           </div>
 
           <div className="flex flex-col">
-            <h1 className=" text-[#64748B] text-[0.625rem] font-HelveticaNeueItalic">
+            <h1 className=" text-[#64748B] text-[0.725rem] font-HelveticaNeueItalic"  style={{fontFamily:"HelveticaNeueMedium"}}>
               Total No items
             </h1>
-            <h2 className="text-[0.75rem] font-HelveticaNeueMedium">{item?.noOfItems}</h2>
+            <h2  style={{fontFamily:"HelveticaNeueMedium"}} className="text-[0.75rem] font-HelveticaNeueMedium">{item?.noOfItems}</h2>
           </div>
         </div>
       </div>
@@ -269,11 +269,11 @@ const handleCopy = (item) => {
 
       <div className="px-6 flex justify-between">
         <div className="flex gap-6 items-center">
-          <h1 className="text-[0.875rem]  font-HelveticaNeueMedium text-[#1E293B]">
+          <h1  style={{fontFamily:"HelveticaNeueMedium"}} className="text-[0.875rem]  font-HelveticaNeueMedium text-[#1E293B]">
             Order total : Rs {item?.total||'--'}
           </h1>
 
-          <h1 className="text-[0.875rem] font-HelveticaNeueMedium text-[#1E293B]">
+          <h1  style={{fontFamily:"HelveticaNeueMedium"}} className="text-[0.875rem] font-HelveticaNeueMedium text-[#1E293B]">
             Delivering to : <span className="text-[#7487FF]">{item?.address?.pincode||'xxxxxx'}</span>
           </h1>
         </div>
